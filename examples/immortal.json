@@ -1,0 +1,37 @@
+{
+  "name": "my-production-app",
+  "mode": "autonomous",
+  "data_dir": "/var/lib/immortal",
+  "log_level": "info",
+  "collectors": {
+    "log_files": [
+      "/var/log/myapp/app.log",
+      "/var/log/nginx/error.log"
+    ],
+    "metric_interval": 10000000000,
+    "processes": ["nginx", "node", "postgres"],
+    "http_endpoints": [
+      "http://localhost:3000/health",
+      "http://localhost:5432/health"
+    ]
+  },
+  "healing": {
+    "enabled": true,
+    "max_retries": 3,
+    "cooldown": 30000000000,
+    "ghost_mode": false
+  },
+  "security": {
+    "firewall": true,
+    "rate_limit": 100,
+    "anti_scrape": true,
+    "secret_scan": true,
+    "rasp": true,
+    "zero_trust": true
+  },
+  "api": {
+    "enabled": true,
+    "port": 7777,
+    "host": "127.0.0.1"
+  }
+}

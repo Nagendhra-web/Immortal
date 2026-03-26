@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "name": "fix-broken-server",
+      "match": {
+        "severity": "critical",
+        "contains": "500"
+      },
+      "action": {
+        "type": "exec",
+        "command": "curl -s http://localhost:8089/fix"
+      }
+    }
+  ]
+}

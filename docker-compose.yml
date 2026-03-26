@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  immortal:
+    build: .
+    ports:
+      - "7777:7777"
+    volumes:
+      - immortal-data:/data
+      - /var/log:/var/log:ro
+    restart: unless-stopped
+    command: >
+      start
+      --data-dir /data
+      --api-port 7777
+
+volumes:
+  immortal-data:

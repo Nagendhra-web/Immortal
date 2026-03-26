@@ -1,0 +1,57 @@
+{
+  "rules": [
+    {
+      "name": "restart-on-crash",
+      "match": {
+        "severity": "critical"
+      },
+      "action": {
+        "type": "exec",
+        "command": "systemctl restart my-service"
+      }
+    },
+    {
+      "name": "alert-on-error",
+      "match": {
+        "severity": "error"
+      },
+      "action": {
+        "type": "log",
+        "message": "Error detected — logging for review"
+      }
+    },
+    {
+      "name": "api-timeout-handler",
+      "match": {
+        "source": "api-server",
+        "contains": "timeout"
+      },
+      "action": {
+        "type": "exec",
+        "command": "systemctl restart api-server"
+      }
+    },
+    {
+      "name": "database-connection-fix",
+      "match": {
+        "severity": "error",
+        "contains": "connection refused"
+      },
+      "action": {
+        "type": "exec",
+        "command": "systemctl restart postgresql"
+      }
+    },
+    {
+      "name": "memory-leak-restart",
+      "match": {
+        "severity": "critical",
+        "contains": "out of memory"
+      },
+      "action": {
+        "type": "exec",
+        "command": "systemctl restart my-app && echo 3 > /proc/sys/vm/drop_caches"
+      }
+    }
+  ]
+}

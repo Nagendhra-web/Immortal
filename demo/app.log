@@ -1,0 +1,58 @@
+2026/03/26 17:26:10 INFO: Server starting on :8089
+2026/03/26 17:26:10 INFO: Served request OK
+2026/03/26 17:26:53 FATAL: Server manually broken via /break endpoint
+2026/03/26 17:26:53 CRITICAL: Health check failed — server is broken
+2026/03/26 17:27:03 CRITICAL: Health check failed — server is broken
+2026/03/26 17:27:13 CRITICAL: Health check failed — server is broken
+2026/03/26 17:27:23 CRITICAL: Health check failed — server is broken
+2026/03/26 17:27:31 INFO: Server manually fixed via /fix endpoint
+2026/03/26 17:28:55 INFO: Server starting on :8089
+2026/03/26 17:29:25 FATAL: Server manually broken via /break endpoint
+2026/03/26 17:29:25 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:29 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:33 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:39 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:43 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:49 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:53 CRITICAL: Health check failed — server is broken
+2026/03/26 17:29:59 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:03 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:09 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:13 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:19 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:23 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:29 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:33 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:39 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:43 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:49 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:53 CRITICAL: Health check failed — server is broken
+2026/03/26 17:30:59 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:03 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:09 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:13 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:19 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:23 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:29 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:33 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:39 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:43 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:49 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:53 CRITICAL: Health check failed — server is broken
+2026/03/26 17:31:59 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:03 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:09 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:13 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:19 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:23 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:29 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:33 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:39 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:43 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:47 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:47 INFO: Server manually fixed via /fix endpoint
+2026/03/26 17:32:53 FATAL: Server manually broken via /break endpoint
+2026/03/26 17:32:57 CRITICAL: Health check failed — server is broken
+2026/03/26 17:32:57 INFO: Server manually fixed via /fix endpoint
+2026/03/26 18:41:12 INFO: Server starting on :8089
+2026/03/26 18:41:13 INFO: Served request OK
