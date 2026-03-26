@@ -1,6 +1,7 @@
 package immortal_test
 
 import (
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -33,18 +34,17 @@ func TestStartStop(t *testing.T) {
 
 func TestHealAndIngest(t *testing.T) {
 	app := immortal.New(immortal.Config{})
-	healed := false
+	var healed atomic.Bool
 	app.Heal(healing.Rule{
 		Name:   "test",
 		Match:  immortal.MatchSeverity(event.SeverityCritical),
-		Action: func(e *event.Event) error { healed = true; return nil },
+		Action: func(e *event.Event) error { healed.Store(true); return nil },
 	})
-	app.Start() // Must start to wire bus subscription
+	app.Start()
 	defer app.Stop()
 	app.Ingest(event.New(event.TypeError, event.SeverityCritical, "crash"))
-	// Actions run in goroutines, give them time
 	time.Sleep(200 * time.Millisecond)
-	if !healed {
+	if !healed.Load() {
 		t.Error("should have healed")
 	}
 }
