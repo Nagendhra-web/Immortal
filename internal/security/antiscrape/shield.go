@@ -82,9 +82,9 @@ func (s *Shield) Analyze(ip string, userAgent string, path string) *ClientProfil
 		}
 	}
 
-	// Check request rate
+	// Check request rate (only after enough time to measure meaningfully)
 	elapsed := now.Sub(client.FirstSeen)
-	if elapsed > 0 && elapsed < time.Minute {
+	if elapsed > time.Second && elapsed < time.Minute {
 		rate := float64(client.RequestCount) / elapsed.Minutes()
 		if rate > float64(s.config.MaxRequestsPerMinute) {
 			client.IsBot = true
