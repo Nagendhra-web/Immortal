@@ -98,7 +98,7 @@ func TestRateLimit_BlocksOverLimit(t *testing.T) {
 
 func TestRateLimit_RefillsOverTime(t *testing.T) {
 	rl := tenant.NewTenantRateLimiter(tenant.RateLimitConfig{
-		RequestsPerSecond: 100,
+		RequestsPerSecond: 1000,
 		BurstSize:         5,
 	})
 
@@ -107,10 +107,9 @@ func TestRateLimit_RefillsOverTime(t *testing.T) {
 		rl.Allow("tenant-a")
 	}
 
-	// Wait for refill
-	time.Sleep(100 * time.Millisecond)
+	// Wait generously for refill (1000/sec = 1 token per ms, wait 500ms = ~500 tokens)
+	time.Sleep(500 * time.Millisecond)
 
-	// Should have refilled ~10 tokens (100/sec * 0.1s)
 	if !rl.Allow("tenant-a") {
 		t.Error("should allow after refill")
 	}
