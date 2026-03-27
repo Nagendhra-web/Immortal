@@ -6,9 +6,9 @@
 
 ### Your apps never die.
 
-The open-source, AI-powered self-healing engine that monitors, protects, and heals your applications 24/7.
+The open-source self-healing engine that monitors, detects failures, and auto-heals your applications.
 
-**52 packages | 3 SDKs | Zero config | $0 cost | Apache 2.0**
+**52 Go packages | 3 SDKs | Single binary | $0 cost | Apache 2.0**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)

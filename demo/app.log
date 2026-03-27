@@ -56,3 +56,7 @@
 2026/03/26 17:32:57 INFO: Server manually fixed via /fix endpoint
 2026/03/26 18:41:12 INFO: Server starting on :8089
 2026/03/26 18:41:13 INFO: Served request OK
+2026/03/26 18:42:40 FATAL: Server manually broken via /break endpoint
+2026/03/26 18:42:43 CRITICAL: Health check failed — server is broken
+2026/03/26 18:42:46 CRITICAL: Health check failed — server is broken
+2026/03/26 18:42:46 INFO: Server manually fixed via /fix endpoint
