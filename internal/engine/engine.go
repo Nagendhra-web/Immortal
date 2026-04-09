@@ -1,24 +1,30 @@
 package engine
 
 import (
+	"fmt"
 	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/immortal-engine/immortal/internal/alert"
+	"github.com/immortal-engine/immortal/internal/audit"
 	"github.com/immortal-engine/immortal/internal/bus"
 	"github.com/immortal-engine/immortal/internal/causality"
 	"github.com/immortal-engine/immortal/internal/consensus"
 	"github.com/immortal-engine/immortal/internal/dedup"
+	"github.com/immortal-engine/immortal/internal/dependency"
 	"github.com/immortal-engine/immortal/internal/dna"
 	"github.com/immortal-engine/immortal/internal/event"
 	"github.com/immortal-engine/immortal/internal/export"
 	"github.com/immortal-engine/immortal/internal/healing"
 	"github.com/immortal-engine/immortal/internal/health"
 	"github.com/immortal-engine/immortal/internal/logger"
+	"github.com/immortal-engine/immortal/internal/pattern"
+	"github.com/immortal-engine/immortal/internal/predict"
 	"github.com/immortal-engine/immortal/internal/rollback"
 	"github.com/immortal-engine/immortal/internal/sandbox"
 	"github.com/immortal-engine/immortal/internal/selfmonitor"
+	"github.com/immortal-engine/immortal/internal/sla"
 	"github.com/immortal-engine/immortal/internal/storage"
 	"github.com/immortal-engine/immortal/internal/stream"
 	"github.com/immortal-engine/immortal/internal/throttle"
@@ -60,6 +66,13 @@ type Engine struct {
 	monitor     *selfmonitor.Monitor
 	exporter    *export.PrometheusExporter
 	liveStream  *stream.Stream
+
+	// Advanced intelligence
+	patternDet *pattern.Detector
+	predictor  *predict.Predictor
+	slaTracker *sla.Tracker
+	auditLog   *audit.Logger
+	depGraph   *dependency.Graph
 
 	// State
 	recommendations []healing.Recommendation
@@ -114,6 +127,12 @@ func New(cfg Config) (*Engine, error) {
 		monitor:    selfmonitor.New(),
 		exporter:   export.NewPrometheus(),
 		liveStream: stream.New(1000),
+
+		patternDet: pattern.New(5*time.Minute, 3),
+		predictor:  predict.New(),
+		slaTracker: sla.New(),
+		auditLog:   audit.New(10000),
+		depGraph:   dependency.New(),
 	}, nil
 }
 
@@ -149,6 +168,7 @@ func (e *Engine) Start() error {
 	e.running = true
 	e.mu.Unlock()
 
+	e.auditLog.Log("engine-start", "engine", "immortal", fmt.Sprintf("mode=%s", e.modeString()), true)
 	e.log.Info("immortal engine started — all systems online")
 	return nil
 }
@@ -192,18 +212,40 @@ func (e *Engine) processEvent(ev *event.Event) {
 	e.monitor.RecordEvent()
 	e.exporter.IncCounter("immortal_events_processed_total")
 
-	// 8. Update health registry
+	// 8. Update health registry + SLA tracking
 	if ev.Source != "" {
 		status := health.StatusHealthy
+		isHealthy := true
 		if ev.Severity.Level() >= event.SeverityCritical.Level() {
 			status = health.StatusUnhealthy
+			isHealthy = false
 		} else if ev.Severity.Level() >= event.SeverityWarning.Level() {
 			status = health.StatusDegraded
 		}
 		e.registry.Update(ev.Source, status, ev.Message)
+		e.slaTracker.RecordStatus(ev.Source, isHealthy)
 	}
 
-	// 9. Run through healer (rule matching)
+	// 9. Pattern detection — track recurring failures
+	if ev.Severity.Level() >= event.SeverityError.Level() {
+		patternKey := fmt.Sprintf("%s:%s", ev.Source, ev.Message)
+		e.patternDet.Record(patternKey, string(ev.Severity))
+		if e.patternDet.IsRepeating(patternKey) {
+			e.exporter.IncCounter("immortal_patterns_detected_total")
+			e.liveStream.Detect("pattern", ev.Source, fmt.Sprintf("recurring failure: %s (%dx)", ev.Message, e.patternDet.Count(patternKey)))
+		}
+	}
+
+	// 10. Predictive healing — feed metrics to predictor
+	if ev.Type == event.TypeMetric {
+		for key, val := range ev.Meta {
+			if fval, ok := toFloat64(val); ok {
+				e.predictor.Feed(key, fval)
+			}
+		}
+	}
+
+	// 11. Run through healer (rule matching)
 	recs := e.healer.Handle(ev)
 	if len(recs) > 0 {
 		e.mu.Lock()
@@ -219,37 +261,43 @@ func (e *Engine) processEvent(ev *event.Event) {
 			e.log.Info("[ghost] would heal: %s (matched %d rules)", ev.Message, len(recs))
 			e.liveStream.Ghost("would heal: " + ev.Message)
 			e.exporter.IncCounter("immortal_ghost_recommendations_total")
+			e.auditLog.Log("ghost-recommend", "engine", ev.Source, ev.Message, true)
 			return
 		}
 
-		// 10. Consensus check
+		// 12. Consensus check
 		consResult := e.consensus.Evaluate(ev)
 		if !consResult.Approved {
 			e.log.Warn("consensus rejected healing for: %s (votes=%d/%d)",
 				ev.Message, consResult.Votes, consResult.Total)
 			e.exporter.IncCounter("immortal_consensus_rejected_total")
+			e.auditLog.Log("consensus-reject", "consensus", ev.Source, fmt.Sprintf("%s (votes=%d/%d)", ev.Message, consResult.Votes, consResult.Total), false)
 			return
 		}
 
-		// 11. Log the heal
+		// 13. Log the heal + audit trail
 		e.log.Info("healing: %s (consensus %d/%d approved)",
 			ev.Message, consResult.Votes, consResult.Total)
 		e.liveStream.Heal(ev.Source, ev.Message)
 		e.monitor.RecordHeal()
 		e.exporter.IncCounter("immortal_heals_executed_total")
+		e.auditLog.Log("heal", "healer", ev.Source, ev.Message, true)
 
-		// 12. Fire alerts
+		// 14. Fire alerts
 		e.alertMgr.Process(ev)
 		e.liveStream.Alert(ev.Source, ev.Message)
 	}
 
-	// 13. Export current metrics
+	// 15. Export current metrics
 	e.exporter.SetGauge("immortal_health_score", e.dna.HealthScore(nil))
 	e.exporter.SetGauge("immortal_goroutines", float64(e.monitor.Stats().Goroutines))
+	e.exporter.SetGauge("immortal_patterns_active", float64(len(e.patternDet.Patterns())))
+	e.exporter.SetGauge("immortal_predictions_active", float64(len(e.predictor.AllPredictions())))
 }
 
 func (e *Engine) Stop() error {
 	e.log.Info("immortal engine shutting down")
+	e.auditLog.Log("engine-stop", "engine", "immortal", "graceful shutdown", true)
 	e.mu.Lock()
 	e.running = false
 	e.mu.Unlock()
@@ -319,6 +367,41 @@ func (e *Engine) AlertManager() *alert.Manager {
 
 func (e *Engine) LiveStream() *stream.Stream {
 	return e.liveStream
+}
+
+func (e *Engine) PatternDetector() *pattern.Detector {
+	return e.patternDet
+}
+
+func (e *Engine) Predictor() *predict.Predictor {
+	return e.predictor
+}
+
+func (e *Engine) SLATracker() *sla.Tracker {
+	return e.slaTracker
+}
+
+func (e *Engine) AuditLog() *audit.Logger {
+	return e.auditLog
+}
+
+func (e *Engine) DependencyGraph() *dependency.Graph {
+	return e.depGraph
+}
+
+// SetPredictThreshold configures a prediction threshold for a metric.
+func (e *Engine) SetPredictThreshold(metric string, value float64) {
+	e.predictor.SetThreshold(metric, value)
+}
+
+// AddDependency registers a service dependency (from depends on to).
+func (e *Engine) AddDependency(from, to string) {
+	e.depGraph.AddDependency(from, to)
+}
+
+// SetSLATarget sets the SLA target for a service (e.g., 99.9).
+func (e *Engine) SetSLATarget(service string, percent float64) {
+	e.slaTracker.SetTarget(service, percent)
 }
 
 func (e *Engine) modeString() string {
