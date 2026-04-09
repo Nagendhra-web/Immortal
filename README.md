@@ -8,11 +8,11 @@
 
 The open-source self-healing engine that monitors, detects failures, and auto-heals your applications.
 
-**52 Go packages | 3 SDKs | Single binary | $0 cost | Apache 2.0**
+**58 Go packages | 3 SDKs | Single binary | $0 cost | Apache 2.0**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go)](https://go.dev)
-[![Tests](https://img.shields.io/badge/Tests-250%2B%20passing-brightgreen)]()
+[![Tests](https://img.shields.io/badge/Tests-350%2B%20passing-brightgreen)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-SDK-3178C6?logo=typescript)](sdk/typescript)
 [![Python](https://img.shields.io/badge/Python-SDK-3776AB?logo=python)](sdk/python)
 
@@ -66,6 +66,27 @@ immortal start
 
 # Ghost mode — observe first, heal later
 immortal start --ghost
+
+# Watch specific targets
+immortal start --watch-url https://myapp.com --watch-process nginx --watch-log /var/log/app.log
+```
+
+### Monitor Everything
+
+```bash
+immortal status          # Engine status, uptime, event count
+immortal health          # Detailed service health
+immortal logs -f         # Live event stream
+immortal sla             # SLA report per service
+immortal predict         # Failure predictions
+immortal patterns        # Recurring failure detection
+immortal audit           # Full audit trail
+immortal history         # Healing action history
+immortal recommend       # Ghost mode recommendations
+immortal metrics         # Prometheus metrics
+immortal deps            # Service dependency graph
+immortal causality       # Causality graph
+immortal timetravel      # Replay events before a crash
 ```
 
 ## SDKs
@@ -131,20 +152,55 @@ func main() {
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────┐
-│              AI BRAIN LAYER                 │
-│   Built-in ML + Optional LLM + Plugins     │
-├─────────────────────────────────────────────┤
-│         HEALING ORCHESTRATOR                │
-│   Reactive + Predictive + Autonomous        │
-├─────────────────────────────────────────────┤
-│          EXECUTION LAYER                    │
-│   SDK (embed) | Agent (sidecar) | Control   │
-├─────────────────────────────────────────────┤
-│        UNIVERSAL CONNECTOR MESH             │
-│   177 connectors — any language/cloud/DB    │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                  AI BRAIN LAYER                     │
+│     Built-in ML + Optional LLM + Plugins            │
+├─────────────────────────────────────────────────────┤
+│              INTELLIGENCE LAYER                     │
+│   DNA Anomaly Detection │ Pattern Recognition       │
+│   Predictive Healing    │ Causality Graph            │
+│   Dependency Mapping    │ Time-Travel Replay         │
+├─────────────────────────────────────────────────────┤
+│            HEALING ORCHESTRATOR                     │
+│   Reactive + Predictive + Autonomous + Ghost        │
+│   Consensus Engine │ Audit Trail │ SLA Tracking      │
+├─────────────────────────────────────────────────────┤
+│              EXECUTION LAYER                        │
+│   SDK (embed) │ Agent (sidecar) │ CLI │ REST API     │
+├─────────────────────────────────────────────────────┤
+│           UNIVERSAL CONNECTOR MESH                  │
+│   177 connectors — any language/cloud/DB             │
+│   Webhooks │ Slack │ Discord │ Prometheus             │
+└─────────────────────────────────────────────────────┘
 ```
+
+## REST API
+
+When the engine is running, a full REST API is available on port `7777`:
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/status` | Engine status, uptime, event count, heal count |
+| `GET /api/health` | Service health registry |
+| `GET /api/events` | Stored events (filter by `?type=` or `?source=`) |
+| `GET /api/healing/history` | Healing action history |
+| `GET /api/recommendations` | Ghost mode recommendations |
+| `GET /api/metrics` | Prometheus metrics export |
+| `GET /api/monitor` | Self-monitoring (goroutines, uptime) |
+| `GET /api/dna/baseline` | Learned metric baselines |
+| `GET /api/dna/health-score` | Current health score (0.0–1.0) |
+| `GET /api/dna/anomaly?metric=X&value=Y` | Check if a value is anomalous |
+| `GET /api/patterns` | Detected recurring failure patterns |
+| `GET /api/predictions` | Failure predictions with confidence % |
+| `GET /api/sla` | SLA report per service (uptime %, violations) |
+| `GET /api/audit?limit=N&action=X&q=search` | Audit trail with filtering |
+| `GET /api/dependencies` | Service dependency graph + critical path |
+| `GET /api/dependencies/impact?service=X` | Blast radius of a service failure |
+| `GET /api/causality/graph` | Causality graph state |
+| `GET /api/causality/root-cause?event_id=X` | Trace root cause chain |
+| `GET /api/timetravel?count=N&before=T` | Replay events before a timestamp |
+| `GET /api/logs/stream` | Live event stream (SSE) |
+| `GET /api/logs/history` | Recent log entries |
 
 ## Features (210 total)
 
@@ -542,6 +598,145 @@ d.AddChannel(&notify.ConsoleChannel{})
 
 d.Send("Server Down", "API returning 500 errors", "critical")
 // → Sent to Slack + Discord + console simultaneously
+```
+
+### Webhook Sender (HMAC-Signed)
+
+Send signed webhook notifications to any HTTP endpoint with automatic retries.
+
+```go
+import "github.com/immortal-engine/immortal/internal/webhook"
+
+sender := webhook.New(webhook.Config{
+    URL:        "https://your-endpoint.com/hook",
+    Secret:     "your-hmac-secret",  // signs payload with SHA-256
+    MaxRetries: 3,                   // retries on 5xx with exponential backoff
+})
+
+sender.Send(webhook.Payload{
+    Event:    "service_down",
+    Severity: "critical",
+    Source:   "api-server",
+    Message:  "HTTP 500 — connection timeout",
+})
+// → POST with X-Immortal-Signature: sha256=... header
+// → Retries: 100ms → 400ms → 900ms on server errors
+```
+
+### Recurring Pattern Detection
+
+Detect repeated failures using sliding time windows.
+
+```go
+import "github.com/immortal-engine/immortal/internal/pattern"
+
+// Detect patterns: alert when same error occurs 3+ times in 5 minutes
+det := pattern.New(5*time.Minute, 3)
+
+det.Record("api:connection timeout", "critical")
+det.Record("api:connection timeout", "critical")
+det.Record("api:connection timeout", "critical")
+
+det.IsRepeating("api:connection timeout") // true — 3x in window
+patterns := det.Patterns()                // sorted by frequency
+// → [{Key: "api:connection timeout", Count: 3, Severity: "critical", ...}]
+```
+
+### Predictive Healing (Failure Forecasting)
+
+Predict when metrics will breach thresholds using linear regression.
+
+```go
+import "github.com/immortal-engine/immortal/internal/predict"
+
+pred := predict.New()
+pred.SetThreshold("cpu_percent", 90.0) // alert before CPU hits 90%
+
+// Feed metric observations over time
+pred.Feed("cpu_percent", 45.0)
+pred.Feed("cpu_percent", 52.0)
+pred.Feed("cpu_percent", 58.0)
+pred.Feed("cpu_percent", 65.0)
+
+// Predict when it will breach the threshold
+p := pred.Predict("cpu_percent")
+fmt.Printf("Current: %.0f%%, Predicted: %.0f%%\n", p.CurrentValue, p.PredictedValue)
+fmt.Printf("Time to breach: %s (confidence: %.0f%%)\n", p.TimeToThreshold, p.Confidence*100)
+fmt.Printf("Severity: %s\n", p.Severity) // "critical" if < 5min, "warning" if < 30min
+```
+
+### SLA Tracking
+
+Track uptime percentage and SLA violations per service.
+
+```go
+import "github.com/immortal-engine/immortal/internal/sla"
+
+tracker := sla.New()
+tracker.SetTarget("api-server", 99.9) // 99.9% SLA target
+
+// Record health checks
+tracker.RecordStatus("api-server", true)  // healthy
+tracker.RecordStatus("api-server", true)
+tracker.RecordStatus("api-server", false) // outage!
+
+tracker.Uptime("api-server")      // 66.67%
+tracker.IsViolating("api-server") // true — below 99.9% target
+
+report := tracker.Report()        // all services, sorted worst-first
+worst := tracker.Worst()          // service with lowest uptime
+```
+
+### Audit Log
+
+Immutable audit trail for all engine actions with search and filtering.
+
+```go
+import "github.com/immortal-engine/immortal/internal/audit"
+
+log := audit.New(10000) // keep last 10K entries
+
+log.Log("heal", "healer", "api-server", "restarted after crash", true)
+log.Log("deploy", "ci-bot", "worker", "deployed v2.1.0", true)
+log.Log("scale", "autoscaler", "database", "scaled to 4 replicas", true)
+
+// Query
+log.Entries(10)                    // last 10 entries
+log.EntriesByAction("heal")       // all healing actions
+log.EntriesByTarget("api-server") // everything that happened to api-server
+log.Search("deploy")              // full-text search
+log.Since(time.Now().Add(-1*time.Hour)) // last hour
+```
+
+### Service Dependency Graph
+
+Map service dependencies and analyze blast radius.
+
+```go
+import "github.com/immortal-engine/immortal/internal/dependency"
+
+g := dependency.New()
+
+// Define your architecture
+g.AddDependency("api", "auth")
+g.AddDependency("api", "database")
+g.AddDependency("auth", "database")
+g.AddDependency("worker", "database")
+g.AddDependency("worker", "queue")
+
+// Blast radius — if database goes down, who is affected?
+g.TransitiveDependents("database") // → ["api", "auth", "worker"]
+g.ImpactOf("database")            // → 3 services affected
+
+// Critical path — which services have the most impact?
+g.CriticalPath() // → ["database", "auth", "queue", ...] (sorted by impact)
+
+// Detect circular dependencies
+g.HasCycle() // false (no cycles)
+
+// Architecture insights
+g.Roots()  // → ["api", "worker"] (top-level services)
+g.Leaves() // → ["database", "queue"] (bottom-level infrastructure)
 ```
 
 ---
