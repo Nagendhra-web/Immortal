@@ -1,114 +1,115 @@
 # Contributing to Immortal
 
-Thank you for your interest in contributing to Immortal! This guide will help you get started.
+Thanks for your interest in contributing! This guide will help you get started.
 
 ## Quick Start
 
 ```bash
-# Clone the repo
-git clone https://github.com/immortal-engine/immortal.git
-cd immortal
-
-# Install Go 1.22+
-# https://go.dev/dl/
-
-# Run tests
+git clone https://github.com/Nagendhra-web/Immortal.git
+cd Immortal
 go test ./...
-
-# Build
-go build -o bin/immortal ./cmd/immortal
-
-# Run
-./bin/immortal start --ghost
+go build -o immortal ./cmd/immortal
+./immortal start --ghost
 ```
 
 ## Project Structure
 
 ```
-immortal/
-├── cmd/immortal/          # CLI entry point
-├── internal/              # Core packages (48 packages)
-│   ├── engine/            # Core engine (wires everything)
-│   ├── event/             # Universal event format
-│   ├── healing/           # Rule matching + actions
-│   ├── dna/               # Health fingerprinting
-│   ├── brain/             # Predictive trend detection
-│   ├── causality/         # Root cause analysis
-│   ├── security/          # WAF, rate limit, RASP, etc.
-│   ├── cluster/           # Multi-node coordination
-│   ├── learning/          # Persistent pattern learning
-│   ├── llm/               # Optional LLM integration
-│   └── ...                # 38 more packages
-├── sdk/                   # Language SDKs
-│   ├── go/                # Go SDK
-│   ├── typescript/        # TypeScript SDK
-│   └── python/            # Python SDK
-├── demo/                  # Real-world demo tests
-└── docs/                  # Design specs and plans
+cmd/immortal/        CLI entrypoint
+internal/            58 packages (each works independently)
+  engine/            Core healing orchestrator
+  dna/               Anomaly detection
+  causality/         Root cause analysis
+  predict/           Predictive healing
+  pattern/           Recurring failure detection
+  sla/               SLA tracking
+  audit/             Immutable audit log
+  dependency/        Service dependency graph
+  webhook/           HMAC-signed notifications
+  healing/           Healing rules and execution
+  security/          WAF, RASP, rate limiter, anti-scrape, secrets, zero-trust
+  api/rest/          REST API (21 endpoints)
+  cli/               CLI (16 commands)
+  ... and 30+ more
+sdk/
+  go/                Go SDK
+  typescript/        TypeScript SDK
+  python/            Python SDK
+demo/                Integration test scenarios
 ```
 
 ## How to Contribute
 
 ### Bug Reports
-Open an issue with:
-- What happened
-- What you expected
+
+Open an issue with the **Bug Report** template. Include:
+- What happened vs what you expected
 - Steps to reproduce
 - Go version and OS
 
 ### Feature Requests
-Open an issue describing:
+
+Open an issue with the **Feature Request** template. Describe:
 - The problem you're solving
 - Your proposed solution
-- Why it matters
+- Alternatives considered
 
 ### Pull Requests
 
-1. Fork the repo
-2. Create a branch: `git checkout -b feat/your-feature`
-3. Write tests first (TDD)
-4. Implement the feature
-5. Run all tests: `go test ./...`
-6. Submit a PR
+1. **Fork** the repo and create a branch: `git checkout -b feat/your-feature`
+2. **Write tests first** — every new function needs a test
+3. **Run all tests**: `go test ./...` — all 59 suites must pass
+4. **Keep PRs small** — one feature per PR, under 500 lines preferred
+5. **Write a clear description** — explain what and why
+6. Submit the PR
 
 ### Code Standards
 
-- Follow Go conventions (`gofmt`, `golint`)
-- Every package must have tests
-- Every public function must have a comment
+- Follow Go conventions (`gofmt`, `go vet`)
+- Every package must be **thread-safe** (`sync.RWMutex`)
+- Every public function needs a **test**
+- Packages should work **standalone** — minimal cross-dependencies
 - No external dependencies without discussion
-- Thread-safety required for all shared state
+- JSON struct tags on all exported types
 
 ### Testing
 
 ```bash
-# Run all tests
+# All tests
 go test ./...
 
-# Run with verbose output
-go test -v ./...
+# Specific package with verbose output
+go test -v ./internal/engine/
 
-# Run specific package
-go test -v ./internal/engine/...
+# With race detection
+go test -race ./...
 
-# Run demo scenarios
-go test -v ./demo/...
+# Demo scenarios
+go test -v ./demo/
 
-# Run benchmarks
-go test -bench=. ./internal/...
+# TypeScript SDK
+cd sdk/typescript && npm test
+
+# Python SDK
+cd sdk/python && pytest
 ```
+
+## Good First Issues
+
+Look for issues labeled [`good first issue`](https://github.com/Nagendhra-web/Immortal/labels/good%20first%20issue) — these are chosen for new contributors.
 
 ## Architecture Decisions
 
-- **Single binary**: No external dependencies (embedded SQLite)
-- **Plugin-first**: New features as packages, not monolith changes
-- **Offline-first**: Works without internet, LLM is optional
-- **Test-first**: Tests before implementation, 1:1 ratio
+- **Single binary** — no external dependencies (embedded SQLite)
+- **Plugin-first** — new features as packages, not monolith changes
+- **Offline-first** — works without internet, LLM is optional
+- **Test-first** — tests before implementation
+- **Honest** — only claim features that are tested and working
 
 ## Code of Conduct
 
-Be respectful. Be constructive. Be kind. We're building something together.
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Be respectful, constructive, and kind.
 
 ## License
 
-Apache 2.0 - see [LICENSE](LICENSE)
+By contributing, you agree that your contributions will be licensed under [Apache 2.0](LICENSE).
