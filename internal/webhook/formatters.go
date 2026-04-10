@@ -2,7 +2,6 @@ package webhook
 
 import "time"
 
-
 // ----------------- Discord WebHook Fromatter ----------------------
 func FormatDiscord(title, message, severity string) map[string]interface{} {
 	return map[string]interface{}{
@@ -29,7 +28,6 @@ func discordColor(severity string) int {
 		return 8421504
 	}
 }
-
 
 // ---------------------- Slack WebHook Formatter ------------------------
 func FormatSlack(title, message, severity string) map[string]interface{} {
@@ -74,8 +72,7 @@ func slackColor(severity string) string {
 	}
 }
 
-
-//  ---------------------- Teams webhook Formatter ------------------------------
+// ---------------------- Teams webhook Formatter ------------------------------
 func FormatTeams(title, message, severity string) map[string]interface{} {
 	return map[string]interface{}{
 		"@type":      "MessageCard",
