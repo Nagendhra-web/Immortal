@@ -434,8 +434,8 @@ func TestStatusEndpointFull(t *testing.T) {
 
 	var resp map[string]interface{}
 	json.NewDecoder(rec.Body).Decode(&resp)
-	if resp["version"] != "0.2.0" {
-		t.Errorf("expected version 0.2.0, got %v", resp["version"])
+	if resp["version"] != "0.3.0" {
+		t.Errorf("expected version 0.3.0, got %v", resp["version"])
 	}
 	if _, ok := resp["uptime"]; !ok {
 		t.Error("expected uptime in full status")

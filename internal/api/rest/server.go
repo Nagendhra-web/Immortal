@@ -8,14 +8,20 @@ import (
 	"time"
 
 	"github.com/immortal-engine/immortal/internal/audit"
+	"github.com/immortal-engine/immortal/internal/autolearn"
+	"github.com/immortal-engine/immortal/internal/capacity"
 	"github.com/immortal-engine/immortal/internal/causality"
+	"github.com/immortal-engine/immortal/internal/chaos"
+	"github.com/immortal-engine/immortal/internal/correlation"
 	"github.com/immortal-engine/immortal/internal/dependency"
 	"github.com/immortal-engine/immortal/internal/dna"
 	"github.com/immortal-engine/immortal/internal/event"
 	"github.com/immortal-engine/immortal/internal/export"
 	"github.com/immortal-engine/immortal/internal/healing"
 	"github.com/immortal-engine/immortal/internal/health"
+	"github.com/immortal-engine/immortal/internal/incident"
 	"github.com/immortal-engine/immortal/internal/pattern"
+	"github.com/immortal-engine/immortal/internal/playbook"
 	"github.com/immortal-engine/immortal/internal/predict"
 	"github.com/immortal-engine/immortal/internal/selfmonitor"
 	"github.com/immortal-engine/immortal/internal/sla"
@@ -43,6 +49,14 @@ type Server struct {
 	depGraph        *dependency.Graph
 	recommendations func() []healing.Recommendation
 
+	// v0.3.0 components
+	chaosEng    *chaos.Engine
+	autoLearner *autolearn.Learner
+	incidents   *incident.Manager
+	capacityPln *capacity.Planner
+	correlator  *correlation.Engine
+	playbookRun *playbook.Runner
+
 	mux *http.ServeMux
 }
 
@@ -63,6 +77,12 @@ type ServerConfig struct {
 	AuditLog        *audit.Logger
 	DepGraph        *dependency.Graph
 	Recommendations func() []healing.Recommendation
+	ChaosEng        *chaos.Engine
+	AutoLearner     *autolearn.Learner
+	Incidents       *incident.Manager
+	CapacityPln     *capacity.Planner
+	Correlator      *correlation.Engine
+	PlaybookRun     *playbook.Runner
 }
 
 func New(store *storage.Store, registry *health.Registry, healer *healing.Healer) *Server {
@@ -106,6 +126,12 @@ func NewFull(cfg ServerConfig) *Server {
 		auditLog:        cfg.AuditLog,
 		depGraph:        cfg.DepGraph,
 		recommendations: cfg.Recommendations,
+		chaosEng:        cfg.ChaosEng,
+		autoLearner:     cfg.AutoLearner,
+		incidents:       cfg.Incidents,
+		capacityPln:     cfg.CapacityPln,
+		correlator:      cfg.Correlator,
+		playbookRun:     cfg.PlaybookRun,
 		mux:             http.NewServeMux(),
 	}
 	s.routes()
@@ -137,6 +163,18 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/dependencies", s.handleDependencies)
 	s.mux.HandleFunc("/api/dependencies/impact", s.handleDependencyImpact)
 	s.mux.HandleFunc("/api/monitor", s.handleMonitor)
+
+	// v0.3.0 endpoints
+	s.mux.HandleFunc("/api/chaos/report", s.handleChaosReport)
+	s.mux.HandleFunc("/api/autolearn/rules", s.handleAutoLearnRules)
+	s.mux.HandleFunc("/api/autolearn/stats", s.handleAutoLearnStats)
+	s.mux.HandleFunc("/api/incidents", s.handleIncidents)
+	s.mux.HandleFunc("/api/incidents/active", s.handleIncidentsActive)
+	s.mux.HandleFunc("/api/capacity", s.handleCapacity)
+	s.mux.HandleFunc("/api/capacity/critical", s.handleCapacityCritical)
+	s.mux.HandleFunc("/api/correlations", s.handleCorrelations)
+	s.mux.HandleFunc("/api/playbooks", s.handlePlaybooks)
+	s.mux.HandleFunc("/api/playbooks/history", s.handlePlaybookHistory)
 }
 
 func (s *Server) Handler() http.Handler {
@@ -197,7 +235,7 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	resp := map[string]interface{}{
 		"engine":  "running",
-		"version": "0.2.0",
+		"version": "0.3.0",
 	}
 	if s.monitor != nil {
 		stats := s.monitor.Stats()
@@ -542,6 +580,153 @@ func (s *Server) handleMonitor(w http.ResponseWriter, r *http.Request) {
 		"uptime":           stats.Uptime.String(),
 		"uptime_seconds":   stats.Uptime.Seconds(),
 	})
+}
+
+// --- v0.3.0 handlers ---
+
+func (s *Server) handleChaosReport(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.chaosEng == nil {
+		writeJSON(w, map[string]interface{}{"total_faults": 0, "score": 0})
+		return
+	}
+	writeJSON(w, s.chaosEng.Report())
+}
+
+func (s *Server) handleAutoLearnRules(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.autoLearner == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	suggested := r.URL.Query().Get("suggested")
+	if suggested == "true" {
+		writeJSON(w, s.autoLearner.SuggestedRules())
+		return
+	}
+	writeJSON(w, s.autoLearner.AllRules())
+}
+
+func (s *Server) handleAutoLearnStats(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.autoLearner == nil {
+		writeJSON(w, map[string]interface{}{})
+		return
+	}
+	writeJSON(w, s.autoLearner.Stats())
+}
+
+func (s *Server) handleIncidents(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.incidents == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	query := r.URL.Query().Get("q")
+	if query != "" {
+		writeJSON(w, s.incidents.Search(query))
+		return
+	}
+	writeJSON(w, s.incidents.All())
+}
+
+func (s *Server) handleIncidentsActive(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.incidents == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	writeJSON(w, s.incidents.Active())
+}
+
+func (s *Server) handleCapacity(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.capacityPln == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	writeJSON(w, s.capacityPln.AllForecasts())
+}
+
+func (s *Server) handleCapacityCritical(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.capacityPln == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	daysStr := r.URL.Query().Get("days")
+	days := 7.0
+	if daysStr != "" {
+		if d, err := strconv.ParseFloat(daysStr, 64); err == nil && d > 0 {
+			days = d
+		}
+	}
+	writeJSON(w, s.capacityPln.Critical(days))
+}
+
+func (s *Server) handleCorrelations(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.correlator == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	metric := r.URL.Query().Get("metric")
+	if metric != "" {
+		writeJSON(w, map[string]interface{}{
+			"strongest":          s.correlator.StrongestCorrelation(metric),
+			"leading_indicators": s.correlator.LeadingIndicators(metric),
+		})
+		return
+	}
+	writeJSON(w, s.correlator.AllCorrelations())
+}
+
+func (s *Server) handlePlaybooks(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.playbookRun == nil {
+		writeJSON(w, []string{})
+		return
+	}
+	writeJSON(w, s.playbookRun.List())
+}
+
+func (s *Server) handlePlaybookHistory(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.playbookRun == nil {
+		writeJSON(w, []interface{}{})
+		return
+	}
+	writeJSON(w, s.playbookRun.History())
 }
 
 // --- Helpers ---

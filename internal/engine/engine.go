@@ -8,9 +8,13 @@ import (
 
 	"github.com/immortal-engine/immortal/internal/alert"
 	"github.com/immortal-engine/immortal/internal/audit"
+	"github.com/immortal-engine/immortal/internal/autolearn"
 	"github.com/immortal-engine/immortal/internal/bus"
+	"github.com/immortal-engine/immortal/internal/capacity"
 	"github.com/immortal-engine/immortal/internal/causality"
+	"github.com/immortal-engine/immortal/internal/chaos"
 	"github.com/immortal-engine/immortal/internal/consensus"
+	"github.com/immortal-engine/immortal/internal/correlation"
 	"github.com/immortal-engine/immortal/internal/dedup"
 	"github.com/immortal-engine/immortal/internal/dependency"
 	"github.com/immortal-engine/immortal/internal/dna"
@@ -18,8 +22,10 @@ import (
 	"github.com/immortal-engine/immortal/internal/export"
 	"github.com/immortal-engine/immortal/internal/healing"
 	"github.com/immortal-engine/immortal/internal/health"
+	"github.com/immortal-engine/immortal/internal/incident"
 	"github.com/immortal-engine/immortal/internal/logger"
 	"github.com/immortal-engine/immortal/internal/pattern"
+	"github.com/immortal-engine/immortal/internal/playbook"
 	"github.com/immortal-engine/immortal/internal/predict"
 	"github.com/immortal-engine/immortal/internal/rollback"
 	"github.com/immortal-engine/immortal/internal/sandbox"
@@ -73,6 +79,14 @@ type Engine struct {
 	slaTracker *sla.Tracker
 	auditLog   *audit.Logger
 	depGraph   *dependency.Graph
+
+	// v0.3.0 — next-gen intelligence
+	chaosEng    *chaos.Engine
+	autoLearner *autolearn.Learner
+	incidents   *incident.Manager
+	capacityPln *capacity.Planner
+	correlator  *correlation.Engine
+	playbookRun *playbook.Runner
 
 	// State
 	recommendations []healing.Recommendation
@@ -133,7 +147,17 @@ func New(cfg Config) (*Engine, error) {
 		slaTracker: sla.New(),
 		auditLog:   audit.New(10000),
 		depGraph:   dependency.New(),
+
+		autoLearner: autolearn.New(5),
+		incidents:   incident.New(),
+		capacityPln: capacity.New(),
+		correlator:  correlation.New(),
+		playbookRun: playbook.New(),
 	}, nil
+}
+
+func (e *Engine) initChaos() {
+	e.chaosEng = chaos.New(e.Ingest)
 }
 
 func (e *Engine) AddRule(rule healing.Rule) {
@@ -275,15 +299,26 @@ func (e *Engine) processEvent(ev *event.Event) {
 			return
 		}
 
-		// 13. Log the heal + audit trail
+		// 13. Log the heal + audit trail + auto-learn
 		e.log.Info("healing: %s (consensus %d/%d approved)",
 			ev.Message, consResult.Votes, consResult.Total)
 		e.liveStream.Heal(ev.Source, ev.Message)
 		e.monitor.RecordHeal()
 		e.exporter.IncCounter("immortal_heals_executed_total")
 		e.auditLog.Log("heal", "healer", ev.Source, ev.Message, true)
+		e.autoLearner.Record(recs[0].RuleName, ev.Source, ev.Message, string(ev.Severity), true)
 
-		// 14. Fire alerts
+		// 14. Feed capacity planner + correlator (metrics)
+		if ev.Type == event.TypeMetric {
+			for key, val := range ev.Meta {
+				if fval, ok := toFloat64(val); ok {
+					e.capacityPln.Record(key, fval)
+					e.correlator.Record(key, fval)
+				}
+			}
+		}
+
+		// 15. Fire alerts
 		e.alertMgr.Process(ev)
 		e.liveStream.Alert(ev.Source, ev.Message)
 	}
@@ -387,6 +422,38 @@ func (e *Engine) AuditLog() *audit.Logger {
 
 func (e *Engine) DependencyGraph() *dependency.Graph {
 	return e.depGraph
+}
+
+func (e *Engine) ChaosEngine() *chaos.Engine {
+	if e.chaosEng == nil {
+		e.initChaos()
+	}
+	return e.chaosEng
+}
+
+func (e *Engine) AutoLearner() *autolearn.Learner {
+	return e.autoLearner
+}
+
+func (e *Engine) IncidentManager() *incident.Manager {
+	return e.incidents
+}
+
+func (e *Engine) CapacityPlanner() *capacity.Planner {
+	return e.capacityPln
+}
+
+func (e *Engine) Correlator() *correlation.Engine {
+	return e.correlator
+}
+
+func (e *Engine) PlaybookRunner() *playbook.Runner {
+	return e.playbookRun
+}
+
+// SetCapacity sets the max capacity for a metric (for capacity forecasting).
+func (e *Engine) SetCapacity(metric string, max float64) {
+	e.capacityPln.SetCapacity(metric, max)
 }
 
 // SetPredictThreshold configures a prediction threshold for a metric.
