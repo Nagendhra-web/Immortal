@@ -6,14 +6,14 @@
 
 The open-source self-healing engine that monitors, detects failures, and auto-heals your applications — with zero configuration.
 
-**58 packages | 3 SDKs | 59 test suites | Single binary | Apache 2.0**
+**64 packages | 3 SDKs | 65 test suites | Single binary | Apache 2.0**
 
 [![CI](https://github.com/Nagendhra-web/Immortal/actions/workflows/ci.yml/badge.svg)](https://github.com/Nagendhra-web/Immortal/actions)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/SDK-TypeScript-3178C6?logo=typescript&logoColor=white)](sdk/typescript)
 [![Python](https://img.shields.io/badge/SDK-Python-3776AB?logo=python&logoColor=white)](sdk/python)
-[![Version](https://img.shields.io/badge/version-0.2.0-green)]()
+[![Version](https://img.shields.io/badge/version-0.3.0-green)]()
 
 </div>
 
@@ -63,6 +63,12 @@ Monitor → Detect → Throttle → Deduplicate → Analyze → Heal → Audit
 | **Circuit breaker** | `circuitbreaker` | Stop hammering failing services |
 | **Prometheus export** | `export` | Metrics in Prometheus format |
 | **Notifications** | `notify` | Slack, Discord, console alerts |
+| **Chaos testing** | `chaos` | Inject failures, verify healing works, score effectiveness |
+| **Self-learning** | `autolearn` | Watches successful heals, suggests new rules automatically |
+| **Incident reports** | `incident` | Auto-generated postmortems with timeline, root cause, markdown export |
+| **Capacity forecast** | `capacity` | Multi-metric forecasting, exhaustion date prediction |
+| **Metric correlation** | `correlation` | Pearson correlation, discovers leading indicators across metrics |
+| **Healing playbooks** | `playbook` | Multi-step healing with conditions, retries, and auto-rollback |
 
 ---
 
@@ -80,7 +86,7 @@ PASS  TestScenario_EventFlood_ThrottlePrevents      — blocked 999/1000 duplica
 PASS  TestScenario_TimeTravel_ReplayBeforeFailure   — replayed 5 events before crash
 PASS  TestScenario_RESTAPI_QueryWhileRunning        — queried health, metrics, Prometheus while live
 
-59 packages | 0 failures
+65 packages | 0 failures
 ```
 
 ---
@@ -119,7 +125,7 @@ immortal causality    # Causality graph + root cause tracing
 immortal timetravel   # Replay events before a crash
 ```
 
-## REST API (21 endpoints)
+## REST API (31 endpoints)
 
 All features accessible over HTTP when the engine runs (default port `7777`):
 
@@ -136,7 +142,7 @@ All features accessible over HTTP when the engine runs (default port `7777`):
 | `GET /api/metrics` | Prometheus metrics (text format) |
 | `GET /api/monitor` | Self-monitoring (goroutines, uptime) |
 | `GET /api/dna/baseline` | Learned metric baselines |
-| `GET /api/dna/health-score` | Health score (0.0–1.0) |
+| `GET /api/dna/health-score` | Health score (0.0-1.0) |
 | `GET /api/dna/anomaly?metric=&value=` | Anomaly check |
 | `GET /api/patterns` | Recurring failure patterns |
 | `GET /api/predictions` | Failure predictions |
@@ -149,6 +155,16 @@ All features accessible over HTTP when the engine runs (default port `7777`):
 | `GET /api/timetravel?count=&before=` | Event replay |
 | `GET /api/logs/stream` | Live SSE event stream |
 | `GET /api/logs/history` | Recent log entries |
+| `GET /api/chaos/report` | Chaos test results and healing score |
+| `GET /api/autolearn/rules?suggested=true` | Self-learned healing rules |
+| `GET /api/autolearn/stats` | Learning statistics |
+| `GET /api/incidents` | All incident reports |
+| `GET /api/incidents/active` | Open incidents |
+| `GET /api/capacity` | Capacity forecasts for all metrics |
+| `GET /api/capacity/critical?days=7` | Resources exhausting within N days |
+| `GET /api/correlations?metric=X` | Cross-metric correlations and leading indicators |
+| `GET /api/playbooks` | Registered healing playbooks |
+| `GET /api/playbooks/history` | Playbook execution history |
 
 </details>
 
@@ -211,16 +227,21 @@ eng.Start()
 ```
 ┌─────────────────────────────────────────────────────┐
 │                  AI BRAIN LAYER                     │
-│     Built-in ML + Optional LLM + Plugins            │
+│   Auto-Learning │ Metric Correlation │ Prediction    │
+│   Built-in ML + Optional LLM + Plugins              │
 ├─────────────────────────────────────────────────────┤
 │              INTELLIGENCE LAYER                     │
 │   DNA Anomaly Detection │ Pattern Recognition       │
-│   Predictive Healing    │ Causality Graph            │
+│   Capacity Forecasting  │ Causality Graph            │
 │   Dependency Mapping    │ Time-Travel Replay         │
 ├─────────────────────────────────────────────────────┤
 │            HEALING ORCHESTRATOR                     │
 │   Reactive + Predictive + Autonomous + Ghost        │
-│   Consensus Engine │ Audit Trail │ SLA Tracking      │
+│   Multi-Step Playbooks │ Auto-Rollback │ Consensus   │
+│   Incident Reports │ Audit Trail │ SLA Tracking      │
+├─────────────────────────────────────────────────────┤
+│              CHAOS + VERIFICATION                   │
+│   Fault Injection │ Healing Validation │ Scoring     │
 ├─────────────────────────────────────────────────────┤
 │              EXECUTION LAYER                        │
 │   SDK (embed) │ Agent (sidecar) │ CLI │ REST API     │
@@ -378,6 +399,151 @@ det.Patterns()                            // sorted by frequency
 </details>
 
 <details>
+<summary><b>Chaos Testing</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/chaos"
+
+// Create a chaos engine that injects events into your healing engine
+ch := chaos.New(engine.Ingest)
+
+// Inject faults and see if your healing rules catch them
+ch.InjectHTTPError("api-server", 500)
+ch.InjectProcessCrash("nginx")
+ch.InjectCPUSpike(95.0)
+
+// Record whether each fault was detected and healed
+ch.RecordResult(fault.ID, true, 200*time.Millisecond, true, 500*time.Millisecond)
+
+// Score your healing effectiveness (0.0 to 1.0)
+fmt.Printf("Healing score: %.0f%%\n", ch.Score()*100)
+```
+</details>
+
+<details>
+<summary><b>Self-Learning Healer</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/autolearn"
+
+learner := autolearn.New(5) // suggest rules after 5 occurrences
+
+// The engine feeds successful heals automatically
+learner.Record("restart-rule", "api-server", "crash", "critical", true)
+// ... after enough observations ...
+
+// Get suggested rules the engine learned on its own
+suggested := learner.SuggestedRules()
+for _, rule := range suggested {
+    fmt.Printf("Suggested: %s (confidence: %.0f%%)\n", rule.Pattern, rule.Confidence*100)
+}
+```
+</details>
+
+<details>
+<summary><b>Incident Reports</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/incident"
+
+mgr := incident.New()
+
+// Open an incident
+inc := mgr.Open("API Outage", "critical")
+mgr.AddEvent(inc.ID, "api-server", "critical", "HTTP 500 errors")
+mgr.AddEvent(inc.ID, "database", "error", "connection pool exhausted")
+mgr.SetRootCause(inc.ID, "database connection limit reached")
+mgr.AddAffectedService(inc.ID, "api-server")
+mgr.AddHealingAction(inc.ID, "restarted connection pool")
+mgr.Resolve(inc.ID, "Connection pool restarted, API recovered")
+
+// Auto-generate a markdown postmortem
+fmt.Println(mgr.GenerateMarkdown(inc.ID))
+```
+</details>
+
+<details>
+<summary><b>Capacity Forecasting</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/capacity"
+
+planner := capacity.New()
+planner.SetCapacity("disk_gb", 500) // 500 GB total
+
+// Feed observations over time
+planner.Record("disk_gb", 200)
+planner.Record("disk_gb", 220)
+planner.Record("disk_gb", 245)
+
+f := planner.Forecast("disk_gb")
+fmt.Printf("Trend: %s, Growth: %.1f GB/hour\n", f.Trend, f.GrowthRate)
+fmt.Printf("Disk full in: %.0f days\n", f.DaysUntilFull)
+
+// Find resources running out within 7 days
+critical := planner.Critical(7)
+```
+</details>
+
+<details>
+<summary><b>Metric Correlation</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/correlation"
+
+engine := correlation.New()
+
+// Feed metrics over time
+for i := 0; i < 100; i++ {
+    engine.Record("cpu", float64(i)*2)
+    engine.Record("memory", float64(i)*1.5)
+    engine.Record("latency", float64(i)*3)
+}
+
+// Discover hidden relationships
+all := engine.AllCorrelations() // sorted by strength
+
+// Find leading indicators for a metric
+leaders := engine.LeadingIndicators("latency")
+// "memory spikes 5 minutes before latency increases"
+```
+</details>
+
+<details>
+<summary><b>Healing Playbooks</b></summary>
+
+```go
+import "github.com/immortal-engine/immortal/internal/playbook"
+
+runner := playbook.New()
+
+runner.Register("deploy-recovery", []playbook.Step{
+    {
+        Name:     "backup-db",
+        Action:   func() error { /* backup */ return nil },
+        Rollback: func() error { /* restore */ return nil },
+    },
+    {
+        Name:    "run-migration",
+        Action:  func() error { /* migrate */ return nil },
+        Retries: 3, // retry up to 3 times
+    },
+    {
+        Name:      "restart-service",
+        Action:    func() error { /* restart */ return nil },
+        Condition: func() bool { return isServiceDown() },
+    },
+})
+
+// Execute (auto-rollback if any step fails)
+exec, err := runner.Run("deploy-recovery")
+
+// Or dry-run first
+exec, _ = runner.DryRun("deploy-recovery")
+```
+</details>
+
+<details>
 <summary><b>More: Circuit Breaker, Rate Limiter, Secret Scanner, RASP, Anti-Scrape, Zero-Trust, Backoff, Dedup, Causality, Logger, Metrics, Notifications, Prometheus</b></summary>
 
 See the [full package list](internal/) — each one works independently with zero dependencies on the engine.
@@ -398,8 +564,14 @@ internal/
   dependency/        Service dependency graph
   webhook/           HMAC-signed HTTP notifications
   healing/           Healing rules and execution
+  chaos/             Chaos testing (fault injection + scoring)
+  autolearn/         Self-learning healer (auto-suggests rules)
+  incident/          Incident report generator (auto postmortem)
+  capacity/          Capacity forecasting (exhaustion prediction)
+  correlation/       Cross-metric correlation (leading indicators)
+  playbook/          Multi-step healing playbooks (auto-rollback)
   security/          WAF, RASP, rate limiter, anti-scrape, secrets, zero-trust
-  api/rest/          REST API server (21 endpoints)
+  api/rest/          REST API server (31 endpoints)
   cli/               CLI commands (16 commands)
   ... and 30+ more packages
 sdk/
