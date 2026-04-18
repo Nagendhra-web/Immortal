@@ -212,7 +212,27 @@ func startCmd() *cobra.Command {
 				Agent:           eng.AgenticAgent(),
 				FedClient:       eng.FederatedClient(),
 				CausalFn:        eng.CausalRootCause,
+				Topology:        eng.Topology(),
+				FormalOn:        eng.FormalEnabled(),
 			})
+
+			// If topology is enabled, seed a small demo dependency graph and
+			// snapshot every 5s so the dashboard has data to render.
+			if eng.Topology() != nil {
+				eng.AddDependency("api", "db")
+				eng.AddDependency("api", "cache")
+				eng.AddDependency("db", "cache")
+				eng.RegisterService("api")
+				eng.RegisterService("db")
+				eng.RegisterService("cache")
+				go func() {
+					tick := time.NewTicker(5 * time.Second)
+					defer tick.Stop()
+					for range tick.C {
+						_, _ = eng.SnapshotTopology()
+					}
+				}()
+			}
 			handler := middleware.Chain(
 				middleware.Recovery,
 				middleware.CORS("*"),

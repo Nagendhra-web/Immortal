@@ -67,13 +67,14 @@ function renderServiceCard(name, svc) {
 async function refreshServices() {
   try {
     const d = await fetchJSON('/api/health');
-    const services = d.services || {};
-    const names = Object.keys(services);
-    if (names.length === 0) {
+    // /api/health returns {status: "...", services: [{name, status, message, last_check, ...}]}
+    const services = Array.isArray(d.services) ? d.services
+                      : (typeof d.services === 'object' && d.services !== null ? Object.values(d.services) : []);
+    if (services.length === 0) {
       el('services-grid').innerHTML = '<span class="panel-disabled">No services registered</span>';
       return;
     }
-    el('services-grid').innerHTML = names.map(n => renderServiceCard(n, services[n])).join('');
+    el('services-grid').innerHTML = services.map(svc => renderServiceCard(svc.name || '?', svc)).join('');
   } catch (_) {
     el('services-grid').innerHTML = '<span class="panel-disabled">Feature not enabled</span>';
   }
@@ -283,15 +284,19 @@ function detectCycles(nodes, edges) {
 
 async function refreshTopology() {
   try {
-    const r = await fetch('/api/v5/topology/snapshot');
-    if (r.status === 404) {
-      el('topo-svg').innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#8b949e" font-size="12">Feature not enabled</text>';
-      return;
-    }
-    if (!r.ok) throw new Error(r.statusText);
-    const data = await r.json();
-    const snapshot = data.snapshot || data;
-    const { nodes, edges } = buildTopoGraph(snapshot);
+    // Pull the actual dependency graph for node/edge layout.
+    const depResp = await fetch('/api/dependencies');
+    if (!depResp.ok) throw new Error(depResp.statusText);
+    const dep = await depResp.json();
+
+    // Build nodes and edges from the dependency graph.
+    const nodes = (dep.nodes || []).map(n => ({ id: n.name, label: n.name }));
+    const edges = [];
+    (dep.nodes || []).forEach(n => {
+      (n.dependencies || []).forEach(to => {
+        edges.push({ from: n.name, to });
+      });
+    });
 
     if (nodes.length === 0) {
       el('topo-svg').innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#8b949e" font-size="12">No topology data</text>';
