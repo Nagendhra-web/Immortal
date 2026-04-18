@@ -278,6 +278,9 @@ func (g *Graph) depthMemo(service string, memo map[string]int) int {
 	if v, ok := memo[service]; ok {
 		return v
 	}
+	// Cycle guard: install a sentinel BEFORE recursing so a cyclic dependency
+	// (e.g. api↔db) terminates instead of overflowing the stack.
+	memo[service] = 0
 	max := 0
 	for _, e := range g.edges {
 		if e.to == service {

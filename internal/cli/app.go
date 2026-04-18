@@ -78,6 +78,10 @@ func startCmd() *cobra.Command {
 		enableAgentic bool
 		enableCausal  bool
 		clusterID     string
+
+		// v0.5.0 — novel observability primitives
+		enableTopology bool
+		enableFormal   bool
 	)
 
 	cmd := &cobra.Command{
@@ -98,6 +102,8 @@ func startCmd() *cobra.Command {
 				EnableAgentic:     enableAgentic,
 				EnableCausal:      enableCausal,
 				FederatedClientID: clusterID,
+				EnableTopology:    enableTopology,
+				EnableFormal:      enableFormal,
 			}
 
 			eng, err := engine.New(cfg)
@@ -292,6 +298,12 @@ func startCmd() *cobra.Command {
 		"Enable causal inference (PC algorithm + do-calculus) on observed metrics")
 	cmd.Flags().StringVar(&clusterID, "cluster-id", "",
 		"This node's ID in a federated-learning fleet (non-empty enables federated mode)")
+
+	// v0.5.0 novel observability primitives.
+	cmd.Flags().BoolVar(&enableTopology, "topology", false,
+		"Enable service-graph homology tracker (detects architectural drift, blast-radius growth, cycle birth)")
+	cmd.Flags().BoolVar(&enableFormal, "formal", false,
+		"Enable formal model-checker for healing plans (proves invariant safety with counterexample traces)")
 
 	return cmd
 }

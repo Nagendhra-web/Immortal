@@ -42,6 +42,7 @@ import (
 	"github.com/immortal-engine/immortal/internal/stream"
 	"github.com/immortal-engine/immortal/internal/throttle"
 	"github.com/immortal-engine/immortal/internal/timetravel"
+	"github.com/immortal-engine/immortal/internal/topology"
 	"github.com/immortal-engine/immortal/internal/twin"
 )
 
@@ -59,6 +60,10 @@ type Config struct {
 	EnableCausal      bool        // causal inference on observed metrics
 	FederatedClientID string      // non-empty enables federated anomaly learning
 	LLMConfig         *llm.Config // optional; if set, agentic loop uses LLM planner
+
+	// v0.5.0 — novel observability primitives (all opt-in).
+	EnableTopology bool // service-graph homology tracker (Components / Cycles / BlastRadius drift)
+	EnableFormal   bool // make formal.CheckPlan available via the engine for invariant proofs
 }
 
 type Engine struct {
@@ -114,6 +119,11 @@ type Engine struct {
 	causalMu   sync.Mutex
 	causalData map[string][]float64 // rolling per-metric window
 	causalCap  int
+
+	// v0.5.0 — novel observability primitives (nil when disabled)
+	topology     *topology.Tracker
+	topologyOn   bool // mirrors Config.EnableTopology for fast checks
+	formalOn     bool
 
 	// State
 	recommendations []healing.Recommendation
@@ -221,6 +231,11 @@ func (e *Engine) initAdvanced(cfg Config) error {
 	if cfg.FederatedClientID != "" {
 		e.fedClient = federated.NewClient(cfg.FederatedClientID)
 	}
+	if cfg.EnableTopology {
+		e.topology = topology.NewTracker(500)
+		e.topologyOn = true
+	}
+	e.formalOn = cfg.EnableFormal
 	return nil
 }
 
@@ -729,6 +744,33 @@ func (e *Engine) FederatedSnapshot(round int, epsilon float64) *federated.Update
 	u := e.fedClient.Snapshot(round, epsilon)
 	return &u
 }
+
+// Topology returns the service-graph homology tracker, or nil if disabled.
+func (e *Engine) Topology() *topology.Tracker { return e.topology }
+
+// SnapshotTopology builds a topology DiGraph from the current dependency graph
+// (engine.depGraph) and records it onto the tracker. Callers can hook this on
+// a timer or after every successful heal — the engine is intentionally hands-off
+// about WHEN to snapshot. Returns the resulting Snapshot.
+func (e *Engine) SnapshotTopology() (topology.Snapshot, error) {
+	if e.topology == nil {
+		return topology.Snapshot{}, errors.New("topology tracker not enabled")
+	}
+	g := topology.NewDiGraph()
+	for _, node := range e.depGraph.All() {
+		g.AddNode(node.Name)
+		for _, to := range e.depGraph.Dependencies(node.Name) {
+			g.AddEdge(node.Name, to)
+		}
+	}
+	e.topology.Record(g)
+	return e.topology.Latest(), nil
+}
+
+// FormalEnabled returns true when the engine was started with EnableFormal=true.
+// Formal model-checking is stateless (pure functions in internal/formal); the
+// flag exists so REST/CLI surfaces can decide whether to expose the endpoint.
+func (e *Engine) FormalEnabled() bool { return e.formalOn }
 
 func toFloat64(v interface{}) (float64, bool) {
 	switch val := v.(type) {
