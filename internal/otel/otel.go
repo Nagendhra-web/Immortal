@@ -27,10 +27,17 @@ const defaultMaxBodyMB = 4
 // Typically wired to engine.Ingest.
 type Sink func(*event.Event)
 
+// TopologySink receives parent-service → child-service relationships
+// extracted from incoming OTLP spans. Used for automatic topology discovery.
+type TopologySink interface {
+	AddEdge(from, to string)
+}
+
 // Config holds Receiver configuration.
 type Config struct {
-	Sink      Sink
-	MaxBodyMB int // default 4
+	Sink         Sink
+	MaxBodyMB    int          // default 4
+	TopologySink TopologySink // optional; if non-nil, invoked for every span pair
 }
 
 // Stats holds cumulative counters for a Receiver.
@@ -44,13 +51,14 @@ type Stats struct {
 
 // Receiver implements the OTLP/HTTP JSON endpoints.
 type Receiver struct {
-	sink      Sink
-	maxBytes  int64
-	reqTraces  atomic.Uint64
-	reqMetrics atomic.Uint64
-	reqLogs    atomic.Uint64
-	evEmitted  atomic.Uint64
-	parseErrs  atomic.Uint64
+	sink         Sink
+	topologySink TopologySink
+	maxBytes     int64
+	reqTraces    atomic.Uint64
+	reqMetrics   atomic.Uint64
+	reqLogs      atomic.Uint64
+	evEmitted    atomic.Uint64
+	parseErrs    atomic.Uint64
 }
 
 // New creates a Receiver. Use Handler() to mount it on an existing mux,
@@ -65,8 +73,9 @@ func New(cfg Config) *Receiver {
 		sink = func(*event.Event) {}
 	}
 	return &Receiver{
-		sink:     sink,
-		maxBytes: int64(maxMB) * 1024 * 1024,
+		sink:         sink,
+		topologySink: cfg.TopologySink,
+		maxBytes:     int64(maxMB) * 1024 * 1024,
 	}
 }
 
@@ -120,6 +129,9 @@ func (r *Receiver) handleTraces(w http.ResponseWriter, req *http.Request) {
 		r.parseErrs.Add(1)
 		http.Error(w, "bad request: "+err.Error(), http.StatusBadRequest)
 		return
+	}
+	if r.topologySink != nil {
+		emitTopology(data, r.topologySink)
 	}
 	writeOK(w)
 }

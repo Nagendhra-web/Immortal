@@ -171,6 +171,54 @@ func TestReceiver_InvalidJSON_400_StatsRecorded(t *testing.T) {
 	}
 }
 
+// ---------- topology sink integration ----------
+
+func TestReceiver_TracesEndpoint_InvokesTopologySink(t *testing.T) {
+	// Two spans: span B's parent is span A (different services).
+	body := `{
+		"resourceSpans":[
+			{
+				"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"frontend"}}]},
+				"scopeSpans":[{"spans":[{
+					"spanId":"span-b","parentSpanId":"span-a",
+					"traceId":"trace1","name":"frontend-op",
+					"startTimeUnixNano":"1000000000","endTimeUnixNano":"2000000000",
+					"status":{"code":0},"attributes":[]
+				}]}]
+			},
+			{
+				"resource":{"attributes":[{"key":"service.name","value":{"stringValue":"backend"}}]},
+				"scopeSpans":[{"spans":[{
+					"spanId":"span-a","parentSpanId":"",
+					"traceId":"trace1","name":"backend-op",
+					"startTimeUnixNano":"1000000000","endTimeUnixNano":"2000000000",
+					"status":{"code":0},"attributes":[]
+				}]}]
+			}
+		]
+	}`
+
+	type edge struct{ from, to string }
+	var edges []edge
+	sink := TopologySinkFunc(func(from, to string) {
+		edges = append(edges, edge{from, to})
+	})
+
+	r := New(Config{MaxBodyMB: 1, TopologySink: sink})
+	h := r.Handler()
+
+	w := postJSON(h, "/v1/traces", body)
+	if w.Code != http.StatusOK {
+		t.Fatalf("want 200, got %d: %s", w.Code, w.Body.String())
+	}
+	if len(edges) != 1 {
+		t.Fatalf("want exactly 1 topology edge, got %d: %v", len(edges), edges)
+	}
+	if edges[0].from != "backend" || edges[0].to != "frontend" {
+		t.Errorf("want backend->frontend, got %s->%s", edges[0].from, edges[0].to)
+	}
+}
+
 func TestReceiver_StatsCounters_Increment(t *testing.T) {
 	r := New(Config{MaxBodyMB: 4})
 	h := r.Handler()
