@@ -71,6 +71,13 @@ func startCmd() *cobra.Command {
 		watchLogs      []string
 		apiPort        int
 		rulesFile      string
+
+		// v0.4.0 — advanced intelligence flags
+		enablePQAudit bool
+		enableTwin    bool
+		enableAgentic bool
+		enableCausal  bool
+		clusterID     string
 	)
 
 	cmd := &cobra.Command{
@@ -84,8 +91,13 @@ func startCmd() *cobra.Command {
 			os.MkdirAll(dataDir, 0755)
 
 			cfg := engine.Config{
-				DataDir:   dataDir,
-				GhostMode: ghostMode,
+				DataDir:           dataDir,
+				GhostMode:         ghostMode,
+				EnablePQAudit:     enablePQAudit,
+				EnableTwin:        enableTwin,
+				EnableAgentic:     enableAgentic,
+				EnableCausal:      enableCausal,
+				FederatedClientID: clusterID,
 			}
 
 			eng, err := engine.New(cfg)
@@ -189,6 +201,11 @@ func startCmd() *cobra.Command {
 				AuditLog:        eng.AuditLog(),
 				DepGraph:        eng.DependencyGraph(),
 				Recommendations: eng.Recommendations,
+				PQLedger:        eng.PQLedger(),
+				Twin:            eng.Twin(),
+				Agent:           eng.AgenticAgent(),
+				FedClient:       eng.FederatedClient(),
+				CausalFn:        eng.CausalRootCause,
 			})
 			handler := middleware.Chain(
 				middleware.Recovery,
@@ -263,6 +280,18 @@ func startCmd() *cobra.Command {
 	cmd.Flags().StringSliceVar(&watchLogs, "watch-log", nil, "Log files to tail")
 	cmd.Flags().IntVar(&apiPort, "api-port", 7777, "REST API port")
 	cmd.Flags().StringVar(&rulesFile, "rules", "", "JSON rules file for healing actions")
+
+	// v0.4.0 advanced intelligence (all opt-in; legacy defaults unchanged).
+	cmd.Flags().BoolVar(&enablePQAudit, "pqaudit", false,
+		"Enable post-quantum tamper-evident audit chain (cryptographic, signed, Merkle-rooted)")
+	cmd.Flags().BoolVar(&enableTwin, "twin", false,
+		"Enable digital-twin simulator — simulate healing plans before executing them")
+	cmd.Flags().BoolVar(&enableAgentic, "agentic", false,
+		"Enable ReAct-style multi-step healing loop (Plan → Act → Observe → Re-plan)")
+	cmd.Flags().BoolVar(&enableCausal, "causal", false,
+		"Enable causal inference (PC algorithm + do-calculus) on observed metrics")
+	cmd.Flags().StringVar(&clusterID, "cluster-id", "",
+		"This node's ID in a federated-learning fleet (non-empty enables federated mode)")
 
 	return cmd
 }

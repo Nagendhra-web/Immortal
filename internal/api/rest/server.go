@@ -1,15 +1,19 @@
 package rest
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/immortal-engine/immortal/internal/agentic"
 	"github.com/immortal-engine/immortal/internal/audit"
 	"github.com/immortal-engine/immortal/internal/autolearn"
 	"github.com/immortal-engine/immortal/internal/capacity"
+	"github.com/immortal-engine/immortal/internal/causal"
 	"github.com/immortal-engine/immortal/internal/causality"
 	"github.com/immortal-engine/immortal/internal/chaos"
 	"github.com/immortal-engine/immortal/internal/correlation"
@@ -17,17 +21,20 @@ import (
 	"github.com/immortal-engine/immortal/internal/dna"
 	"github.com/immortal-engine/immortal/internal/event"
 	"github.com/immortal-engine/immortal/internal/export"
+	"github.com/immortal-engine/immortal/internal/federated"
 	"github.com/immortal-engine/immortal/internal/healing"
 	"github.com/immortal-engine/immortal/internal/health"
 	"github.com/immortal-engine/immortal/internal/incident"
 	"github.com/immortal-engine/immortal/internal/pattern"
 	"github.com/immortal-engine/immortal/internal/playbook"
+	"github.com/immortal-engine/immortal/internal/pqaudit"
 	"github.com/immortal-engine/immortal/internal/predict"
 	"github.com/immortal-engine/immortal/internal/selfmonitor"
 	"github.com/immortal-engine/immortal/internal/sla"
 	"github.com/immortal-engine/immortal/internal/storage"
 	"github.com/immortal-engine/immortal/internal/stream"
 	"github.com/immortal-engine/immortal/internal/timetravel"
+	"github.com/immortal-engine/immortal/internal/twin"
 )
 
 type Server struct {
@@ -57,6 +64,13 @@ type Server struct {
 	correlator  *correlation.Engine
 	playbookRun *playbook.Runner
 
+	// v0.4.0 components
+	pqLedger  *pqaudit.Ledger
+	twinSvc   *twin.Twin
+	agentSvc  *agentic.Agent
+	fedClient *federated.Client
+	causalFn  func(outcome string, vars []string) (*causal.RootCauseResult, error)
+
 	mux *http.ServeMux
 }
 
@@ -83,6 +97,13 @@ type ServerConfig struct {
 	CapacityPln     *capacity.Planner
 	Correlator      *correlation.Engine
 	PlaybookRun     *playbook.Runner
+
+	// v0.4.0 components
+	PQLedger  *pqaudit.Ledger
+	Twin      *twin.Twin
+	Agent     *agentic.Agent
+	FedClient *federated.Client
+	CausalFn  func(outcome string, vars []string) (*causal.RootCauseResult, error)
 }
 
 func New(store *storage.Store, registry *health.Registry, healer *healing.Healer) *Server {
@@ -132,6 +153,11 @@ func NewFull(cfg ServerConfig) *Server {
 		capacityPln:     cfg.CapacityPln,
 		correlator:      cfg.Correlator,
 		playbookRun:     cfg.PlaybookRun,
+		pqLedger:        cfg.PQLedger,
+		twinSvc:         cfg.Twin,
+		agentSvc:        cfg.Agent,
+		fedClient:       cfg.FedClient,
+		causalFn:        cfg.CausalFn,
 		mux:             http.NewServeMux(),
 	}
 	s.routes()
@@ -175,6 +201,17 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/correlations", s.handleCorrelations)
 	s.mux.HandleFunc("/api/playbooks", s.handlePlaybooks)
 	s.mux.HandleFunc("/api/playbooks/history", s.handlePlaybookHistory)
+
+	// v0.4.0 endpoints
+	s.mux.HandleFunc("/api/v4/audit/verify", s.handleV4AuditVerify)
+	s.mux.HandleFunc("/api/v4/audit/merkle-root", s.handleV4AuditMerkleRoot)
+	s.mux.HandleFunc("/api/v4/audit/entries", s.handleV4AuditEntries)
+	s.mux.HandleFunc("/api/v4/twin/simulate", s.handleV4TwinSimulate)
+	s.mux.HandleFunc("/api/v4/twin/states", s.handleV4TwinStates)
+	s.mux.HandleFunc("/api/v4/twin/state/", s.handleV4TwinStateByService)
+	s.mux.HandleFunc("/api/v4/agentic/run", s.handleV4AgenticRun)
+	s.mux.HandleFunc("/api/v4/causal/root-cause", s.handleV4CausalRootCause)
+	s.mux.HandleFunc("/api/v4/federated/snapshot", s.handleV4FederatedSnapshot)
 }
 
 func (s *Server) Handler() http.Handler {
@@ -727,6 +764,222 @@ func (s *Server) handlePlaybookHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, s.playbookRun.History())
+}
+
+// --- v0.4.0 handlers ---
+
+func (s *Server) handleV4AuditVerify(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.pqLedger == nil {
+		writeJSON(w, map[string]interface{}{"ok": true, "issues": []interface{}{}, "count": 0})
+		return
+	}
+	ok, issues := s.pqLedger.Verify()
+	type issueJSON struct {
+		Seq    uint64 `json:"seq"`
+		Reason string `json:"reason"`
+	}
+	out := make([]issueJSON, len(issues))
+	for i, iss := range issues {
+		out[i] = issueJSON{Seq: iss.Seq, Reason: iss.Reason}
+	}
+	writeJSON(w, map[string]interface{}{
+		"ok":     ok,
+		"issues": out,
+		"count":  len(issues),
+	})
+}
+
+func (s *Server) handleV4AuditMerkleRoot(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.pqLedger == nil {
+		http.Error(w, "pqaudit ledger not available", http.StatusNotFound)
+		return
+	}
+	root := s.pqLedger.MerkleRoot()
+	writeJSON(w, map[string]interface{}{
+		"root":  hex.EncodeToString(root),
+		"count": s.pqLedger.Count(),
+	})
+}
+
+func (s *Server) handleV4AuditEntries(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.pqLedger == nil {
+		http.Error(w, "pqaudit ledger not available", http.StatusNotFound)
+		return
+	}
+	limitStr := r.URL.Query().Get("limit")
+	limit := 100
+	if limitStr != "" {
+		if n, err := strconv.Atoi(limitStr); err == nil && n > 0 {
+			limit = n
+		}
+	}
+	all := s.pqLedger.Entries()
+	if limit < len(all) {
+		all = all[len(all)-limit:]
+	}
+	writeJSON(w, map[string]interface{}{"entries": all})
+}
+
+func (s *Server) handleV4TwinSimulate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.twinSvc == nil {
+		http.Error(w, "digital twin not available", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		ID      string `json:"id"`
+		Actions []struct {
+			Type   string            `json:"type"`
+			Target string            `json:"target"`
+			Params map[string]string `json:"params"`
+		} `json:"actions"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	actions := make([]twin.Action, len(body.Actions))
+	for i, a := range body.Actions {
+		actions[i] = twin.Action{Type: a.Type, Target: a.Target, Params: a.Params}
+	}
+	plan := twin.Plan{ID: body.ID, Actions: actions}
+	sim := s.twinSvc.Simulate(plan)
+	writeJSON(w, sim)
+}
+
+func (s *Server) handleV4TwinStates(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.twinSvc == nil {
+		http.Error(w, "digital twin not available", http.StatusNotFound)
+		return
+	}
+	writeJSON(w, map[string]interface{}{"states": s.twinSvc.States()})
+}
+
+func (s *Server) handleV4TwinStateByService(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.twinSvc == nil {
+		http.Error(w, "digital twin not available", http.StatusNotFound)
+		return
+	}
+	// Extract service name from path: /api/v4/twin/state/<service>
+	service := strings.TrimPrefix(r.URL.Path, "/api/v4/twin/state/")
+	if service == "" {
+		http.Error(w, "service name required", http.StatusBadRequest)
+		return
+	}
+	state, ok := s.twinSvc.Get(service)
+	if !ok {
+		http.Error(w, "service not found", http.StatusNotFound)
+		return
+	}
+	writeJSON(w, state)
+}
+
+func (s *Server) handleV4AgenticRun(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.agentSvc == nil {
+		http.Error(w, "agentic agent not available", http.StatusNotFound)
+		return
+	}
+	var body struct {
+		Type     string                 `json:"type"`
+		Severity string                 `json:"severity"`
+		Message  string                 `json:"message"`
+		Source   string                 `json:"source"`
+		Meta     map[string]interface{} `json:"meta"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	ev := event.New(event.Type(body.Type), event.Severity(body.Severity), body.Message)
+	ev.Source = body.Source
+	for k, v := range body.Meta {
+		ev.Meta[k] = v
+	}
+	trace := s.agentSvc.Run(ev)
+	writeJSON(w, trace)
+}
+
+func (s *Server) handleV4CausalRootCause(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.causalFn == nil {
+		http.Error(w, "causal inference not available", http.StatusServiceUnavailable)
+		return
+	}
+	var body struct {
+		Outcome   string   `json:"outcome"`
+		Variables []string `json:"variables"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	if body.Outcome == "" {
+		http.Error(w, "outcome is required", http.StatusBadRequest)
+		return
+	}
+	result, err := s.causalFn(body.Outcome, body.Variables)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, result)
+}
+
+func (s *Server) handleV4FederatedSnapshot(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.fedClient == nil {
+		http.Error(w, "federated client not available", http.StatusNotFound)
+		return
+	}
+	roundStr := r.URL.Query().Get("round")
+	round := 0
+	if roundStr != "" {
+		if n, err := strconv.Atoi(roundStr); err == nil {
+			round = n
+		}
+	}
+	epsilonStr := r.URL.Query().Get("epsilon")
+	epsilon := 0.0
+	if epsilonStr != "" {
+		if f, err := strconv.ParseFloat(epsilonStr, 64); err == nil {
+			epsilon = f
+		}
+	}
+	update := s.fedClient.Snapshot(round, epsilon)
+	writeJSON(w, update)
 }
 
 // --- Helpers ---
