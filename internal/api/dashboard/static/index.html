@@ -1,209 +1,344 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Immortal — Mission Control</title>
+  <title>Immortal — Dashboard</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="nav">
-  <a class="nav-logo" href="#/overview" aria-label="Immortal home">
-    <span class="nav-logo-mark" aria-hidden="true"></span>
-    <span class="nav-logo-text">IMMORTAL</span>
-  </a>
-  <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation" aria-expanded="false">☰</button>
-  <div class="nav-links" id="nav-links" role="navigation" aria-label="Main navigation">
-    <a class="nav-link" data-view="overview"      href="#/overview">Overview</a>
-    <a class="nav-link" data-view="topology"      href="#/topology">Topology</a>
-    <a class="nav-link" data-view="audit"         href="#/audit">Audit Chain</a>
-    <a class="nav-link" data-view="terminal"      href="#/terminal">Terminal</a>
-    <a class="nav-link" data-view="forecast"      href="#/forecast">Forecast</a>
-    <a class="nav-link" data-view="agent"         href="#/agent">Agent</a>
-    <a class="nav-link" data-view="verify"        href="#/verify">Verify</a>
-    <a class="nav-link" data-view="plan"          href="#/plan">Plan</a>
-    <a class="nav-link" data-view="causes"        href="#/causes">Causes</a>
-    <a class="nav-link" data-view="fleet"         href="#/fleet">Fleet</a>
-    <a class="nav-link" data-view="economics"     href="#/economics">Economics</a>
-    <a class="nav-link" data-view="certificates"  href="#/certificates">Certs</a>
-  </div>
-  <div class="nav-meta">
-    <span class="nav-pill" id="nav-node">NODE · —</span>
-    <span class="nav-pill nav-pill-live" id="nav-live">LIVE</span>
-    <button class="btn btn--ghost" id="palette-trigger" aria-label="Open command palette (Ctrl+K)" style="padding:4px 8px;font-size:10px;min-height:auto;border-radius:4px;">⌘K</button>
-  </div>
-</nav>
-
-<!-- VIEWS -->
-<main id="app" role="main">
-
-  <!-- OVERVIEW -->
-  <section id="view-overview" class="view">
-    <div class="hero">
-      <h1 class="hero-headline">YOUR APPS /<br>NEVER DIE.</h1>
-      <div class="hero-chip">
-        <span class="hero-chip-dot" aria-hidden="true"></span>
-        <span id="hero-chip-text">NODE · — · autonomous mode · connecting…</span>
-      </div>
-    </div>
-    <div id="overview-filter-bar"></div>
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-label">Uptime</div><div class="stat-number" id="stat-uptime">—</div></div>
-      <div class="stat-card"><div class="stat-label">Events Processed</div><div class="stat-number" id="stat-events">—</div></div>
-      <div class="stat-card"><div class="stat-label">Healing Actions</div><div class="stat-number" id="stat-healing">—</div></div>
-      <div class="stat-card"><div class="stat-label">Services Healthy</div><div class="stat-number" id="stat-healthy">—</div></div>
-    </div>
-    <div class="panel panel-timeline">
-      <div class="panel-header">
-        <span class="panel-title">Healing Timeline</span>
-        <span class="panel-caption">Last 20 events — hover for detail</span>
-      </div>
-      <div class="timeline-ribbon" id="timeline-ribbon"><div class="timeline-empty">No events yet</div></div>
-    </div>
-    <div class="overview-grid">
-      <div class="panel panel-feed">
-        <div class="panel-header">
-          <span class="panel-title">Live Feed</span>
-          <span class="feed-pulse" id="feed-pulse" aria-hidden="true"></span>
-        </div>
-        <div class="feed-list" id="feed-list" role="log" aria-live="polite" aria-label="Live event feed">
-          <div class="feed-empty">Waiting for events…</div>
-        </div>
-      </div>
-      <div class="panel panel-services">
-        <div class="panel-header">
-          <span class="panel-title">Services</span>
-          <span class="panel-caption" id="svc-summary">—</span>
-        </div>
-        <div class="services-grid" id="services-grid"><div class="svc-loading">Loading…</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TOPOLOGY -->
-  <section id="view-topology" class="view view-hidden">
-    <div class="topo-wrap">
-      <div class="topo-header">
-        <h2 class="topo-title">Dependency Topology</h2>
-        <div class="topo-controls">
-          <button class="topo-btn" id="topo-reset">Reset View</button>
-          <span class="topo-hint">Drag nodes · Scroll to zoom</span>
-        </div>
-      </div>
-      <div class="topo-canvas-wrap" id="topo-canvas-wrap">
-        <svg id="topo-svg" class="topo-svg" aria-label="Dependency topology graph" role="img">
-          <defs>
-            <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#8b949e" opacity="0.5"/></marker>
-            <marker id="arrow-cycle" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#ffa657" opacity="0.9"/></marker>
-          </defs>
-          <g id="topo-edges"></g><g id="topo-nodes"></g>
+<!-- SIDEBAR -->
+<aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
+  <div class="sidebar-header">
+    <a class="sidebar-logo" href="#/overview" aria-label="Immortal home">
+      <span class="sidebar-logo-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="8" cy="8" r="3" fill="currentColor"/>
         </svg>
-        <div class="topo-empty" id="topo-empty" style="display:none">
-          <div class="topo-empty-icon" aria-hidden="true">⬡</div>
-          <div class="topo-empty-text">No topology data available</div>
-          <div class="topo-empty-sub">Start the engine with --topology flag</div>
-        </div>
-      </div>
-      <div class="topo-legend">
-        <div class="topo-stat-row">
-          <span class="topo-stat"><span class="topo-stat-n" id="ts-nodes">0</span> Components</span>
-          <span class="topo-stat"><span class="topo-stat-n" id="ts-edges">0</span> Dependencies</span>
-          <span class="topo-stat topo-stat-amber"><span class="topo-stat-n" id="ts-cycles">0</span> Cycles</span>
-        </div>
-        <div class="topo-legend-items">
-          <span class="legend-item"><span class="legend-dot legend-dot-normal" aria-hidden="true"></span>Component</span>
-          <span class="legend-item"><span class="legend-dot legend-dot-cycle" aria-hidden="true"></span>In cycle</span>
-        </div>
-      </div>
+      </span>
+      <span class="sidebar-logo-text">Immortal</span>
+    </a>
+    <button class="sidebar-collapse-btn" id="sidebar-collapse" aria-label="Collapse sidebar" aria-expanded="true">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" role="navigation" aria-label="Application views">
+    <div class="sidebar-section">
+      <span class="sidebar-section-label">Monitor</span>
+      <a class="sidebar-link" data-view="overview" href="#/overview" aria-label="Overview">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="sidebar-link-text">Overview</span>
+      </a>
+      <a class="sidebar-link" data-view="topology" href="#/topology" aria-label="Topology">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="3" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="3" cy="13" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v2M8 7L3 11M8 7l5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Topology</span>
+      </a>
+      <a class="sidebar-link" data-view="audit" href="#/audit" aria-label="Audit Chain">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1L2 4v4c0 3.31 2.5 6.41 6 7.2C11.5 14.41 14 11.31 14 8V4L8 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="sidebar-link-text">Audit</span>
+      </a>
+      <a class="sidebar-link" data-view="terminal" href="#/terminal" aria-label="Terminal">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M4 6l3 3-3 3M8 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="sidebar-link-text">Terminal</span>
+      </a>
     </div>
-  </section>
 
-  <!-- AUDIT -->
-  <section id="view-audit" class="view view-hidden">
-    <div class="audit-wrap">
-      <div class="audit-hero">
-        <div class="audit-verdict" id="audit-verdict" role="status" aria-live="polite">
-          <span class="audit-verdict-icon" id="audit-verdict-icon" aria-hidden="true">◌</span>
-          <span class="audit-verdict-text" id="audit-verdict-text">VERIFYING CHAIN…</span>
+    <div class="sidebar-section">
+      <span class="sidebar-section-label">Reason</span>
+      <a class="sidebar-link" data-view="forecast" href="#/forecast" aria-label="Forecast">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1 12L5 8l3 3 4-6 2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="sidebar-link-text">Forecast</span>
+      </a>
+      <a class="sidebar-link" data-view="agent" href="#/agent" aria-label="Agent">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 14c0-2.21 2.686-4 6-4s6 1.79 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Agent</span>
+      </a>
+      <a class="sidebar-link" data-view="verify" href="#/verify" aria-label="Verify">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8l3.5 3.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="sidebar-link-text">Verify</span>
+      </a>
+      <a class="sidebar-link" data-view="plan" href="#/plan" aria-label="Plan">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Plan</span>
+      </a>
+      <a class="sidebar-link" data-view="causes" href="#/causes" aria-label="Causes">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.42 1.42M11.36 11.36l1.42 1.42M11.36 4.64l-1.42 1.42M4.64 11.36L3.22 12.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Causes</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <span class="sidebar-section-label">Scale</span>
+      <a class="sidebar-link" data-view="fleet" href="#/fleet" aria-label="Fleet">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="4" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="1" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="4" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="6" y="9" width="4" height="4" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="sidebar-link-text">Fleet</span>
+      </a>
+      <a class="sidebar-link" data-view="economics" href="#/economics" aria-label="Economics">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1v14M5 4.5C5 3.12 6.34 2 8 2s3 1.12 3 2.5c0 1.38-1.34 2.25-3 2.5-1.66.25-3 1.12-3 2.5S6.34 12 8 12s3-1.12 3-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Economics</span>
+      </a>
+      <a class="sidebar-link" data-view="certificates" href="#/certificates" aria-label="Certificates">
+        <svg class="sidebar-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V6M10 2l4 4M10 2v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="sidebar-link-text">Certificates</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+      <svg class="sidebar-icon icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.22 3.22l1.42 1.42M11.36 11.36l1.42 1.42M11.36 4.64l-1.42 1.42M4.64 11.36L3.22 12.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg class="sidebar-icon icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="display:none"><path d="M13.6 11.2A6 6 0 014.8 2.4a6 6 0 108.8 8.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <span class="sidebar-link-text">Theme</span>
+    </button>
+    <div class="sidebar-node-chip">
+      <span class="node-dot" aria-hidden="true"></span>
+      <span class="sidebar-link-text" id="sidebar-node-id">demo-node</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MOBILE OVERLAY -->
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout-main" id="layout-main">
+
+  <!-- TOP BAR -->
+  <header class="topbar" role="banner">
+    <button class="topbar-hamburger" id="topbar-hamburger" aria-label="Open navigation" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <nav class="topbar-breadcrumb" aria-label="Breadcrumb">
+      <span class="breadcrumb-section" id="breadcrumb-section">Monitor</span>
+      <span class="breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="breadcrumb-current" id="breadcrumb-current">Overview</span>
+    </nav>
+    <div class="topbar-search-wrap">
+      <button class="topbar-search" id="palette-trigger" aria-label="Open command palette (Ctrl+K)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="topbar-search-text">Search commands…</span>
+        <kbd class="kbd">⌘K</kbd>
+      </button>
+    </div>
+    <div class="topbar-right">
+      <span class="live-indicator" id="nav-live" aria-label="Live data active">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span>Live</span>
+      </span>
+      <span class="topbar-node" id="nav-node">demo-node</span>
+      <div class="avatar" aria-label="User avatar" role="img">I</div>
+    </div>
+  </header>
+
+  <!-- VIEWS -->
+  <main id="app" role="main">
+
+    <!-- OVERVIEW -->
+    <section id="view-overview" class="view">
+      <div class="page-header">
+        <h1 class="page-title">Overview</h1>
+        <p class="page-description">System health and live event feed</p>
+      </div>
+      <div id="overview-filter-bar"></div>
+      <div class="stat-row">
+        <div class="card stat-card">
+          <div class="stat-label">Uptime</div>
+          <div class="stat-number" id="stat-uptime">—</div>
+          <div class="stat-delta stat-delta-up" id="stat-uptime-delta"></div>
         </div>
-        <div class="audit-meta" id="audit-meta">—</div>
+        <div class="card stat-card">
+          <div class="stat-label">Events Processed</div>
+          <div class="stat-number" id="stat-events">—</div>
+          <div class="stat-delta" id="stat-events-delta"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Healing Actions</div>
+          <div class="stat-number" id="stat-healing">—</div>
+          <div class="stat-delta" id="stat-healing-delta"></div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-label">Services Healthy</div>
+          <div class="stat-number" id="stat-healthy">—</div>
+          <div class="stat-delta stat-delta-up" id="stat-healthy-delta"></div>
+        </div>
       </div>
-      <div class="audit-chain" id="audit-chain"><div class="audit-chain-empty">Loading audit entries…</div></div>
-    </div>
-  </section>
-
-  <!-- TERMINAL -->
-  <section id="view-terminal" class="view view-hidden">
-    <div class="term-wrap">
-      <div class="term-bar">
-        <span class="term-bar-dot term-dot-red" aria-hidden="true"></span>
-        <span class="term-bar-dot term-dot-amber" aria-hidden="true"></span>
-        <span class="term-bar-dot term-dot-green" aria-hidden="true"></span>
-        <span class="term-bar-title">immortal — live event tail</span>
-        <span class="term-bar-right" id="term-count">0 events</span>
+      <div class="overview-grid">
+        <div class="card panel-feed">
+          <div class="card-header">
+            <h2 class="card-title">Live Feed</h2>
+            <span class="feed-pulse" id="feed-pulse" aria-hidden="true"></span>
+          </div>
+          <div class="card-content p-0">
+            <div class="feed-list" id="feed-list" role="log" aria-live="polite" aria-label="Live event feed">
+              <div class="feed-empty">Waiting for events…</div>
+            </div>
+          </div>
+        </div>
+        <div class="card panel-services">
+          <div class="card-header">
+            <h2 class="card-title">Services</h2>
+            <span class="card-description" id="svc-summary">—</span>
+          </div>
+          <div class="card-content">
+            <div class="services-grid" id="services-grid"><div class="svc-loading">Loading…</div></div>
+          </div>
+        </div>
       </div>
-      <div class="term-body" id="term-body" role="log" aria-label="Event terminal output">
-        <div class="term-line term-line-sys">Immortal mission control — connecting to event stream…</div>
+    </section>
+
+    <!-- TOPOLOGY -->
+    <section id="view-topology" class="view view-hidden">
+      <div class="page-header">
+        <h1 class="page-title">Topology</h1>
+        <p class="page-description">Interactive dependency graph — drag nodes, scroll to zoom</p>
       </div>
-      <div class="term-input-row" aria-hidden="true">
-        <span class="term-prompt">immortal&gt;</span>
-        <span class="term-cursor"></span>
+      <div class="card topo-card">
+        <div class="card-header">
+          <h2 class="card-title">Dependency Graph</h2>
+          <div class="topo-controls">
+            <button class="btn btn-outline btn-sm" id="topo-reset">Reset View</button>
+            <div class="topo-stat-row">
+              <span class="topo-stat"><span class="topo-stat-n" id="ts-nodes">0</span> nodes</span>
+              <span class="topo-stat"><span class="topo-stat-n" id="ts-edges">0</span> edges</span>
+              <span class="topo-stat topo-stat-warn"><span class="topo-stat-n" id="ts-cycles">0</span> cycles</span>
+            </div>
+          </div>
+        </div>
+        <div class="topo-canvas-wrap" id="topo-canvas-wrap">
+          <svg id="topo-svg" class="topo-svg" aria-label="Dependency topology graph" role="img">
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="hsl(240 3.8% 46.1%)" opacity="0.6"/></marker>
+              <marker id="arrow-cycle" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="hsl(25 95% 53%)" opacity="0.9"/></marker>
+            </defs>
+            <g id="topo-edges"></g><g id="topo-nodes"></g>
+          </svg>
+          <div class="topo-empty" id="topo-empty" style="display:none">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="none" style="color:hsl(240 3.8% 80%)" aria-hidden="true"><circle cx="8" cy="3" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="3" cy="13" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v2M8 7L3 11M8 7l5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div class="topo-empty-text">No topology data</div>
+            <div class="topo-empty-sub">Start with --topology flag</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="topo-legend-items">
+            <span class="legend-item"><span class="legend-dot legend-dot-normal" aria-hidden="true"></span>Component</span>
+            <span class="legend-item"><span class="legend-dot legend-dot-cycle" aria-hidden="true"></span>In cycle</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- FORECAST -->
-  <section id="view-forecast" class="view view-hidden"></section>
+    <!-- AUDIT -->
+    <section id="view-audit" class="view view-hidden">
+      <div class="page-header">
+        <h1 class="page-title">Audit Chain</h1>
+        <p class="page-description">Post-quantum signed tamper-proof audit log</p>
+      </div>
+      <div class="audit-wrap">
+        <div class="card audit-hero-card">
+          <div class="card-content">
+            <div class="audit-verdict" id="audit-verdict" role="status" aria-live="polite">
+              <div class="audit-verdict-icon-wrap" id="audit-verdict-icon-wrap">
+                <svg class="audit-icon-pending" width="32" height="32" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/></svg>
+              </div>
+              <div>
+                <div class="audit-verdict-text" id="audit-verdict-text">Verifying chain…</div>
+                <div class="audit-meta" id="audit-meta">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="audit-chain" id="audit-chain">
+          <div class="audit-chain-empty">Loading audit entries…</div>
+        </div>
+      </div>
+    </section>
 
-  <!-- AGENT -->
-  <section id="view-agent" class="view view-hidden"></section>
+    <!-- TERMINAL -->
+    <section id="view-terminal" class="view view-hidden">
+      <div class="page-header">
+        <h1 class="page-title">Terminal</h1>
+        <p class="page-description">Live event stream in raw log format</p>
+      </div>
+      <div class="card term-card">
+        <div class="term-bar">
+          <span class="term-dot term-dot-red" aria-hidden="true"></span>
+          <span class="term-dot term-dot-amber" aria-hidden="true"></span>
+          <span class="term-dot term-dot-green" aria-hidden="true"></span>
+          <span class="term-bar-title">immortal — live event tail</span>
+          <span class="term-bar-count" id="term-count">0 events</span>
+        </div>
+        <div class="term-body" id="term-body" role="log" aria-label="Event terminal output">
+          <div class="term-line term-line-sys">Immortal dashboard — connecting to event stream…</div>
+        </div>
+        <div class="term-input-row" aria-hidden="true">
+          <span class="term-prompt">immortal&gt;</span>
+          <span class="term-cursor"></span>
+        </div>
+      </div>
+    </section>
 
-  <!-- VERIFY -->
-  <section id="view-verify" class="view view-hidden"></section>
+    <!-- FORECAST -->
+    <section id="view-forecast" class="view view-hidden"></section>
 
-  <!-- PLAN -->
-  <section id="view-plan" class="view view-hidden"></section>
+    <!-- AGENT -->
+    <section id="view-agent" class="view view-hidden"></section>
 
-  <!-- CAUSES -->
-  <section id="view-causes" class="view view-hidden"></section>
+    <!-- VERIFY -->
+    <section id="view-verify" class="view view-hidden"></section>
 
-  <!-- FLEET -->
-  <section id="view-fleet" class="view view-hidden"></section>
+    <!-- PLAN -->
+    <section id="view-plan" class="view view-hidden"></section>
 
-  <!-- ECONOMICS -->
-  <section id="view-economics" class="view view-hidden"></section>
+    <!-- CAUSES -->
+    <section id="view-causes" class="view view-hidden"></section>
 
-  <!-- CERTIFICATES -->
-  <section id="view-certificates" class="view view-hidden"></section>
+    <!-- FLEET -->
+    <section id="view-fleet" class="view view-hidden"></section>
 
-</main>
+    <!-- ECONOMICS -->
+    <section id="view-economics" class="view view-hidden"></section>
+
+    <!-- CERTIFICATES -->
+    <section id="view-certificates" class="view view-hidden"></section>
+
+  </main>
+</div>
 
 <!-- COMMAND PALETTE -->
 <div class="dialog-overlay" id="palette-overlay" role="dialog" aria-modal="true" aria-label="Command palette">
-  <div class="dialog" id="palette-dialog">
-    <div class="palette-input-row">
-      <input class="palette-input" id="palette-input" type="text" placeholder="Type a command or search…" autocomplete="off" aria-label="Command search" aria-autocomplete="list" aria-controls="palette-list">
-      <kbd class="palette-esc">ESC</kbd>
+  <div class="command" id="palette-dialog" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+    <div class="command-input-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" style="flex-shrink:0;color:hsl(240 3.8% 46.1%)"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input class="command-input" id="palette-input" type="text" placeholder="Type a command or search…" autocomplete="off" aria-label="Command search" aria-autocomplete="list" aria-controls="palette-list" role="searchbox">
+      <kbd class="kbd">ESC</kbd>
     </div>
-    <div class="palette-list" id="palette-list" role="listbox" aria-label="Commands"></div>
-    <div class="palette-footer">
-      <span class="palette-footer-hint"><kbd class="palette-footer-kbd">↑↓</kbd> navigate</span>
-      <span class="palette-footer-hint"><kbd class="palette-footer-kbd">↵</kbd> select</span>
-      <span class="palette-footer-hint"><kbd class="palette-footer-kbd">ESC</kbd> close</span>
+    <div class="command-separator"></div>
+    <div class="command-list" id="palette-list" role="listbox" aria-label="Commands"></div>
+    <div class="command-footer">
+      <span class="command-footer-hint"><kbd class="kbd kbd-sm">↑↓</kbd> navigate</span>
+      <span class="command-footer-hint"><kbd class="kbd kbd-sm">↵</kbd> select</span>
+      <span class="command-footer-hint"><kbd class="kbd kbd-sm">ESC</kbd> close</span>
     </div>
   </div>
 </div>
 
-<!-- DRAWER -->
-<div class="drawer-overlay" id="drawer-overlay"></div>
-<aside class="drawer" id="drawer" role="complementary" aria-label="Detail panel">
-  <div class="drawer-header">
-    <span class="drawer-title" id="drawer-title">Detail</span>
-    <button class="drawer-close" id="drawer-close" aria-label="Close detail panel">✕</button>
+<!-- DRAWER / SHEET -->
+<div class="sheet-overlay" id="drawer-overlay" aria-hidden="true"></div>
+<aside class="sheet" id="drawer" role="complementary" aria-label="Detail panel">
+  <div class="sheet-header">
+    <h2 class="sheet-title" id="drawer-title">Detail</h2>
+    <button class="btn btn-ghost btn-icon" id="drawer-close" aria-label="Close detail panel">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
   </div>
-  <div class="drawer-body" id="drawer-body"></div>
+  <div class="sheet-body" id="drawer-body"></div>
 </aside>
 
 <!-- TOAST REGION -->
