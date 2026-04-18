@@ -15,6 +15,12 @@ type Event struct {
 	Message  string    `json:"message"`
 }
 
+// CausalCause is a single entry in the causally-inferred root-cause ranking.
+type CausalCause struct {
+	Variable string  `json:"variable"`
+	ACE      float64 `json:"ace"` // average causal effect (not correlation)
+}
+
 type Report struct {
 	ID               string        `json:"id"`
 	Title            string        `json:"title"`
@@ -29,6 +35,17 @@ type Report struct {
 	HealingActions   []string      `json:"healing_actions"`
 	Impact           string        `json:"impact"`
 	Summary          string        `json:"summary"`
+
+	// CausalCauses is the ranked list of causal ancestors produced by the
+	// causal-inference engine (PC-algorithm + do-calculus). Non-empty only
+	// when the engine was started with EnableCausal=true and enough data
+	// was collected before the incident was closed.
+	CausalCauses []CausalCause `json:"causal_causes,omitempty"`
+}
+
+// SetCausalCauses records the causal root-cause ranking on the report.
+func (r *Report) SetCausalCauses(causes []CausalCause) {
+	r.CausalCauses = causes
 }
 
 type Manager struct {
