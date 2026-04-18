@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Immortal — Observability Dashboard</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+  <span class="logo">&#x25cf; IMMORTAL</span>
+  <div class="meta">
+    <span><strong id="hdr-version">v?</strong>version</span>
+    <span><strong id="hdr-mode">—</strong>mode</span>
+    <span><strong id="hdr-uptime">—</strong>uptime</span>
+    <span><strong id="hdr-events">—</strong>events processed</span>
+  </div>
+  <span id="refresh-indicator">auto-refresh 5s</span>
+</div>
+
+<!-- Main 2-column grid -->
+<div id="main">
+
+  <!-- LEFT col: services + recommendations -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <!-- Panel 1: Service health -->
+    <div class="panel" id="panel-services">
+      <div class="panel-title">Service Health</div>
+      <div class="panel-body">
+        <div id="services-grid"><span class="panel-disabled">Loading…</span></div>
+      </div>
+    </div>
+
+    <!-- Panel 6: Healing recommendations -->
+    <div class="panel" id="panel-recs">
+      <div class="panel-title">Healing Recommendations</div>
+      <div class="panel-body" id="recs-body"><span class="panel-disabled">Loading…</span></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT col: topology + events + audit -->
+  <div style="display:flex;flex-direction:column;gap:16px">
+
+    <!-- Panel 4: Topology graph -->
+    <div class="panel" id="panel-topo">
+      <div class="panel-title">Topology Graph</div>
+      <svg id="topo-svg"></svg>
+    </div>
+
+    <!-- Panel 3: Live event stream -->
+    <div class="panel" id="panel-events">
+      <div class="panel-title">Live Event Stream</div>
+      <div class="panel-body">
+        <div id="event-list"><span class="panel-disabled">Loading…</span></div>
+      </div>
+    </div>
+
+    <!-- Panel 5: Audit ledger -->
+    <div class="panel" id="panel-audit">
+      <div class="panel-title">Audit Ledger</div>
+      <div class="panel-body" id="audit-body"><span class="panel-disabled">Loading…</span></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

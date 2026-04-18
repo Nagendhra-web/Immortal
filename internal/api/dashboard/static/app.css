@@ -1,0 +1,210 @@
+/* Immortal Dashboard — dark-mode system palette */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --border:   #30363d;
+  --text:     #c9d1d9;
+  --muted:    #8b949e;
+  --accent:   #58a6ff;
+  --healthy:  #3fb950;
+  --warning:  #d29922;
+  --critical: #f85149;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+#header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+#header .logo {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+#header .meta {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--muted);
+}
+#header .meta span { display: flex; flex-direction: column; }
+#header .meta strong { color: var(--text); font-size: 13px; }
+#refresh-indicator {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── Layout ── */
+#main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+/* ── Panel base ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.panel-title {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.panel-body { padding: 12px 14px; }
+.panel-disabled {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: italic;
+  padding: 20px 14px;
+  text-align: center;
+}
+
+/* ── Service health grid ── */
+#services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+.svc-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+.svc-name {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.svc-status {
+  font-size: 11px;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dot-healthy  { background: var(--healthy); }
+.dot-warning  { background: var(--warning); }
+.dot-critical { background: var(--critical); }
+.dot-unknown  { background: var(--muted); }
+.svc-last {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── Event stream ── */
+#event-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.ev-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 12px;
+}
+.ev-row:last-child { border-bottom: none; }
+.ev-time { color: var(--muted); font-size: 10px; flex-shrink: 0; }
+.ev-sev  { font-size: 10px; font-weight: 600; flex-shrink: 0; min-width: 50px; }
+.ev-sev-critical { color: var(--critical); }
+.ev-sev-warning  { color: var(--warning); }
+.ev-sev-info     { color: var(--accent); }
+.ev-msg  { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-src  { color: var(--muted); font-size: 10px; flex-shrink: 0; }
+
+/* ── Topology SVG ── */
+#topo-svg {
+  width: 100%;
+  height: 260px;
+  display: block;
+}
+#topo-svg circle { stroke-width: 1.5; }
+#topo-svg text   { font-size: 10px; fill: var(--text); }
+#topo-svg line   { stroke: var(--border); stroke-width: 1.5; }
+line.cycle-edge  { stroke: var(--critical); }
+
+/* ── Audit ledger ── */
+.audit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 12px;
+}
+.audit-row:last-child { border-bottom: none; }
+.audit-action { color: var(--accent); font-weight: 600; min-width: 90px; flex-shrink: 0; }
+.audit-actor  { color: var(--muted); flex-shrink: 0; }
+.audit-detail { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.badge-verified {
+  margin-left: auto;
+  background: rgba(63,185,80,0.15);
+  color: var(--healthy);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(63,185,80,0.3);
+  flex-shrink: 0;
+}
+.badge-unverified {
+  margin-left: auto;
+  background: rgba(248,81,73,0.1);
+  color: var(--critical);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(248,81,73,0.3);
+  flex-shrink: 0;
+}
+
+/* ── Healing recommendations ── */
+.rec-row {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 12px;
+}
+.rec-row:last-child { border-bottom: none; }
+.rec-rule { color: var(--warning); font-weight: 600; font-size: 11px; }
+.rec-msg  { color: var(--text); margin-top: 2px; }
+
+/* ── Scrollbar styling ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

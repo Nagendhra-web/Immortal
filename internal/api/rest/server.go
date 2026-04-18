@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/immortal-engine/immortal/internal/agentic"
+	"github.com/immortal-engine/immortal/internal/api/dashboard"
 	"github.com/immortal-engine/immortal/internal/audit"
 	"github.com/immortal-engine/immortal/internal/autolearn"
 	"github.com/immortal-engine/immortal/internal/capacity"
@@ -249,6 +250,9 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/v5/agentic/memory/recall", s.handleV5AgenticMemoryRecall)
 	s.mux.HandleFunc("/api/v5/agentic/meta-investigate", s.handleV5AgenticMetaInvestigate)
 	s.mux.HandleFunc("/api/v5/federated/close", s.handleV5FederatedClose)
+
+	// Dashboard (additive — must come after all /api/ routes)
+	s.mux.Handle("/dashboard/", dashboard.Handler())
 }
 
 func (s *Server) Handler() http.Handler {

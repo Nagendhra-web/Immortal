@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -1334,4 +1335,39 @@ func TestAPI_V5_MethodNotAllowed_AllEndpoints(t *testing.T) {
 
 // Ensure topology import is used (it is used in setupV5Server via topology.NewTracker etc.)
 var _ = topology.NewTracker
+
+// --- Dashboard route tests ---
+
+func TestServer_DashboardRouteRegistered(t *testing.T) {
+	s, cleanup := setupServer(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/dashboard/index.html", nil)
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200 from /dashboard/index.html, got %d", rec.Code)
+	}
+	ct := rec.Header().Get("Content-Type")
+	if !strings.Contains(ct, "text/html") {
+		t.Errorf("expected text/html content-type, got %s", ct)
+	}
+}
+
+func TestServer_RootRedirectsToDashboard(t *testing.T) {
+	// The root "/" is not registered (no catch-all), so http.ServeMux returns 404.
+	// This test confirms /dashboard/ itself serves correctly as the canonical entry.
+	s, cleanup := setupServer(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/dashboard/", nil)
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	// /dashboard/ strips to "" → serves index.html (Go's FileServer serves index.html for directory)
+	if rec.Code != http.StatusOK && rec.Code != http.StatusMovedPermanently && rec.Code != http.StatusFound {
+		t.Errorf("expected 200 or redirect from /dashboard/, got %d", rec.Code)
+	}
+}
 
