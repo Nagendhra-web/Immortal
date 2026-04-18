@@ -6,7 +6,7 @@
 
 The open-source self-healing engine that monitors, detects failures, and auto-heals your applications — with zero configuration.
 
-**64 packages | 3 SDKs | 65 test suites | Single binary | Apache 2.0**
+**69 packages | 3 SDKs | 70 test suites | Single binary | Apache 2.0**
 
 [![CI](https://github.com/Nagendhra-web/Immortal/actions/workflows/ci.yml/badge.svg)](https://github.com/Nagendhra-web/Immortal/actions)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
@@ -69,6 +69,11 @@ Monitor → Detect → Throttle → Deduplicate → Analyze → Heal → Audit
 | **Capacity forecast** | `capacity` | Multi-metric forecasting, exhaustion date prediction |
 | **Metric correlation** | `correlation` | Pearson correlation, discovers leading indicators across metrics |
 | **Healing playbooks** | `playbook` | Multi-step healing with conditions, retries, and auto-rollback |
+| **Agentic healing loop** | `agentic` | ReAct-style multi-step reasoning — Plan → Act → Observe → Re-plan until resolved |
+| **Post-quantum audit chain** | `pqaudit` | Hash-chained, signed audit ledger with Merkle root; tamper-evident end-to-end |
+| **Digital twin simulator** | `twin` | Simulates healing plans against a shadow state machine; rejects plans that worsen predicted score |
+| **Federated anomaly learning** | `federated` | FedAvg across a fleet of Immortal instances with robust trim + DP noise — raw metrics stay local |
+| **Causal inference** | `causal` | PC-algorithm discovery + do-calculus ACE — identifies *true* root causes, not spurious correlations |
 
 ---
 
@@ -85,8 +90,13 @@ PASS  TestScenario_CascadingFailure_CausalityTracked — traced: disk full → D
 PASS  TestScenario_EventFlood_ThrottlePrevents      — blocked 999/1000 duplicate events
 PASS  TestScenario_TimeTravel_ReplayBeforeFailure   — replayed 5 events before crash
 PASS  TestScenario_RESTAPI_QueryWhileRunning        — queried health, metrics, Prometheus while live
+PASS  TestRealWorld_DatabaseDown_AgentRestartsAndVerifies — agentic loop: check → restart → verify → finish
+PASS  TestRealWorld_AttackerTriesToHideAction        — pqaudit Merkle root exposes attempted field mutation
+PASS  TestRealWorld_CascadeFailure_TwinRejectsBadPlan — twin accepts failover:db+restart:api, rejects scale-to-1
+PASS  TestRealWorld_FleetLearnsCPUBaseline           — federated FedAvg resists malicious outlier via trim
+PASS  TestRealWorld_CausalRootCauseBeatsCorrelation  — r=0.83 red herring demoted below true causes
 
-65 packages | 0 failures
+69 packages | 0 failures
 ```
 
 ---
