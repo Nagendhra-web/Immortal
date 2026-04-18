@@ -142,11 +142,25 @@ func laplaceNoise(rng *rand.Rand, scale float64) float64 {
 	return -scale * math.Copysign(math.Log(1-2*math.Abs(u)), u)
 }
 
+// AggregationStrategy selects the aggregation algorithm used by Aggregator.Close.
+type AggregationStrategy int
+
+const (
+	// StrategyFedAvg is the default weighted-mean aggregation (backwards-compatible).
+	StrategyFedAvg AggregationStrategy = iota
+	// StrategyKrum selects the single most-representative client update.
+	StrategyKrum
+	// StrategyTrimmedMean drops the top-F and bottom-F client means per metric.
+	StrategyTrimmedMean
+)
+
 // AggregatorConfig controls round closure and robustness.
 type AggregatorConfig struct {
-	MinClients      int     // round doesn't close until this many updates received
-	RobustTrimRatio float64 // 0.1 = drop top 10% + bottom 10% of per-metric means
-	MaxClientWeight float64 // 0 = no cap; cap each client's Count contribution
+	MinClients      int                 // round doesn't close until this many updates received
+	RobustTrimRatio float64             // 0.1 = drop top 10% + bottom 10% of per-metric means
+	MaxClientWeight float64             // 0 = no cap; cap each client's Count contribution
+	Strategy        AggregationStrategy // default StrategyFedAvg (backwards compat)
+	KrumF           int                 // assumed Byzantine clients (used by StrategyKrum and StrategyTrimmedMean)
 }
 
 // Aggregator receives updates from N clients per round and computes the global model.
@@ -179,8 +193,9 @@ func (a *Aggregator) Submit(u Update) error {
 	return nil
 }
 
-// Close computes the FedAvg global model for the given round and advances to the next round.
-// Returns an error if fewer than MinClients have submitted.
+// Close computes the global model for the given round using the configured
+// aggregation strategy and advances to the next round. Returns an error if
+// fewer than MinClients have submitted.
 func (a *Aggregator) Close(round int) (GlobalModel, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
@@ -188,6 +203,40 @@ func (a *Aggregator) Close(round int) (GlobalModel, error) {
 	if len(a.updates) < a.cfg.MinClients {
 		return GlobalModel{}, errors.New("federated: not enough clients for round closure")
 	}
+
+	switch a.cfg.Strategy {
+	case StrategyKrum:
+		ka := NewKrumAggregator(len(a.updates), a.cfg.KrumF)
+		for _, u := range a.updates {
+			if err := ka.Submit(u); err != nil {
+				return GlobalModel{}, err
+			}
+		}
+		a.updates = nil
+		a.round = round + 1
+		gm, err := ka.Close(round)
+		if err == nil {
+			a.history = append(a.history, gm)
+		}
+		return gm, err
+
+	case StrategyTrimmedMean:
+		ta := NewTrimmedMeanAggregator(a.cfg.KrumF)
+		for _, u := range a.updates {
+			if err := ta.Submit(u); err != nil {
+				return GlobalModel{}, err
+			}
+		}
+		a.updates = nil
+		a.round = round + 1
+		gm, err := ta.Close(round)
+		if err == nil {
+			a.history = append(a.history, gm)
+		}
+		return gm, err
+	}
+
+	// Default: StrategyFedAvg
 
 	// Collect all metric names across all updates.
 	metricSet := make(map[string]struct{})
@@ -306,4 +355,10 @@ func (a *Aggregator) History() []GlobalModel {
 	out := make([]GlobalModel, len(a.history))
 	copy(out, a.history)
 	return out
+}
+
+// SecureSnapshot returns a masked Update suitable for SecureAggregator.
+// Equivalent to Snapshot(round, 0) but with pairwise masks applied via sc.
+func (c *Client) SecureSnapshot(round int, sc *SecureClient) Update {
+	return sc.MaskedSnapshot(round)
 }

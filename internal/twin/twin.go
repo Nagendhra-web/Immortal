@@ -2,7 +2,9 @@ package twin
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
+	"time"
 )
 
 // State represents the observed state of a service.
@@ -15,6 +17,11 @@ type State struct {
 	Latency      float64  // ms
 	ErrorRate    float64  // 0-1
 	Dependencies []string // service names this one depends on
+
+	// Extended fields populated by ObserveEvent.
+	LastHealthCheck time.Time
+	LastSeen        time.Time
+	ErrorCount      int64 // running count since Twin start
 }
 
 // Action is a single step in a healing plan.
@@ -133,6 +140,40 @@ func (t *Twin) Simulate(p Plan) Simulation {
 
 	for _, action := range p.Actions {
 		modeled := false
+
+		// For traffic_shift, apply the model to both from and to services.
+		if action.Type == "traffic_shift" {
+			fromSvc := action.Params["from"]
+			toSvc := action.Params["to"]
+			for _, svcName := range []string{fromSvc, toSvc} {
+				if svcName == "" {
+					continue
+				}
+				svcAction := action
+				svcAction.Target = svcName
+				svc, exists := current[svcName]
+				if !exists {
+					svc = State{Service: svcName}
+				}
+				for _, model := range cfg.EffectModels {
+					next, ok := model(svc, svcAction)
+					if ok {
+						next.Service = svcName
+						current[svcName] = next
+						modeled = true
+						break
+					}
+				}
+			}
+			if modeled {
+				sim.ModeledSteps++
+			} else {
+				sim.UnmodeledSteps++
+			}
+			sim.StepStates = append(sim.StepStates, copyStates(current))
+			continue
+		}
+
 		for _, model := range cfg.EffectModels {
 			target, exists := current[action.Target]
 			if !exists {
@@ -144,6 +185,17 @@ func (t *Twin) Simulate(p Plan) Simulation {
 			if ok {
 				next.Service = action.Target
 				current[action.Target] = next
+
+				// For canary actions, also register the canary sub-state.
+				if action.Type == "canary" {
+					if pctStr, hasPct := action.Params["percent"]; hasPct {
+						if pct, err := strconv.ParseFloat(pctStr, 64); err == nil {
+							cs := canaryStateFor(target, pct)
+							current[cs.Service] = cs
+						}
+					}
+				}
+
 				// Only propagate dependency recovery when the action actually
 				// restored an unhealthy target — restarting a healthy service
 				// is a disturbance, not a benefit to its dependents.

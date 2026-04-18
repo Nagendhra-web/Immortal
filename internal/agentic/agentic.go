@@ -12,12 +12,26 @@ import (
 // ToolFunc is the signature for a tool implementation.
 type ToolFunc func(args map[string]any) (result string, err error)
 
+// CostTier classifies the impact level of a tool.
+type CostTier int
+
+const (
+	CostRead        CostTier = 0 // read-only: get_metric, check_health, list_dependencies
+	CostReversible  CostTier = 1 // safe to undo: dry_run, wait, rollback
+	CostDisruptive  CostTier = 2 // causes disruption: restart_service, scale
+	CostDestructive CostTier = 3 // traffic-shifting, hard failover: canary, failover
+)
+
 // Tool describes an action the agent can invoke.
 type Tool struct {
-	Name        string
-	Description string
-	Schema      map[string]string // arg name -> type description
-	Fn          ToolFunc
+	Name          string
+	Description   string
+	Schema        map[string]string // arg name -> type description
+	Fn            ToolFunc
+	CostTier      CostTier // impact classification
+	Reversible    bool     // whether the action can be undone
+	BlastRadius   int      // estimated number of services impacted
+	Prerequisites []string // tool names whose observations are needed first
 }
 
 // Step is one iteration of the agent reasoning loop.
@@ -29,6 +43,7 @@ type Step struct {
 	Observation string
 	Error       string
 	Timestamp   time.Time
+	Reflection  *Reflection // populated after each tool run when a Reflector is configured
 }
 
 // Trace is the full record of an agent run.
@@ -52,6 +67,13 @@ type MetricProvider func(name string) (string, error)
 // HealthChecker returns "healthy" or "unhealthy" for a target.
 type HealthChecker func(target string) (string, error)
 
+// ReflectingPlanner is an optional extension of Planner that receives the
+// reflection history in addition to the step history.
+type ReflectingPlanner interface {
+	Planner
+	NextStepWithReflection(incident *event.Event, history []Step, reflections []Reflection) (tool string, args map[string]any, thought string, err error)
+}
+
 // Config controls agent behaviour.
 type Config struct {
 	MaxIterations  int
@@ -59,6 +81,9 @@ type Config struct {
 	Planner        Planner
 	MetricProvider MetricProvider
 	HealthChecker  HealthChecker
+	Reflector      Reflector      // optional; defaults to DefaultReflector when nil
+	Memory         *Memory        // optional; records traces for future recall
+	Safety         *SafetyPolicy  // optional; guards each tool call
 }
 
 // Agent runs the ReAct-style healing loop.
@@ -85,6 +110,9 @@ func New(cfg Config) *Agent {
 		cfg.HealthChecker = func(target string) (string, error) {
 			return "healthy", nil
 		}
+	}
+	if cfg.Reflector == nil {
+		cfg.Reflector = DefaultReflector{}
 	}
 
 	a := &Agent{
@@ -119,11 +147,25 @@ func (a *Agent) Run(incident *event.Event) *Trace {
 	start := time.Now()
 	trace := &Trace{IncidentID: incident.ID}
 	history := make([]Step, 0, a.cfg.MaxIterations)
+	reflections := make([]Reflection, 0, a.cfg.MaxIterations)
+
+	consecutiveViolations := 0
 
 	for i := 0; i < a.cfg.MaxIterations; i++ {
 		step := Step{Iteration: i, Timestamp: time.Now()}
 
-		tool, args, thought, err := a.cfg.Planner.NextStep(incident, history)
+		// Call either the reflecting or legacy planner variant.
+		var tool string
+		var args map[string]any
+		var thought string
+		var err error
+
+		if rp, ok := a.cfg.Planner.(ReflectingPlanner); ok {
+			tool, args, thought, err = rp.NextStepWithReflection(incident, history, reflections)
+		} else {
+			tool, args, thought, err = a.cfg.Planner.NextStep(incident, history)
+		}
+
 		step.Thought = thought
 		step.Tool = tool
 		step.ToolArgs = args
@@ -145,12 +187,54 @@ func (a *Agent) Run(incident *event.Event) *Trace {
 			break
 		}
 
+		// Safety gate: check policy before executing.
+		if a.cfg.Safety != nil {
+			a.mu.RLock()
+			toolDef, toolFound := a.tools[tool]
+			a.mu.RUnlock()
+			if toolFound {
+				if violation := a.cfg.Safety.Guard(toolDef, args, history); violation != nil {
+					step.Error = fmt.Sprintf("safety violation: %s", violation.Reason)
+					history = append(history, step)
+					consecutiveViolations++
+					if consecutiveViolations >= 3 {
+						trace.Resolved = false
+						trace.Reason = "safety policy halted the loop"
+						break
+					}
+					continue
+				}
+			}
+		}
+		consecutiveViolations = 0
+
 		step.Observation, step.Error = a.runTool(tool, args)
+
+		// Post-step reflection.
+		ref := a.cfg.Reflector.Reflect(step, a.cfg.Planner)
+		step.Reflection = &ref
+		reflections = append(reflections, ref)
+
 		history = append(history, step)
 	}
 
 	trace.Steps = history
 	trace.Duration = time.Since(start)
+
+	// Record into memory if configured.
+	if a.cfg.Memory != nil {
+		outcome := OutcomeFailed
+		if trace.Resolved {
+			outcome = OutcomeResolved
+		}
+		inc := Incident{
+			Message:  incident.Message,
+			Source:   incident.Source,
+			Severity: string(incident.Severity),
+		}
+		a.cfg.Memory.Record(inc, trace, outcome)
+	}
+
 	return trace
 }
 
