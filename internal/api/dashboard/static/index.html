@@ -3,71 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Immortal — Observability Dashboard</title>
+  <title>Immortal — Mission Control</title>
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
 
-<!-- Header -->
-<div id="header">
-  <span class="logo">&#x25cf; IMMORTAL</span>
-  <div class="meta">
-    <span><strong id="hdr-version">v?</strong>version</span>
-    <span><strong id="hdr-mode">—</strong>mode</span>
-    <span><strong id="hdr-uptime">—</strong>uptime</span>
-    <span><strong id="hdr-events">—</strong>events processed</span>
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#/overview">
+    <span class="nav-logo-mark"></span>
+    <span class="nav-logo-text">IMMORTAL</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" data-view="overview"  href="#/overview">Overview</a>
+    <a class="nav-link" data-view="topology"  href="#/topology">Topology</a>
+    <a class="nav-link" data-view="audit"     href="#/audit">Audit Chain</a>
+    <a class="nav-link" data-view="terminal"  href="#/terminal">Terminal</a>
   </div>
-  <span id="refresh-indicator">auto-refresh 5s</span>
-</div>
+  <div class="nav-meta">
+    <span class="nav-pill" id="nav-node">NODE · —</span>
+    <span class="nav-pill nav-pill-live" id="nav-live">LIVE</span>
+  </div>
+</nav>
 
-<!-- Main 2-column grid -->
-<div id="main">
+<!-- VIEWS -->
+<main id="app">
 
-  <!-- LEFT col: services + recommendations -->
-  <div style="display:flex;flex-direction:column;gap:16px">
+  <!-- OVERVIEW -->
+  <section id="view-overview" class="view">
 
-    <!-- Panel 1: Service health -->
-    <div class="panel" id="panel-services">
-      <div class="panel-title">Service Health</div>
-      <div class="panel-body">
-        <div id="services-grid"><span class="panel-disabled">Loading…</span></div>
+    <div class="hero">
+      <h1 class="hero-headline">YOUR APPS /<br>NEVER DIE.</h1>
+      <div class="hero-chip">
+        <span class="hero-chip-dot"></span>
+        <span id="hero-chip-text">NODE · — · autonomous mode · connecting…</span>
       </div>
     </div>
 
-    <!-- Panel 6: Healing recommendations -->
-    <div class="panel" id="panel-recs">
-      <div class="panel-title">Healing Recommendations</div>
-      <div class="panel-body" id="recs-body"><span class="panel-disabled">Loading…</span></div>
-    </div>
-
-  </div>
-
-  <!-- RIGHT col: topology + events + audit -->
-  <div style="display:flex;flex-direction:column;gap:16px">
-
-    <!-- Panel 4: Topology graph -->
-    <div class="panel" id="panel-topo">
-      <div class="panel-title">Topology Graph</div>
-      <svg id="topo-svg"></svg>
-    </div>
-
-    <!-- Panel 3: Live event stream -->
-    <div class="panel" id="panel-events">
-      <div class="panel-title">Live Event Stream</div>
-      <div class="panel-body">
-        <div id="event-list"><span class="panel-disabled">Loading…</span></div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">Uptime</div>
+        <div class="stat-number" id="stat-uptime">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Events Processed</div>
+        <div class="stat-number" id="stat-events">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Healing Actions</div>
+        <div class="stat-number" id="stat-healing">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Services Healthy</div>
+        <div class="stat-number" id="stat-healthy">—</div>
       </div>
     </div>
 
-    <!-- Panel 5: Audit ledger -->
-    <div class="panel" id="panel-audit">
-      <div class="panel-title">Audit Ledger</div>
-      <div class="panel-body" id="audit-body"><span class="panel-disabled">Loading…</span></div>
+    <div class="panel panel-timeline">
+      <div class="panel-header">
+        <span class="panel-title">Healing Timeline</span>
+        <span class="panel-caption">Last 20 events — hover for detail</span>
+      </div>
+      <div class="timeline-ribbon" id="timeline-ribbon">
+        <div class="timeline-empty">No events yet</div>
+      </div>
     </div>
 
-  </div>
+    <div class="overview-grid">
 
-</div>
+      <div class="panel panel-feed">
+        <div class="panel-header">
+          <span class="panel-title">Live Feed</span>
+          <span class="feed-pulse" id="feed-pulse"></span>
+        </div>
+        <div class="feed-list" id="feed-list">
+          <div class="feed-empty">Waiting for events…</div>
+        </div>
+      </div>
+
+      <div class="panel panel-services">
+        <div class="panel-header">
+          <span class="panel-title">Services</span>
+          <span class="panel-caption" id="svc-summary">—</span>
+        </div>
+        <div class="services-grid" id="services-grid">
+          <div class="svc-loading">Loading…</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TOPOLOGY -->
+  <section id="view-topology" class="view view-hidden">
+    <div class="topo-wrap">
+      <div class="topo-header">
+        <h2 class="topo-title">Dependency Topology</h2>
+        <div class="topo-controls">
+          <button class="topo-btn" id="topo-reset">Reset View</button>
+          <span class="topo-hint">Drag nodes · Scroll to zoom</span>
+        </div>
+      </div>
+      <div class="topo-canvas-wrap" id="topo-canvas-wrap">
+        <svg id="topo-svg" class="topo-svg">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#8b949e" opacity="0.5"/>
+            </marker>
+            <marker id="arrow-cycle" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0,8 3,0 6" fill="#ffa657" opacity="0.9"/>
+            </marker>
+          </defs>
+          <g id="topo-edges"></g>
+          <g id="topo-nodes"></g>
+        </svg>
+        <div class="topo-empty" id="topo-empty" style="display:none">
+          <div class="topo-empty-icon">&#x2B21;</div>
+          <div class="topo-empty-text">No topology data available</div>
+          <div class="topo-empty-sub">Start the engine with --topology flag</div>
+        </div>
+      </div>
+      <div class="topo-legend">
+        <div class="topo-stat-row">
+          <span class="topo-stat"><span class="topo-stat-n" id="ts-nodes">0</span> Components</span>
+          <span class="topo-stat"><span class="topo-stat-n" id="ts-edges">0</span> Dependencies</span>
+          <span class="topo-stat topo-stat-amber"><span class="topo-stat-n" id="ts-cycles">0</span> Cycles</span>
+        </div>
+        <div class="topo-legend-items">
+          <span class="legend-item"><span class="legend-dot legend-dot-normal"></span>Component</span>
+          <span class="legend-item"><span class="legend-dot legend-dot-cycle"></span>In cycle</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIT -->
+  <section id="view-audit" class="view view-hidden">
+    <div class="audit-wrap">
+      <div class="audit-hero">
+        <div class="audit-verdict" id="audit-verdict">
+          <span class="audit-verdict-icon" id="audit-verdict-icon">&#x25CC;</span>
+          <span class="audit-verdict-text" id="audit-verdict-text">VERIFYING CHAIN…</span>
+        </div>
+        <div class="audit-meta" id="audit-meta">—</div>
+      </div>
+      <div class="audit-chain" id="audit-chain">
+        <div class="audit-chain-empty">Loading audit entries…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TERMINAL -->
+  <section id="view-terminal" class="view view-hidden">
+    <div class="term-wrap">
+      <div class="term-bar">
+        <span class="term-bar-dot term-dot-red"></span>
+        <span class="term-bar-dot term-dot-amber"></span>
+        <span class="term-bar-dot term-dot-green"></span>
+        <span class="term-bar-title">immortal — live event tail</span>
+        <span class="term-bar-right" id="term-count">0 events</span>
+      </div>
+      <div class="term-body" id="term-body">
+        <div class="term-line term-line-sys">Immortal mission control — connecting to event stream…</div>
+      </div>
+      <div class="term-input-row">
+        <span class="term-prompt">immortal&gt;</span>
+        <span class="term-cursor"></span>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 <script src="app.js"></script>
 </body>
