@@ -251,6 +251,42 @@ func DiscoverFCI(ds *Dataset, cfg FCIConfig) (PAG, error) {
 		}
 	}
 
+	// ── Phase 4b: Build intermediate PAG and run R4–R10 until fixpoint ────────
+
+	// Build canonical sep map for advanced rules (keyed by sorted name pair).
+	sepByName := make(map[[2]string][]string, len(sepSet))
+	for i := 0; i < p; i++ {
+		for j := i + 1; j < p; j++ {
+			if ss := sepSet[i*p+j]; ss != nil {
+				key := [2]string{nodes[i], nodes[j]}
+				sepByName[key] = ss
+			}
+		}
+	}
+
+	// Snapshot current pagMark into a PAG, apply R4–R10, read marks back.
+	intermediatePAG := PAG{Nodes: nodes}
+	for i := 0; i < p; i++ {
+		for j := i + 1; j < p; j++ {
+			if adj[i][j] {
+				intermediatePAG.Edges = append(intermediatePAG.Edges, PAGEdge{
+					From:     nodes[i],
+					To:       nodes[j],
+					FromMark: pagMark[j][i],
+					ToMark:   pagMark[i][j],
+				})
+			}
+		}
+	}
+	applyAdvancedRules(&intermediatePAG, sepByName)
+
+	// Read back the oriented marks into pagMark.
+	for _, e := range intermediatePAG.Edges {
+		fi, ti := idx[e.From], idx[e.To]
+		pagMark[ti][fi] = e.FromMark
+		pagMark[fi][ti] = e.ToMark
+	}
+
 	// ── Phase 5: Build PAG from pagMark ──────────────────────────────────────
 	//
 	// For each undirected pair (i < j) with adj[i][j]:

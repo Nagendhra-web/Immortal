@@ -29,6 +29,7 @@ import (
 	"github.com/immortal-engine/immortal/internal/sla"
 	"github.com/immortal-engine/immortal/internal/storage"
 	"github.com/immortal-engine/immortal/internal/timetravel"
+	"github.com/immortal-engine/immortal/internal/topology"
 	"github.com/immortal-engine/immortal/internal/twin"
 )
 
@@ -885,4 +886,452 @@ type testPlanner struct{}
 func (t *testPlanner) NextStep(ev *event.Event, history []agentic.Step) (string, map[string]any, string, error) {
 	return "finish", map[string]any{"reason": "test planner resolved"}, "finished immediately", nil
 }
+
+// --- v0.5.0 helpers ---
+
+func setupV5Server(t *testing.T) (*rest.Server, func()) {
+	t.Helper()
+	dir, _ := os.MkdirTemp("", "immortal-v5-test-*")
+	store, err := storage.New(dir + "/test.db")
+	if err != nil {
+		t.Fatal(err)
+	}
+	registry := health.NewRegistry()
+	healer := healing.NewHealer()
+
+	// Topology: tracker with 2 snapshots (generates events on topology change)
+	tr := topology.NewTracker(100)
+	g1 := topology.NewDiGraph()
+	g1.AddEdge("svc-a", "svc-b")
+	tr.Record(g1)
+	g2 := topology.NewDiGraph()
+	g2.AddEdge("svc-a", "svc-b")
+	g2.AddEdge("svc-b", "svc-c")
+	tr.Record(g2)
+
+	// Semantic memory with 3 records
+	sm := agentic.NewSemanticMemory(100)
+	for i := 0; i < 3; i++ {
+		inc := agentic.Incident{Message: fmt.Sprintf("high cpu on svc-%d", i), Source: "svc-a", Severity: "critical"}
+		trace := &agentic.Trace{Steps: []agentic.Step{}, Resolved: true}
+		sm.Record(inc, trace, agentic.OutcomeResolved)
+	}
+
+	// MetaAgent with a deterministic finishing planner
+	ma := agentic.NewMetaAgent(agentic.MetaConfig{StopOnFirstResolve: true})
+
+	// PCMCI function: real DiscoverPCMCI on a small chain dataset
+	pcmciFn := func(ds *causal.Dataset, cfg causal.PCMCIConfig) (causal.LaggedGraph, error) {
+		return causal.DiscoverPCMCI(ds, cfg)
+	}
+
+	// Counterfactual function: real Counterfactual call
+	counterfactualFn := func(ds *causal.Dataset, m *causal.StructuralModel, rowIdx int, cause string, do float64, outcome string) (causal.CounterfactualResult, error) {
+		return causal.Counterfactual(ds, m, rowIdx, cause, do, outcome)
+	}
+
+	// Federated aggregator with 1 client
+	agg := federated.NewAggregator(federated.AggregatorConfig{MinClients: 1})
+	fc := federated.NewClientWithSeed("v5-node", 99, 0)
+	fc.Observe("cpu", 50.0)
+	agg.Submit(fc.Snapshot(1, 0))
+
+	cleanup := func() {
+		store.Close()
+		os.RemoveAll(dir)
+	}
+
+	s := rest.NewFull(rest.ServerConfig{
+		Store:              store,
+		Registry:           registry,
+		Healer:             healer,
+		Topology:           tr,
+		FormalOn:           true,
+		PCMCIFn:            pcmciFn,
+		CounterfactualFn:   counterfactualFn,
+		SemanticMemory:     sm,
+		MetaAgent:          ma,
+		AggregatorAdvanced: agg,
+	})
+	return s, cleanup
+}
+
+func disabledV5Server(t *testing.T) (*rest.Server, func()) {
+	t.Helper()
+	dir, _ := os.MkdirTemp("", "immortal-v5-disabled-*")
+	store, _ := storage.New(dir + "/test.db")
+	cleanup := func() { store.Close(); os.RemoveAll(dir) }
+	s := rest.NewFull(rest.ServerConfig{
+		Store:    store,
+		Registry: health.NewRegistry(),
+		Healer:   healing.NewHealer(),
+		// all v0.5 fields nil/false
+	})
+	return s, cleanup
+}
+
+// --- v0.5.0 topology tests ---
+
+func TestAPI_V5_TopologySnapshot_OK(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v5/topology/snapshot", nil)
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var resp map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&resp)
+	if _, ok := resp["snapshot"]; !ok {
+		t.Error("expected 'snapshot' key in response")
+	}
+}
+
+func TestAPI_V5_TopologySnapshot_Disabled404(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v5/topology/snapshot", nil)
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("expected 404, got %d", rec.Code)
+	}
+}
+
+func TestAPI_V5_TopologyEvents_OK(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v5/topology/events", nil)
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var resp map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&resp)
+	if _, ok := resp["events"]; !ok {
+		t.Error("expected 'events' key in response")
+	}
+}
+
+// --- v0.5.0 formal tests ---
+
+func TestAPI_V5_FormalCheck_DetectsViolation(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	// Scale svc-a to 0 replicas; min_replicas invariant requires >=1 → violation
+	body := `{
+		"world": {"svc-a": {"healthy": true, "replicas": 2}},
+		"plan": {
+			"id": "plan-scale-zero",
+			"steps": [{"name": "scale-down", "action_type": "set_replicas", "target": "svc-a", "params": {"target": "svc-a", "value": 0}}]
+		},
+		"invariants": [{"kind": "min_replicas", "args": {"service": "svc-a", "n": 1}}]
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/formal/check", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var result map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&result)
+	safe, _ := result["Safe"].(bool)
+	if safe {
+		t.Error("expected Safe=false for scale-to-zero + min_replicas violation")
+	}
+}
+
+func TestAPI_V5_FormalCheck_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	body := `{"world":{},"plan":{"id":"x","steps":[]},"invariants":[]}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/formal/check", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 causal PCMCI tests ---
+
+func makePCMCIBody() string {
+	// 3 variables, 30 rows — enough for PCMCI (needs >TauMax rows)
+	names := `["x","y","z"]`
+	var rows []string
+	for i := 0; i < 30; i++ {
+		fi := float64(i)
+		rows = append(rows, fmt.Sprintf("[%.2f,%.2f,%.2f]", fi, fi*0.8+1, fi*0.5+2))
+	}
+	rowsJSON := "["
+	for i, r := range rows {
+		if i > 0 {
+			rowsJSON += ","
+		}
+		rowsJSON += r
+	}
+	rowsJSON += "]"
+	return fmt.Sprintf(`{"names":%s,"rows":%s,"alpha":0.05,"tau_max":2,"max_cond_set_size":2}`, names, rowsJSON)
+}
+
+func TestAPI_V5_PCMCI_ReturnsGraph(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	body := makePCMCIBody()
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/causal/pcmci", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var result map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&result)
+	if _, ok := result["Parents"]; !ok {
+		t.Error("expected 'Parents' key in PCMCI result")
+	}
+}
+
+func TestAPI_V5_PCMCI_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/causal/pcmci", bytes.NewBufferString(makePCMCIBody()))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 causal counterfactual tests ---
+
+func makeCounterfactualBody() string {
+	// Simple 2-variable dataset: y = 2*x + noise; parents: x → y
+	var rows []string
+	for i := 0; i < 20; i++ {
+		fi := float64(i + 1)
+		rows = append(rows, fmt.Sprintf("[%.1f,%.1f]", fi, fi*2.0))
+	}
+	rowsJSON := "[" + joinStrings(rows, ",") + "]"
+	return fmt.Sprintf(`{"names":["x","y"],"rows":%s,"parents":{"y":["x"]},"row_index":5,"cause":"x","do":10.0,"outcome":"y"}`, rowsJSON)
+}
+
+func joinStrings(ss []string, sep string) string {
+	result := ""
+	for i, s := range ss {
+		if i > 0 {
+			result += sep
+		}
+		result += s
+	}
+	return result
+}
+
+func TestAPI_V5_Counterfactual_ReturnsResult(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	body := makeCounterfactualBody()
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/causal/counterfactual", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var result map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&result)
+	if _, ok := result["CounterfactualOutcome"]; !ok {
+		t.Error("expected 'CounterfactualOutcome' in result")
+	}
+}
+
+func TestAPI_V5_Counterfactual_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/causal/counterfactual", bytes.NewBufferString(makeCounterfactualBody()))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 agentic memory recall tests ---
+
+func TestAPI_V5_AgenticMemoryRecall_ReturnsTopK(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	body := `{"message":"high cpu","source":"svc-a","severity":"critical","k":2}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/agentic/memory/recall", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var resp map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&resp)
+	entries, ok := resp["entries"].([]interface{})
+	if !ok {
+		t.Fatal("expected 'entries' array in response")
+	}
+	if len(entries) == 0 {
+		t.Error("expected at least one entry returned")
+	}
+	if len(entries) > 2 {
+		t.Errorf("expected at most k=2 entries, got %d", len(entries))
+	}
+}
+
+func TestAPI_V5_AgenticMemoryRecall_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	body := `{"message":"test","source":"svc","severity":"info","k":3}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/agentic/memory/recall", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 meta-investigate tests ---
+
+func TestAPI_V5_MetaInvestigate_RunsBranches(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	body := `{
+		"type":"error","severity":"critical","message":"high cpu","source":"svc-a",
+		"hypothesis_types":["resource_exhaustion","dependency_failure","recent_deployment"]
+	}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/agentic/meta-investigate", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var result map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&result)
+	branches, ok := result["Branches"].([]interface{})
+	if !ok {
+		t.Fatal("expected 'Branches' array in MetaResult")
+	}
+	if len(branches) != 3 {
+		t.Errorf("expected 3 branches, got %d", len(branches))
+	}
+}
+
+func TestAPI_V5_MetaInvestigate_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	body := `{"type":"error","severity":"critical","message":"test","source":"svc","hypothesis_types":["resource_exhaustion"]}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/agentic/meta-investigate", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 federated close tests ---
+
+func TestAPI_V5_FederatedClose_ReturnsGlobalModel(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	body := `{"round":1}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/federated/close", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var gm map[string]interface{}
+	json.NewDecoder(rec.Body).Decode(&gm)
+	if _, ok := gm["Round"]; !ok {
+		t.Error("expected 'Round' in GlobalModel response")
+	}
+}
+
+func TestAPI_V5_FederatedClose_Disabled503(t *testing.T) {
+	s, cleanup := disabledV5Server(t)
+	defer cleanup()
+
+	body := `{"round":0}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v5/federated/close", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	s.Handler().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", rec.Code)
+	}
+}
+
+// --- v0.5.0 method-not-allowed table test ---
+
+func TestAPI_V5_MethodNotAllowed_AllEndpoints(t *testing.T) {
+	s, cleanup := setupV5Server(t)
+	defer cleanup()
+
+	cases := []struct {
+		method string
+		path   string
+	}{
+		// POST-only endpoints called with GET
+		{http.MethodGet, "/api/v5/formal/check"},
+		{http.MethodGet, "/api/v5/causal/pcmci"},
+		{http.MethodGet, "/api/v5/causal/counterfactual"},
+		{http.MethodGet, "/api/v5/agentic/memory/recall"},
+		{http.MethodGet, "/api/v5/agentic/meta-investigate"},
+		{http.MethodGet, "/api/v5/federated/close"},
+		// GET-only endpoints called with POST
+		{http.MethodPost, "/api/v5/topology/snapshot"},
+		{http.MethodPost, "/api/v5/topology/events"},
+	}
+	for _, tc := range cases {
+		t.Run(fmt.Sprintf("%s %s", tc.method, tc.path), func(t *testing.T) {
+			req := httptest.NewRequest(tc.method, tc.path, nil)
+			rec := httptest.NewRecorder()
+			s.Handler().ServeHTTP(rec, req)
+			if rec.Code != http.StatusMethodNotAllowed {
+				t.Errorf("expected 405, got %d", rec.Code)
+			}
+		})
+	}
+}
+
+// Ensure topology import is used (it is used in setupV5Server via topology.NewTracker etc.)
+var _ = topology.NewTracker
 

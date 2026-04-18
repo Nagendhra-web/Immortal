@@ -127,3 +127,11 @@ func (c *Calibrator) Weights() ScoreWeights {
 func (c *Calibrator) SampleCount() int {
 	return c.count
 }
+
+// NewRankNetCalibratorFromWeights is a convenience wrapper that constructs a
+// RankNetCalibrator seeded from the given ScoreWeights, using package defaults
+// for learning-rate, momentum, and L2. It sits alongside NewCalibrator so
+// callers can adopt RankNet without breaking existing gradient-descent code.
+func NewRankNetCalibratorFromWeights(initial ScoreWeights) *RankNetCalibrator {
+	return NewRankNetCalibrator(RankNetConfig{Initial: initial})
+}

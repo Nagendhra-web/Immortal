@@ -22,6 +22,7 @@ import (
 	"github.com/immortal-engine/immortal/internal/event"
 	"github.com/immortal-engine/immortal/internal/export"
 	"github.com/immortal-engine/immortal/internal/federated"
+	"github.com/immortal-engine/immortal/internal/formal"
 	"github.com/immortal-engine/immortal/internal/healing"
 	"github.com/immortal-engine/immortal/internal/health"
 	"github.com/immortal-engine/immortal/internal/incident"
@@ -34,6 +35,7 @@ import (
 	"github.com/immortal-engine/immortal/internal/storage"
 	"github.com/immortal-engine/immortal/internal/stream"
 	"github.com/immortal-engine/immortal/internal/timetravel"
+	"github.com/immortal-engine/immortal/internal/topology"
 	"github.com/immortal-engine/immortal/internal/twin"
 )
 
@@ -71,6 +73,15 @@ type Server struct {
 	fedClient *federated.Client
 	causalFn  func(outcome string, vars []string) (*causal.RootCauseResult, error)
 
+	// v0.5.0 components
+	topoTracker        *topology.Tracker
+	formalOn           bool
+	pcmciFn            func(ds *causal.Dataset, cfg causal.PCMCIConfig) (causal.LaggedGraph, error)
+	counterfactualFn   func(ds *causal.Dataset, m *causal.StructuralModel, rowIdx int, cause string, do float64, outcome string) (causal.CounterfactualResult, error)
+	semanticMemory     *agentic.SemanticMemory
+	metaAgent          *agentic.MetaAgent
+	aggregatorAdvanced *federated.Aggregator
+
 	mux *http.ServeMux
 }
 
@@ -104,6 +115,15 @@ type ServerConfig struct {
 	Agent     *agentic.Agent
 	FedClient *federated.Client
 	CausalFn  func(outcome string, vars []string) (*causal.RootCauseResult, error)
+
+	// v0.5.0 — novel observability primitives + advanced agentic/causal/federated.
+	Topology           *topology.Tracker  // optional; nil disables topology endpoints
+	FormalOn           bool               // mirrors engine.FormalEnabled — gates formal endpoint
+	PCMCIFn            func(ds *causal.Dataset, cfg causal.PCMCIConfig) (causal.LaggedGraph, error)
+	CounterfactualFn   func(ds *causal.Dataset, m *causal.StructuralModel, rowIdx int, cause string, do float64, outcome string) (causal.CounterfactualResult, error)
+	SemanticMemory     *agentic.SemanticMemory
+	MetaAgent          *agentic.MetaAgent
+	AggregatorAdvanced *federated.Aggregator // for /api/v5/federated/close
 }
 
 func New(store *storage.Store, registry *health.Registry, healer *healing.Healer) *Server {
@@ -153,12 +173,19 @@ func NewFull(cfg ServerConfig) *Server {
 		capacityPln:     cfg.CapacityPln,
 		correlator:      cfg.Correlator,
 		playbookRun:     cfg.PlaybookRun,
-		pqLedger:        cfg.PQLedger,
-		twinSvc:         cfg.Twin,
-		agentSvc:        cfg.Agent,
-		fedClient:       cfg.FedClient,
-		causalFn:        cfg.CausalFn,
-		mux:             http.NewServeMux(),
+		pqLedger:           cfg.PQLedger,
+		twinSvc:            cfg.Twin,
+		agentSvc:           cfg.Agent,
+		fedClient:          cfg.FedClient,
+		causalFn:           cfg.CausalFn,
+		topoTracker:        cfg.Topology,
+		formalOn:           cfg.FormalOn,
+		pcmciFn:            cfg.PCMCIFn,
+		counterfactualFn:   cfg.CounterfactualFn,
+		semanticMemory:     cfg.SemanticMemory,
+		metaAgent:          cfg.MetaAgent,
+		aggregatorAdvanced: cfg.AggregatorAdvanced,
+		mux:                http.NewServeMux(),
 	}
 	s.routes()
 	return s
@@ -212,6 +239,16 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/v4/agentic/run", s.handleV4AgenticRun)
 	s.mux.HandleFunc("/api/v4/causal/root-cause", s.handleV4CausalRootCause)
 	s.mux.HandleFunc("/api/v4/federated/snapshot", s.handleV4FederatedSnapshot)
+
+	// v0.5.0 endpoints
+	s.mux.HandleFunc("/api/v5/topology/snapshot", s.handleV5TopologySnapshot)
+	s.mux.HandleFunc("/api/v5/topology/events", s.handleV5TopologyEvents)
+	s.mux.HandleFunc("/api/v5/formal/check", s.handleV5FormalCheck)
+	s.mux.HandleFunc("/api/v5/causal/pcmci", s.handleV5CausalPCMCI)
+	s.mux.HandleFunc("/api/v5/causal/counterfactual", s.handleV5CausalCounterfactual)
+	s.mux.HandleFunc("/api/v5/agentic/memory/recall", s.handleV5AgenticMemoryRecall)
+	s.mux.HandleFunc("/api/v5/agentic/meta-investigate", s.handleV5AgenticMetaInvestigate)
+	s.mux.HandleFunc("/api/v5/federated/close", s.handleV5FederatedClose)
 }
 
 func (s *Server) Handler() http.Handler {
@@ -980,6 +1017,363 @@ func (s *Server) handleV4FederatedSnapshot(w http.ResponseWriter, r *http.Reques
 	}
 	update := s.fedClient.Snapshot(round, epsilon)
 	writeJSON(w, update)
+}
+
+// --- v0.5.0 handlers ---
+
+func (s *Server) handleV5TopologySnapshot(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.topoTracker == nil {
+		http.Error(w, "topology tracker not available", http.StatusNotFound)
+		return
+	}
+	writeJSON(w, map[string]interface{}{"snapshot": s.topoTracker.Latest()})
+}
+
+func (s *Server) handleV5TopologyEvents(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.topoTracker == nil {
+		http.Error(w, "topology tracker not available", http.StatusNotFound)
+		return
+	}
+	events := s.topoTracker.Events()
+	if events == nil {
+		events = []topology.Event{}
+	}
+	writeJSON(w, map[string]interface{}{"events": events})
+}
+
+func (s *Server) handleV5FormalCheck(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if !s.formalOn {
+		http.Error(w, "formal checker not enabled", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		World map[string]struct {
+			Healthy  bool `json:"healthy"`
+			Replicas int  `json:"replicas"`
+		} `json:"world"`
+		Plan struct {
+			ID    string `json:"id"`
+			Steps []struct {
+				Name       string                 `json:"name"`
+				ActionType string                 `json:"action_type"`
+				Target     string                 `json:"target"`
+				Params     map[string]interface{} `json:"params"`
+			} `json:"steps"`
+		} `json:"plan"`
+		Invariants []struct {
+			Kind string                 `json:"kind"`
+			Args map[string]interface{} `json:"args"`
+		} `json:"invariants"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build World
+	world := make(formal.World, len(body.World))
+	for svc, st := range body.World {
+		world[svc] = formal.ServiceState{Name: svc, Healthy: st.Healthy, Replicas: st.Replicas}
+	}
+
+	// Build Plan steps
+	steps := make([]formal.Action, 0, len(body.Plan.Steps))
+	for _, step := range body.Plan.Steps {
+		s := step // capture
+		var fn func(formal.World) formal.World
+		switch s.ActionType {
+		case "set_healthy":
+			target, _ := s.Params["target"].(string)
+			value, _ := s.Params["value"].(bool)
+			fn = func(w formal.World) formal.World {
+				st := w[target]
+				st.Healthy = value
+				w[target] = st
+				return w
+			}
+		case "set_replicas":
+			target, _ := s.Params["target"].(string)
+			var n int
+			switch v := s.Params["value"].(type) {
+			case float64:
+				n = int(v)
+			case int:
+				n = v
+			}
+			fn = func(w formal.World) formal.World {
+				st := w[target]
+				st.Replicas = n
+				w[target] = st
+				return w
+			}
+		default: // "noop" or unknown
+			fn = func(w formal.World) formal.World { return w }
+		}
+		steps = append(steps, formal.Action{Name: s.Name, Fn: fn})
+	}
+
+	plan := formal.Plan{ID: body.Plan.ID, Steps: steps}
+
+	// Build Invariants
+	invs := make([]formal.Invariant, 0, len(body.Invariants))
+	for _, inv := range body.Invariants {
+		switch inv.Kind {
+		case "at_least_n_healthy":
+			n := 0
+			if v, ok := inv.Args["n"].(float64); ok {
+				n = int(v)
+			}
+			invs = append(invs, formal.AtLeastNHealthy(n))
+		case "min_replicas":
+			svc, _ := inv.Args["service"].(string)
+			n := 0
+			if v, ok := inv.Args["n"].(float64); ok {
+				n = int(v)
+			}
+			invs = append(invs, formal.MinReplicas(svc, n))
+		case "service_always_healthy":
+			svc, _ := inv.Args["service"].(string)
+			invs = append(invs, formal.ServiceAlwaysHealthy(svc))
+		}
+	}
+
+	result := formal.Check(world, plan, invs)
+	writeJSON(w, result)
+}
+
+func (s *Server) handleV5CausalPCMCI(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.pcmciFn == nil {
+		http.Error(w, "PCMCI not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		Names          []string    `json:"names"`
+		Rows           [][]float64 `json:"rows"`
+		Alpha          float64     `json:"alpha"`
+		TauMax         int         `json:"tau_max"`
+		MaxCondSetSize int         `json:"max_cond_set_size"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ds := causal.NewDataset(body.Names)
+	for _, row := range body.Rows {
+		m := make(map[string]float64, len(body.Names))
+		for i, name := range body.Names {
+			if i < len(row) {
+				m[name] = row[i]
+			}
+		}
+		if err := ds.Add(m); err != nil {
+			http.Error(w, "dataset error: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+
+	cfg := causal.PCMCIConfig{
+		Alpha:          body.Alpha,
+		TauMax:         body.TauMax,
+		MaxCondSetSize: body.MaxCondSetSize,
+	}
+	graph, err := s.pcmciFn(ds, cfg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, graph)
+}
+
+func (s *Server) handleV5CausalCounterfactual(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.counterfactualFn == nil {
+		http.Error(w, "counterfactual not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		Names    []string               `json:"names"`
+		Rows     [][]float64            `json:"rows"`
+		Parents  map[string][]string    `json:"parents"`
+		RowIndex int                    `json:"row_index"`
+		Cause    string                 `json:"cause"`
+		Do       float64                `json:"do"`
+		Outcome  string                 `json:"outcome"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ds := causal.NewDataset(body.Names)
+	for _, row := range body.Rows {
+		m := make(map[string]float64, len(body.Names))
+		for i, name := range body.Names {
+			if i < len(row) {
+				m[name] = row[i]
+			}
+		}
+		if err := ds.Add(m); err != nil {
+			http.Error(w, "dataset error: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+	}
+
+	// Build CausalGraph from parents map
+	g := causal.CausalGraph{Nodes: body.Names, Directed: make(map[string][]string)}
+	for child, pars := range body.Parents {
+		for _, par := range pars {
+			g.Directed[par] = append(g.Directed[par], child)
+		}
+	}
+
+	m, err := causal.FitSCM(ds, g)
+	if err != nil {
+		http.Error(w, "SCM fit error: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	result, err := s.counterfactualFn(ds, m, body.RowIndex, body.Cause, body.Do, body.Outcome)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, result)
+}
+
+func (s *Server) handleV5AgenticMemoryRecall(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.semanticMemory == nil {
+		http.Error(w, "semantic memory not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		Message  string `json:"message"`
+		Source   string `json:"source"`
+		Severity string `json:"severity"`
+		K        int    `json:"k"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	if body.K <= 0 {
+		body.K = 5
+	}
+
+	query := agentic.Incident{
+		Message:  body.Message,
+		Source:   body.Source,
+		Severity: body.Severity,
+	}
+	entries := s.semanticMemory.Recall(query, body.K)
+	if entries == nil {
+		entries = []agentic.MemoryEntry{}
+	}
+	writeJSON(w, map[string]interface{}{"entries": entries})
+}
+
+func (s *Server) handleV5AgenticMetaInvestigate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.metaAgent == nil {
+		http.Error(w, "meta-agent not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		Type            string   `json:"type"`
+		Severity        string   `json:"severity"`
+		Message         string   `json:"message"`
+		Source          string   `json:"source"`
+		HypothesisTypes []string `json:"hypothesis_types"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ev := event.New(event.Type(body.Type), event.Severity(body.Severity), body.Message)
+	ev.Source = body.Source
+
+	// Build hypotheses from requested types using built-in generators with no-op checkers.
+	hypotheses := make([]agentic.Hypothesis, 0, len(body.HypothesisTypes))
+	for _, ht := range body.HypothesisTypes {
+		switch ht {
+		case "resource_exhaustion":
+			hypotheses = append(hypotheses, agentic.HypothesisResourceExhaustion(
+				body.Source,
+				func(target, metric string) (float64, error) { return 0, nil },
+			))
+		case "dependency_failure":
+			hypotheses = append(hypotheses, agentic.HypothesisDependencyFailure(
+				body.Source,
+				func(target string) ([]string, error) { return nil, nil },
+			))
+		case "recent_deployment":
+			hypotheses = append(hypotheses, agentic.HypothesisRecentDeployment(
+				body.Source,
+				func(target string) ([]string, error) { return nil, nil },
+			))
+		}
+	}
+
+	result := s.metaAgent.Investigate(ev, hypotheses)
+	writeJSON(w, result)
+}
+
+func (s *Server) handleV5FederatedClose(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if s.aggregatorAdvanced == nil {
+		http.Error(w, "federated aggregator not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	var body struct {
+		Round int `json:"round"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	gm, err := s.aggregatorAdvanced.Close(body.Round)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, gm)
 }
 
 // --- Helpers ---
