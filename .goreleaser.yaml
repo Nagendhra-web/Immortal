@@ -88,26 +88,24 @@ release:
     go install github.com/Nagendhra-web/Immortal/cmd/immortal@{{ .Tag }}
     ```
 
-# ── Homebrew tap auto-bump (disabled until HOMEBREW_TAP_TOKEN secret is set) ──
-#
-# To enable:
-#   1. Create a fine-grained PAT with Contents: Read & Write scope on the
-#      Nagendhra-web/homebrew-immortal repository.
-#   2. Add it as a repository secret named HOMEBREW_TAP_TOKEN.
-#   3. Uncomment the block below.
-#   4. Tag a new version; GoReleaser will push the formula update.
-#
-# brews:
-#   - name: immortal
-#     repository:
-#       owner: Nagendhra-web
-#       name: homebrew-immortal
-#       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
-#     directory: Formula
-#     homepage: "https://github.com/Nagendhra-web/Immortal"
-#     description: "Self-healing engine. Your apps never die."
-#     license: "Apache-2.0"
-#     test: |
-#       system "#{bin}/immortal", "version"
-#     install: |
-#       bin.install "immortal"
+# ── Homebrew tap auto-bump ──
+# Requires the HOMEBREW_TAP_TOKEN repository secret (fine-grained PAT with
+# Contents: Read and Write on Nagendhra-web/homebrew-immortal).
+brews:
+  - name: immortal
+    repository:
+      owner: Nagendhra-web
+      name: homebrew-immortal
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/Nagendhra-web/Immortal"
+    description: "Self-healing engine. Your apps never die."
+    license: "Apache-2.0"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    commit_msg_template: "chore(formula): bump immortal to {{ .Tag }}"
+    test: |
+      system "#{bin}/immortal", "version"
+    install: |
+      bin.install "immortal"

@@ -77,18 +77,14 @@ docker run -p 7777:7777 immortal:local start --api-port 7777
 
 A pre-built image at `ghcr.io/nagendhra-web/immortal` is planned for v0.6 (see issue #15).
 
-## 6. Homebrew (planned for v0.6)
-
-Homebrew support is on the v0.6 roadmap. The GoReleaser pipeline is already wired to publish a formula; it is gated on a `HOMEBREW_TAP_TOKEN` secret being added to the repository. Tracking: [issue #16](https://github.com/Nagendhra-web/Immortal/issues/16).
-
-Once enabled it will be:
+## 6. Homebrew (macOS / Linux)
 
 ```sh
 brew tap Nagendhra-web/immortal
 brew install immortal
 ```
 
-Until then, use the one-liner installer or `go install`.
+The tap lives at [`Nagendhra-web/homebrew-immortal`](https://github.com/Nagendhra-web/homebrew-immortal) and is auto-bumped by GoReleaser on every release tag.
 
 ---
 
@@ -107,10 +103,11 @@ immortal start --pqaudit --twin --agentic --causal --topology --formal
 
 | Install method               | Uninstall                               |
 | ---------------------------- | --------------------------------------- |
-| `install.sh` / `install.ps1` | `rm $IMMORTAL_INSTALL/immortal`         |
-| `go install`                 | `rm $(go env GOBIN)/immortal`           |
-| Docker                       | `docker rmi immortal:local`             |
-| Source                       | `rm -rf Immortal/`                      |
+| `install.sh` / `install.ps1` | `rm $IMMORTAL_INSTALL/immortal`                            |
+| `go install`                 | `rm $(go env GOBIN)/immortal`                              |
+| Homebrew                     | `brew uninstall immortal && brew untap Nagendhra-web/immortal` |
+| Docker                       | `docker rmi immortal:local`                                |
+| Source                       | `rm -rf Immortal/`                                         |
 
 No state lives outside the `$IMMORTAL_DATA` directory (default `~/.immortal`). Delete that to fully remove traces.
 

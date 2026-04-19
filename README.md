@@ -70,11 +70,12 @@ irm https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/instal
 # Go toolchain (Go 1.25+)
 go install github.com/Nagendhra-web/Immortal/cmd/immortal@latest
 
+# Homebrew (macOS / Linux)
+brew tap Nagendhra-web/immortal && brew install immortal
+
 # Docker
 docker run -p 7777:7777 ghcr.io/nagendhra-web/immortal:latest
 ```
-
-> **Homebrew tap is on the v0.6 roadmap.** Use the one-liner installer or `go install` in the meantime.
 
 ```bash
 # Start healing.

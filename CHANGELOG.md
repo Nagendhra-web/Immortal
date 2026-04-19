@@ -6,6 +6,12 @@ Immortal follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-04-19
+
+### Added
+
+- **Homebrew tap auto-bump**. The `HOMEBREW_TAP_TOKEN` secret is now configured, so GoReleaser publishes a formula update to `Nagendhra-web/homebrew-immortal` on every tag. Install with `brew tap Nagendhra-web/immortal && brew install immortal`.
+
 ## [0.6.1] - 2026-04-19
 
 ### Fixed
