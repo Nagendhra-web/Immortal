@@ -1,6 +1,7 @@
-# GoReleaser v2 — cross-platform release automation
+# GoReleaser v2 config for Immortal cross-platform releases.
+#
 # Usage:
-#   git tag v0.4.0 && git push --tags
+#   git tag v0.5.0 && git push origin v0.5.0
 #   (CI workflow at .github/workflows/release.yml runs goreleaser on tag push)
 #
 # Local dry-run:
@@ -75,7 +76,7 @@ release:
   prerelease: auto
   header: |
     ## Immortal {{ .Version }}
-    Self-healing engine · your apps never die.
+    Self-healing engine. Your apps never die.
   footer: |
     ---
     **Install:**
@@ -87,16 +88,26 @@ release:
     go install github.com/Nagendhra-web/Immortal/cmd/immortal@{{ .Tag }}
     ```
 
-brews:
-  - name: immortal
-    repository:
-      owner: Nagendhra-web
-      name: homebrew-immortal
-    folder: Formula
-    homepage: "https://github.com/Nagendhra-web/Immortal"
-    description: "Self-healing engine — your apps never die"
-    license: "Apache-2.0"
-    test: |
-      system "#{bin}/immortal", "version"
-    install: |
-      bin.install "immortal"
+# ── Homebrew tap auto-bump (disabled until HOMEBREW_TAP_TOKEN secret is set) ──
+#
+# To enable:
+#   1. Create a fine-grained PAT with Contents: Read & Write scope on the
+#      Nagendhra-web/homebrew-immortal repository.
+#   2. Add it as a repository secret named HOMEBREW_TAP_TOKEN.
+#   3. Uncomment the block below.
+#   4. Tag a new version; GoReleaser will push the formula update.
+#
+# brews:
+#   - name: immortal
+#     repository:
+#       owner: Nagendhra-web
+#       name: homebrew-immortal
+#       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+#     directory: Formula
+#     homepage: "https://github.com/Nagendhra-web/Immortal"
+#     description: "Self-healing engine. Your apps never die."
+#     license: "Apache-2.0"
+#     test: |
+#       system "#{bin}/immortal", "version"
+#     install: |
+#       bin.install "immortal"
