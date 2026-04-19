@@ -14,6 +14,7 @@ import (
 
 	"github.com/immortal-engine/immortal/internal/alert"
 	"github.com/immortal-engine/immortal/internal/api/rest"
+	"github.com/immortal-engine/immortal/internal/web/landing"
 	"github.com/immortal-engine/immortal/internal/collector"
 	"github.com/immortal-engine/immortal/internal/connector"
 	"github.com/immortal-engine/immortal/internal/engine"
@@ -233,10 +234,19 @@ func startCmd() *cobra.Command {
 					}
 				}()
 			}
+			// Top-level mux: REST API + app dashboard share the apiServer
+			// handler; everything else (landing page, assets) goes to the
+			// landing handler. This way the marketing site lives at "/" and
+			// the app at "/dashboard/".
+			rootMux := http.NewServeMux()
+			rootMux.Handle("/api/", apiServer.Handler())
+			rootMux.Handle("/dashboard/", apiServer.Handler())
+			rootMux.Handle("/", landing.Handler())
+
 			handler := middleware.Chain(
 				middleware.Recovery,
 				middleware.CORS("*"),
-			)(apiServer.Handler())
+			)(rootMux)
 
 			go func() {
 				addr := fmt.Sprintf("127.0.0.1:%d", apiPort)
