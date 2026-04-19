@@ -51,6 +51,16 @@ const FAQS = [
 
 const GITHUB_REPO = "Nagendhra-web/Immortal"
 
+// On GitHub Pages the dashboard does not exist (it only runs inside the local
+// binary). Redirect CTAs to the install Quick Start instead of a dead link.
+const IS_PAGES = (import.meta as any).env?.VITE_TARGET === "pages"
+const DASHBOARD_HREF = IS_PAGES
+  ? `https://github.com/${GITHUB_REPO}#quick-start`
+  : "/dashboard/"
+const DASHBOARD_EXTERNAL = IS_PAGES
+  ? { target: "_blank", rel: "noreferrer" }
+  : {}
+
 function useGithubStars() {
   const [stars, setStars] = useState<number | null>(null)
   useEffect(() => {
@@ -120,7 +130,9 @@ export default function App() {
               </a>
             </Button>
             <Button size="sm" asChild>
-              <a href="/dashboard/">Launch Dashboard <ArrowRight className="h-3.5 w-3.5 ml-1.5" /></a>
+              <a href={DASHBOARD_HREF} {...DASHBOARD_EXTERNAL}>
+                {IS_PAGES ? "Install" : "Launch Dashboard"} <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+              </a>
             </Button>
           </div>
         </div>
@@ -143,7 +155,9 @@ export default function App() {
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Button size="lg" asChild>
-              <a href="/dashboard/">Get started <ArrowRight className="h-4 w-4 ml-2" /></a>
+              <a href={DASHBOARD_HREF} {...DASHBOARD_EXTERNAL}>
+                Get started <ArrowRight className="h-4 w-4 ml-2" />
+              </a>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <a href="https://github.com/Nagendhra-web/Immortal" target="_blank" rel="noreferrer">
@@ -292,7 +306,9 @@ export default function App() {
         </Card>
         <div className="mt-8 flex justify-center">
           <Button size="lg" asChild>
-            <a href="/dashboard/">Try the dashboard <ArrowRight className="h-4 w-4 ml-2" /></a>
+            <a href={DASHBOARD_HREF} {...DASHBOARD_EXTERNAL}>
+              {IS_PAGES ? "Install to try it" : "Try the dashboard"} <ArrowRight className="h-4 w-4 ml-2" />
+            </a>
           </Button>
         </div>
       </section>
