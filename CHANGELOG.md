@@ -6,6 +6,12 @@ Immortal follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-04-19
+
+### Fixed
+
+- **Docker publish job**. v0.6.0's first Docker-publish attempt failed with `Cache export is not supported for the docker driver` because `cache-from/to: type=gha` requires the `docker-container` buildx driver. The docker job now runs `docker/setup-qemu-action@v3` and `docker/setup-buildx-action@v3` first, producing a proper multi-arch builder. Multi-arch image (`linux/amd64` + `linux/arm64`) now publishes correctly to `ghcr.io/nagendhra-web/immortal`.
+
 ## [0.6.0] - 2026-04-19
 
 Docker images, honest install story, and hardening based on a post-v0.5 audit.
