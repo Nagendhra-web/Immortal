@@ -1,0 +1,22 @@
+.select {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: var(--btn-h);
+  padding: 0 var(--s-3);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.select:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+.select[aria-expanded="true"] { border-color: var(--accent); }
+
+.select__label { color: var(--text-muted); font-size: var(--fs-xs); }
+.select__value { color: var(--text-strong); font-weight: var(--fw-medium); }
+.select__chevron { color: var(--text-subtle); margin-left: 4px; }

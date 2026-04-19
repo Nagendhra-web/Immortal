@@ -2,14 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/dashboard/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/dashboard/favicon.svg" />
     <title>Immortal — Dashboard</title>
     <meta name="application-name" content="Immortal" />
-    <script type="module" crossorigin src="/dashboard/app.js"></script>
-    <link rel="stylesheet" crossorigin href="/dashboard/app.css">
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="stylesheet" href="/dashboard/tokens.css" />
+    <link rel="stylesheet" href="/dashboard/base.css" />
+    <link rel="stylesheet" href="/dashboard/components/button.css" />
+    <link rel="stylesheet" href="/dashboard/components/badge.css" />
+    <link rel="stylesheet" href="/dashboard/components/input.css" />
+    <link rel="stylesheet" href="/dashboard/components/tabs.css" />
+    <link rel="stylesheet" href="/dashboard/components/tooltip.css" />
+    <link rel="stylesheet" href="/dashboard/components/dialog.css" />
+    <link rel="stylesheet" href="/dashboard/components/popover.css" />
+    <link rel="stylesheet" href="/dashboard/components/toast.css" />
+    <link rel="stylesheet" href="/dashboard/components/sheet.css" />
+    <link rel="stylesheet" href="/dashboard/components/table.css" />
+    <link rel="stylesheet" href="/dashboard/components/select.css" />
+    <link rel="stylesheet" href="/dashboard/components/command-palette.css" />
+    <link rel="stylesheet" href="/dashboard/components/chart.css" />
+    <link rel="stylesheet" href="/dashboard/views/shell.css" />
+
+    <script type="module" src="/dashboard/app.js"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="app" class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Primary navigation"></aside>
+      <header class="topbar" id="topbar" role="banner"></header>
+      <main class="main" id="main" role="main" aria-live="polite"></main>
+    </div>
+    <ol class="toast-region" id="toast-region" aria-live="polite" aria-atomic="false"></ol>
+    <div id="overlay-root"></div>
   </body>
 </html>

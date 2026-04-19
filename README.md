@@ -1,198 +1,286 @@
 <div align="center">
 
-# IMMORTAL
+# Immortal
 
-### Your apps never die.
+### The self-healing engine for modern infrastructure.
 
-The open-source self-healing engine that monitors, detects failures, and auto-heals your applications — with zero configuration.
+Detect failures in milliseconds. Heal them autonomously. Prove every action with a signed, tamper-evident audit trail.
 
-**69 packages | 3 SDKs | 70 test suites | Single binary | Apache 2.0**
+**79 Go packages · 12-view operator dashboard · 3 SDKs · Single binary · Apache 2.0**
 
 [![CI](https://github.com/Nagendhra-web/Immortal/actions/workflows/ci.yml/badge.svg)](https://github.com/Nagendhra-web/Immortal/actions)
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](https://go.dev)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/SDK-TypeScript-3178C6?logo=typescript&logoColor=white)](sdk/typescript)
-[![Python](https://img.shields.io/badge/SDK-Python-3776AB?logo=python&logoColor=white)](sdk/python)
-[![Version](https://img.shields.io/badge/version-0.3.0-green)]()
+[![Release](https://img.shields.io/github/v/release/Nagendhra-web/Immortal?color=00c48c)](https://github.com/Nagendhra-web/Immortal/releases/latest)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Nagendhra-web/Immortal)](https://goreportcard.com/report/github.com/Nagendhra-web/Immortal)
+[![Go Reference](https://pkg.go.dev/badge/github.com/Nagendhra-web/Immortal.svg)](https://pkg.go.dev/github.com/Nagendhra-web/Immortal)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/Nagendhra-web/Immortal?style=social)](https://github.com/Nagendhra-web/Immortal/stargazers)
+
+<p>
+<a href="#quick-start">Install</a> ·
+<a href="#what-it-actually-does">Features</a> ·
+<a href="#the-operator-dashboard">Dashboard</a> ·
+<a href="#sdks">SDKs</a> ·
+<a href="docs/INSTALL.md">Docs</a> ·
+<a href="https://github.com/Nagendhra-web/Immortal/issues">Issues</a>
+</p>
 
 </div>
 
 ---
 
 ```
-Server crashes at 3 AM.
-  Traditional: PagerDuty pages you → you wake up → you SSH in → you restart → 45 min downtime.
-  Immortal:    Detects in 200ms → heals automatically → 0 downtime → you sleep through it.
+3:00 AM.  Prod goes down.
+  Traditional stack:   PagerDuty wakes you. You SSH in. You restart. 45 minutes of downtime.
+  Immortal:            Detects in 200 ms. Heals automatically. Writes a signed receipt.
+                       You sleep through it.
 ```
 
 ---
 
-## What It Actually Does
+## Why Immortal
 
-Immortal is a Go engine that watches your applications and heals them when things break. No magic — just solid engineering.
+Every other layer of your stack has been automated. Deploys, tests, infra, security scans. **Recovery is still manual.** A human is still in the loop at 3 AM, reading stack traces, guessing at root causes.
 
-**The healing loop:**
-```
-Monitor → Detect → Throttle → Deduplicate → Analyze → Heal → Audit
-  ↑                                                          |
-  └──────────────────────────────────────────────────────────┘
-```
+Immortal closes that loop. It is the first open-source engine that combines:
 
-**What's real and tested:**
+- **Reactive healing**: rule-based responses to known failure signatures.
+- **Predictive healing**: linear regression and anomaly detection catch breaches before they happen.
+- **Agentic healing**: ReAct-style Plan > Act > Observe > Re-plan loops for the novel failures your rules miss.
+- **Formal verification**: LTL/CTL properties checked against the system model, with counterexamples when they fail.
+- **Causal inference**: PCMCI root-cause analysis that separates true causes from spurious correlations.
+- **Post-quantum audit trail**: every action is hash-chained, Merkle-rooted, and signed. Tamper-evident end-to-end.
+- **Digital twin**: every healing plan is simulated against a shadow state machine before it touches prod.
 
-| Capability | Package | What it does |
-|---|---|---|
-| **Self-healing** | `engine` | Detect failures, match rules, execute fixes automatically |
-| **Anomaly detection** | `dna` | Learns normal baselines, flags deviations (3-sigma rule) |
-| **Root cause analysis** | `causality` | Traces cascading failures (disk full → DB crash → API timeout) |
-| **Predictive healing** | `predict` | Linear regression on metrics — warns before thresholds breach |
-| **Pattern detection** | `pattern` | Detects recurring failures with sliding time windows |
-| **SLA tracking** | `sla` | Uptime %, violation alerts, worst-service ranking |
-| **Ghost mode** | `engine` | Observe-only mode — recommends but doesn't act |
-| **Time-travel** | `timetravel` | Replay events before a crash to understand what happened |
-| **Audit trail** | `audit` | Immutable log of every action with search/filter |
-| **Dependency graph** | `dependency` | Map service dependencies, analyze blast radius |
-| **Webhook alerts** | `webhook` | HMAC-signed HTTP notifications with retries |
-| **Event throttling** | `throttle` | Blocks event floods (999/1000 duplicates blocked in tests) |
-| **WAF** | `security/firewall` | SQLi, XSS, path traversal, command injection protection |
-| **RASP** | `security/rasp` | Runtime protection against dangerous operations |
-| **Rate limiting** | `security/ratelimit` | Per-IP request throttling |
-| **Anti-scrape** | `security/antiscrape` | Bot and scraper detection |
-| **Secret scanning** | `security/secrets` | Find leaked API keys, tokens, passwords |
-| **Zero-trust auth** | `security/zerotrust` | Service-to-service auth with expiring tokens |
-| **Circuit breaker** | `circuitbreaker` | Stop hammering failing services |
-| **Prometheus export** | `export` | Metrics in Prometheus format |
-| **Notifications** | `notify` | Slack, Discord, console alerts |
-| **Chaos testing** | `chaos` | Inject failures, verify healing works, score effectiveness |
-| **Self-learning** | `autolearn` | Watches successful heals, suggests new rules automatically |
-| **Incident reports** | `incident` | Auto-generated postmortems with timeline, root cause, markdown export |
-| **Capacity forecast** | `capacity` | Multi-metric forecasting, exhaustion date prediction |
-| **Metric correlation** | `correlation` | Pearson correlation, discovers leading indicators across metrics |
-| **Healing playbooks** | `playbook` | Multi-step healing with conditions, retries, and auto-rollback |
-| **Agentic healing loop** | `agentic` | ReAct-style multi-step reasoning — Plan → Act → Observe → Re-plan until resolved |
-| **Post-quantum audit chain** | `pqaudit` | Hash-chained, signed audit ledger with Merkle root; tamper-evident end-to-end |
-| **Digital twin simulator** | `twin` | Simulates healing plans against a shadow state machine; rejects plans that worsen predicted score |
-| **Federated anomaly learning** | `federated` | FedAvg across a fleet of Immortal instances with robust trim + DP noise — raw metrics stay local |
-| **Causal inference** | `causal` | PC-algorithm discovery + do-calculus ACE — identifies *true* root causes, not spurious correlations |
-
----
-
-## Proven in Tests
-
-These aren't hypothetical — every scenario runs in CI:
-
-```
-PASS  TestScenario_APIReturns500_ImmortalHeals     — server broke, Immortal healed it
-PASS  TestScenario_LogErrors_ImmortalDetects        — caught ERROR + FATAL from log tailing
-PASS  TestScenario_CPUAnomaly_DNADetects            — flagged 95% CPU as anomaly (baseline: 44.5%)
-PASS  TestScenario_GhostMode_ObservesOnly           — observed without acting, produced recommendations
-PASS  TestScenario_CascadingFailure_CausalityTracked — traced: disk full → DB crash → API timeout
-PASS  TestScenario_EventFlood_ThrottlePrevents      — blocked 999/1000 duplicate events
-PASS  TestScenario_TimeTravel_ReplayBeforeFailure   — replayed 5 events before crash
-PASS  TestScenario_RESTAPI_QueryWhileRunning        — queried health, metrics, Prometheus while live
-PASS  TestRealWorld_DatabaseDown_AgentRestartsAndVerifies — agentic loop: check → restart → verify → finish
-PASS  TestRealWorld_AttackerTriesToHideAction        — pqaudit Merkle root exposes attempted field mutation
-PASS  TestRealWorld_CascadeFailure_TwinRejectsBadPlan — twin accepts failover:db+restart:api, rejects scale-to-1
-PASS  TestRealWorld_FleetLearnsCPUBaseline           — federated FedAvg resists malicious outlier via trim
-PASS  TestRealWorld_CausalRootCauseBeatsCorrelation  — r=0.83 red herring demoted below true causes
-
-69 packages | 0 failures
-```
+All of it ships as a **single Go binary** with an embedded vanilla-JS operator dashboard. Zero external dependencies. Run it on a Raspberry Pi or a 128-core bare-metal node.
 
 ---
 
 ## Quick Start
 
 ```bash
-# macOS / Linux — one-liner installer (downloads release binary or builds from source)
+# macOS / Linux: one-liner installer (downloads release binary, falls back to go install)
 curl -fsSL https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.sh | bash
 
-# Windows — PowerShell
+# Windows (PowerShell)
 irm https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.ps1 | iex
 
-# Or via Go toolchain (requires Go 1.25+)
+# Go toolchain (Go 1.25+)
 go install github.com/Nagendhra-web/Immortal/cmd/immortal@latest
 
-# Or via Homebrew
+# Homebrew
 brew tap Nagendhra-web/immortal && brew install immortal
 ```
 
 ```bash
-# Start healing
+# Start healing.
 immortal start
 
-# With every advanced feature on
+# With every advanced feature on (twin simulation, agentic reasoning, causal RCA, formal checks).
 immortal start --pqaudit --twin --agentic --causal --topology --formal
 
-# Ghost mode — observe first, heal later
+# Ghost mode: observe first, act later. Produces recommendations without side effects.
 immortal start --ghost
 
-# Watch specific targets
+# Watch specific targets.
 immortal start --watch-url https://myapp.com --watch-process nginx --watch-log /var/log/app.log
 ```
 
-More install options (pre-built binaries, Docker, from source): **[docs/INSTALL.md](docs/INSTALL.md)**
+Then open **http://127.0.0.1:7777/dashboard/** for the operator console and **http://127.0.0.1:7777/** for the landing page.
+
+Full install options (pre-built binaries, Docker, source): [docs/INSTALL.md](docs/INSTALL.md).
+
+---
+
+## The Operator Dashboard
+
+A zero-dependency, vanilla HTML/CSS/JS console embedded directly into the binary. **12 views**, command palette (Cmd/Ctrl+K), real SVG charts, SSE-backed live updates, full keyboard navigation.
+
+**Mission Control**
+- `/overview` : KPI strip, latency + error rate, active incidents, recent heals.
+- `/topology` : force-directed service graph with health, blast-radius, drill-downs.
+- `/audit` : Merkle-anchored log with filter DSL, one-click chain verification.
+- `/terminal` : live log tail with severity filter.
+
+**Intelligence**
+- `/twin` : predictive forecasts with 90% bands, per-service drift + calibration.
+- `/agentic` : ReAct trace viewer (thought / action / observation timeline, replayable).
+- `/causal` : PCMCI DAG with ranked root causes and causal-vs-correlation toggle.
+- `/formal` : model-check results with step-by-step counterexample viewer.
+
+**Authoring**
+- `/planner/nl` : natural-language goal compiles to a dependency graph of operations, each with rationale, pre/post conditions, and rollback.
+- `/planner/economic` : Pareto frontier optimizer (cost vs. p99 latency) with per-service allocation detail.
+
+**Knowledge**
+- `/federation` : federated knowledge graph across peers with cryptographic provenance.
+- `/certificates` : post-quantum signed attestations with verify-now and key rotation.
+
+Built on a three-tier OKLCH design token system. Works from 320 px mobile up to 4K. Accessible by default (keyboard nav, ARIA tablists, focus rings, reduced-motion support).
+
+---
+
+## What It Actually Does
+
+| Capability | Package | Summary |
+|---|---|---|
+| **Self-healing** | `engine` | Detect failures, match rules, execute fixes automatically. |
+| **Anomaly detection** | `dna` | Learns normal baselines, flags 3-sigma deviations. |
+| **Root cause analysis** | `causality` | Traces cascading failures (disk full -> DB crash -> API timeout). |
+| **Predictive healing** | `predict` | Linear regression on metrics. Warns before thresholds breach. |
+| **Pattern detection** | `pattern` | Recurring failures with sliding time windows. |
+| **SLA tracking** | `sla` | Uptime percentage, violation alerts, worst-service ranking. |
+| **Ghost mode** | `engine` | Observe-only mode. Recommends without acting. |
+| **Time-travel** | `timetravel` | Replay events before a crash to understand what happened. |
+| **Audit trail** | `audit` | Immutable log of every action with search and filter. |
+| **Dependency graph** | `dependency` | Map service dependencies, analyze blast radius. |
+| **Webhook alerts** | `webhook` | HMAC-signed HTTP notifications with retries. |
+| **Event throttling** | `throttle` | Blocks event floods (tested: 999 of 1000 duplicates dropped). |
+| **WAF** | `security/firewall` | SQLi, XSS, path traversal, command injection. |
+| **RASP** | `security/rasp` | Runtime protection against dangerous operations. |
+| **Rate limiting** | `security/ratelimit` | Per-IP request throttling. |
+| **Anti-scrape** | `security/antiscrape` | Bot and scraper detection. |
+| **Secret scanning** | `security/secrets` | Find leaked API keys, tokens, passwords. |
+| **Zero-trust auth** | `security/zerotrust` | Service-to-service auth with expiring tokens. |
+| **Circuit breaker** | `circuitbreaker` | Stop hammering failing services. |
+| **Prometheus export** | `export` | Metrics in Prometheus text format. |
+| **Notifications** | `notify` | Slack, Discord, console alerts. |
+| **Chaos testing** | `chaos` | Inject failures, verify healing works, score effectiveness. |
+| **Self-learning** | `autolearn` | Watches successful heals, suggests new rules automatically. |
+| **Incident reports** | `incident` | Auto-generated postmortems (timeline, root cause, markdown export). |
+| **Capacity forecast** | `capacity` | Multi-metric forecasting, exhaustion date prediction. |
+| **Metric correlation** | `correlation` | Pearson correlation. Discovers leading indicators across metrics. |
+| **Healing playbooks** | `playbook` | Multi-step healing with conditions, retries, auto-rollback. |
+| **Agentic healing loop** | `agentic` | ReAct-style Plan > Act > Observe > Re-plan until resolved. |
+| **Post-quantum audit** | `pqaudit` | Hash-chained signed audit ledger with Merkle root. Tamper-evident. |
+| **Digital twin** | `twin` | Simulates healing plans against a shadow state machine. Rejects plans that worsen predicted score. |
+| **Federated learning** | `federated` | FedAvg across a fleet with robust trim plus DP noise. Raw metrics stay local. |
+| **Causal inference** | `causal` | PC-algorithm discovery plus do-calculus ACE. Identifies true root causes, not spurious correlations. |
+| **Formal verification** | `formal` | LTL/CTL model checking with counterexample generation. |
+
+---
+
+## Proven in Tests
+
+Every scenario below runs in CI on every commit:
+
+```
+PASS  TestScenario_APIReturns500_ImmortalHeals            server broke, Immortal healed it
+PASS  TestScenario_LogErrors_ImmortalDetects              caught ERROR + FATAL from log tailing
+PASS  TestScenario_CPUAnomaly_DNADetects                  flagged 95% CPU as anomaly (baseline 44.5%)
+PASS  TestScenario_GhostMode_ObservesOnly                 observed without acting, produced recommendations
+PASS  TestScenario_CascadingFailure_CausalityTracked      traced: disk full -> DB crash -> API timeout
+PASS  TestScenario_EventFlood_ThrottlePrevents            blocked 999/1000 duplicate events
+PASS  TestScenario_TimeTravel_ReplayBeforeFailure         replayed 5 events before crash
+PASS  TestScenario_RESTAPI_QueryWhileRunning              queried health, metrics, Prometheus while live
+PASS  TestRealWorld_DatabaseDown_AgentRestartsAndVerifies agentic loop: check -> restart -> verify -> done
+PASS  TestRealWorld_AttackerTriesToHideAction             pqaudit Merkle root exposes attempted field mutation
+PASS  TestRealWorld_CascadeFailure_TwinRejectsBadPlan     twin accepts failover+restart, rejects scale-to-1
+PASS  TestRealWorld_FleetLearnsCPUBaseline                federated FedAvg resists malicious outlier via trim
+PASS  TestRealWorld_CausalRootCauseBeatsCorrelation       r=0.83 red herring demoted below true causes
+
+79 packages · 0 failures
+```
+
+---
+
+## How It Compares
+
+| | Immortal | Traditional APM | Kubernetes self-heal | Pure alerting |
+|---|:---:|:---:|:---:|:---:|
+| Detects failures | yes | yes | limited | yes |
+| Heals automatically | yes | no | pod-level only | no |
+| Predicts failures | yes | partial | no | no |
+| Agentic reasoning for novel failures | yes | no | no | no |
+| Formal verification of invariants | yes | no | no | no |
+| Causal root-cause (not just correlation) | yes | no | no | no |
+| Signed, post-quantum audit trail | yes | no | no | no |
+| Digital twin simulation before apply | yes | no | no | no |
+| Single binary, zero deps | yes | no (agents, collectors) | no | no |
+| Works offline / air-gapped | yes | no | yes | partial |
+| Open source, Apache 2.0 | yes | no (mostly) | yes | varies |
+
+---
 
 ## CLI
 
 ```bash
 immortal status       # Engine status, uptime, event count
 immortal health       # Detailed service health per service
-immortal logs -f      # Live event stream (like tail -f)
-immortal sla          # SLA report — uptime %, violations
-immortal predict      # Failure predictions with confidence %
+immortal logs -f      # Live event stream (tail -f style)
+immortal sla          # SLA report, uptime percentage, violations
+immortal predict      # Failure predictions with confidence
 immortal patterns     # Recurring failure detection
 immortal audit        # Full audit trail with search
 immortal history      # Healing action history
 immortal recommend    # Ghost mode recommendations
 immortal metrics      # Prometheus metrics
-immortal deps         # Service dependency graph + blast radius
-immortal causality    # Causality graph + root cause tracing
+immortal deps         # Service dependency graph plus blast radius
+immortal causality    # Causality graph plus root cause tracing
 immortal timetravel   # Replay events before a crash
 ```
 
-## REST API (31 endpoints)
+---
 
-All features accessible over HTTP when the engine runs (default port `7777`):
+## REST API
+
+31 endpoints covering health, metrics, events, healing, audit, predictions, incidents, playbooks, and the full v4/v5 advanced surface (twin, agentic, causal, federated, formal, topology). Default port 7777.
 
 <details>
-<summary><b>View all endpoints</b></summary>
+<summary><b>Full endpoint list</b></summary>
 
 | Endpoint | Description |
 |---|---|
-| `GET /api/status` | Engine status, uptime, event/heal counts |
+| `GET /api/status` | Engine status, uptime, event and heal counts |
 | `GET /api/health` | Service health registry |
 | `GET /api/events?type=&source=` | Stored events with filters |
 | `GET /api/healing/history` | Healing action history |
 | `GET /api/recommendations` | Ghost mode recommendations |
-| `GET /api/metrics` | Prometheus metrics (text format) |
+| `GET /api/metrics` | Prometheus metrics |
 | `GET /api/monitor` | Self-monitoring (goroutines, uptime) |
 | `GET /api/dna/baseline` | Learned metric baselines |
-| `GET /api/dna/health-score` | Health score (0.0-1.0) |
+| `GET /api/dna/health-score` | Health score (0.0 to 1.0) |
 | `GET /api/dna/anomaly?metric=&value=` | Anomaly check |
 | `GET /api/patterns` | Recurring failure patterns |
 | `GET /api/predictions` | Failure predictions |
 | `GET /api/sla` | SLA report per service |
-| `GET /api/audit?limit=&action=&q=` | Audit trail with search |
-| `GET /api/dependencies` | Dependency graph + critical path |
+| `GET /api/audit` | Audit trail with search |
+| `GET /api/dependencies` | Dependency graph plus critical path |
 | `GET /api/dependencies/impact?service=` | Blast radius analysis |
 | `GET /api/causality/graph` | Causality graph |
 | `GET /api/causality/root-cause?event_id=` | Root cause chain |
-| `GET /api/timetravel?count=&before=` | Event replay |
+| `GET /api/timetravel` | Event replay |
 | `GET /api/logs/stream` | Live SSE event stream |
 | `GET /api/logs/history` | Recent log entries |
 | `GET /api/chaos/report` | Chaos test results and healing score |
-| `GET /api/autolearn/rules?suggested=true` | Self-learned healing rules |
+| `GET /api/autolearn/rules` | Self-learned healing rules |
 | `GET /api/autolearn/stats` | Learning statistics |
 | `GET /api/incidents` | All incident reports |
 | `GET /api/incidents/active` | Open incidents |
-| `GET /api/capacity` | Capacity forecasts for all metrics |
+| `GET /api/capacity` | Capacity forecasts |
 | `GET /api/capacity/critical?days=7` | Resources exhausting within N days |
-| `GET /api/correlations?metric=X` | Cross-metric correlations and leading indicators |
+| `GET /api/correlations?metric=X` | Cross-metric correlations |
 | `GET /api/playbooks` | Registered healing playbooks |
 | `GET /api/playbooks/history` | Playbook execution history |
+| `GET /api/v4/audit/verify` | Verify PQ audit chain |
+| `GET /api/v4/audit/merkle-root` | Current Merkle root |
+| `GET /api/v4/audit/entries` | Audit entries |
+| `GET /api/v4/twin/simulate` | Simulate a plan against the twin |
+| `GET /api/v4/twin/states` | Twin state snapshots |
+| `GET /api/v4/agentic/run` | Run an agentic investigation |
+| `GET /api/v4/causal/root-cause` | Causal root-cause |
+| `GET /api/v4/federated/snapshot` | Federated snapshot |
+| `GET /api/v5/topology/snapshot` | Topology snapshot |
+| `GET /api/v5/topology/events` | Topology change stream |
+| `GET /api/v5/formal/check` | Formal property check |
+| `GET /api/v5/causal/pcmci` | PCMCI causal discovery |
+| `GET /api/v5/causal/counterfactual` | Counterfactual reasoning |
+| `GET /api/v5/agentic/memory/recall` | Agentic memory recall |
+| `GET /api/v5/agentic/meta-investigate` | Meta-investigation |
+| `GET /api/v5/federated/close` | Federated close |
 
 </details>
+
+---
 
 ## SDKs
 
@@ -207,9 +295,7 @@ const app = new Immortal({ name: 'my-api' });
 app.heal({
   name: 'restart-on-crash',
   when: (e) => e.severity === 'critical',
-  do: async (e) => {
-    console.log('Healing:', e.message);
-  },
+  do: async (e) => { console.log('Healing:', e.message); },
 });
 
 app.start();
@@ -239,8 +325,8 @@ app.start()
 eng, _ := engine.New(engine.Config{DataDir: "/tmp/immortal"})
 
 eng.AddRule(healing.Rule{
-    Name:  "restart-on-crash",
-    Match: healing.MatchSeverity(event.SeverityCritical),
+    Name:   "restart-on-crash",
+    Match:  healing.MatchSeverity(event.SeverityCritical),
     Action: healing.ActionExec("systemctl restart my-service"),
 })
 
@@ -248,39 +334,46 @@ eng.Start()
 ```
 </details>
 
+---
+
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                  AI BRAIN LAYER                     │
-│   Auto-Learning │ Metric Correlation │ Prediction    │
-│   Built-in ML + Optional LLM + Plugins              │
-├─────────────────────────────────────────────────────┤
-│              INTELLIGENCE LAYER                     │
-│   DNA Anomaly Detection │ Pattern Recognition       │
-│   Capacity Forecasting  │ Causality Graph            │
-│   Dependency Mapping    │ Time-Travel Replay         │
-├─────────────────────────────────────────────────────┤
-│            HEALING ORCHESTRATOR                     │
-│   Reactive + Predictive + Autonomous + Ghost        │
-│   Multi-Step Playbooks │ Auto-Rollback │ Consensus   │
-│   Incident Reports │ Audit Trail │ SLA Tracking      │
-├─────────────────────────────────────────────────────┤
-│              CHAOS + VERIFICATION                   │
-│   Fault Injection │ Healing Validation │ Scoring     │
-├─────────────────────────────────────────────────────┤
-│              EXECUTION LAYER                        │
-│   SDK (embed) │ Agent (sidecar) │ CLI │ REST API     │
-├─────────────────────────────────────────────────────┤
-│           UNIVERSAL CONNECTOR MESH                  │
-│   177 connectors — any language/cloud/DB             │
-│   Webhooks │ Slack │ Discord │ Prometheus             │
-└─────────────────────────────────────────────────────┘
++-----------------------------------------------------+
+|                   AI BRAIN LAYER                    |
+|   Auto-Learning / Metric Correlation / Prediction   |
+|   Built-in ML + optional LLM + plugin interface     |
++-----------------------------------------------------+
+|               INTELLIGENCE LAYER                    |
+|   DNA Anomaly / Pattern Recognition / Capacity      |
+|   Causality Graph / Dependency / Time-Travel        |
+|   Digital Twin / Causal Inference / Federated       |
++-----------------------------------------------------+
+|             HEALING ORCHESTRATOR                    |
+|   Reactive / Predictive / Agentic (ReAct)           |
+|   Multi-step Playbooks / Auto-rollback / Consensus  |
+|   Ghost Mode / Incident Reports / SLA Tracking      |
++-----------------------------------------------------+
+|          VERIFICATION + PROVENANCE                  |
+|   Formal Model Checking (LTL/CTL)                   |
+|   Post-Quantum Signed Audit Chain + Merkle Root     |
+|   Chaos Injection / Healing Score                   |
++-----------------------------------------------------+
+|              EXECUTION LAYER                        |
+|   SDK (embed) / Agent (sidecar) / CLI / REST API    |
+|   Embedded operator dashboard (vanilla HTML/CSS/JS) |
++-----------------------------------------------------+
+|           UNIVERSAL CONNECTOR MESH                  |
+|   Any language, any cloud, any database             |
+|   Webhooks / Slack / Discord / Prometheus           |
++-----------------------------------------------------+
 ```
+
+---
 
 ## Use Individual Packages
 
-Every package works **standalone** — import just what you need:
+Every package works standalone. Import only what you need:
 
 ```bash
 go get github.com/Nagendhra-web/Immortal
@@ -294,16 +387,16 @@ import "github.com/Nagendhra-web/Immortal/internal/dna"
 
 d := dna.New("api-server")
 
-// Feed normal metrics — it learns automatically
+// Feed normal metrics. It learns automatically.
 for i := 0; i < 100; i++ {
     d.Record("response_time_ms", 120.0 + rand.Float64()*30)
 }
 
-d.IsAnomaly("response_time_ms", 500.0) // true — way above normal
-d.IsAnomaly("response_time_ms", 125.0) // false — within normal
+d.IsAnomaly("response_time_ms", 500.0) // true, far above normal
+d.IsAnomaly("response_time_ms", 125.0) // false, within normal
 
 score := d.HealthScore(map[string]float64{"response_time_ms": 500.0})
-// score ≈ 0.15 — something is very wrong
+// score about 0.15, something is very wrong
 ```
 </details>
 
@@ -326,6 +419,67 @@ fmt.Printf("Breach in: %s (confidence: %.0f%%)\n", p.TimeToThreshold, p.Confiden
 </details>
 
 <details>
+<summary><b>Digital Twin (plan validation)</b></summary>
+
+```go
+import "github.com/Nagendhra-web/Immortal/internal/twin"
+
+t := twin.New()
+t.SnapshotState(currentMetrics)
+
+plan := twin.Plan{Actions: []string{"failover:db", "restart:api"}}
+if t.Simulate(plan).ImprovesHealth() {
+    engine.ApplyPlan(plan)   // accepted
+} else {
+    fmt.Println("twin rejected the plan")
+}
+```
+</details>
+
+<details>
+<summary><b>Causal Inference (PC + ACE)</b></summary>
+
+```go
+import "github.com/Nagendhra-web/Immortal/internal/causal"
+
+c := causal.New()
+c.Record("cpu", 0.8);     c.Record("latency", 240)
+c.Record("cpu", 0.2);     c.Record("latency", 80)
+// ... time series keep coming ...
+
+graph := c.DiscoverPC()              // PC-algorithm DAG
+ace   := c.AverageCausalEffect("cpu", "latency")
+fmt.Printf("ACE(cpu -> latency) = %.3f\n", ace)
+```
+</details>
+
+<details>
+<summary><b>Post-Quantum Audit Chain</b></summary>
+
+```go
+import "github.com/Nagendhra-web/Immortal/internal/pqaudit"
+
+chain := pqaudit.New()
+chain.Append(pqaudit.Entry{Kind: "heal", Service: "payments", Result: "ok"})
+root := chain.MerkleRoot()
+ok   := chain.Verify()   // false if anyone has mutated a historical entry
+```
+</details>
+
+<details>
+<summary><b>Federated Anomaly Learning</b></summary>
+
+```go
+import "github.com/Nagendhra-web/Immortal/internal/federated"
+
+fl := federated.New(federated.Config{DP: true, Trim: 0.2})
+fl.AddPeer("node-a", localModelA)
+fl.AddPeer("node-b", localModelB)
+global := fl.FedAvg()   // robust trimmed mean + DP noise, raw data never leaves a node
+```
+</details>
+
+<details>
 <summary><b>SLA Tracking</b></summary>
 
 ```go
@@ -333,17 +487,16 @@ import "github.com/Nagendhra-web/Immortal/internal/sla"
 
 tracker := sla.New()
 tracker.SetTarget("api-server", 99.9)
-
 tracker.RecordStatus("api-server", true)
-tracker.RecordStatus("api-server", false) // outage
+tracker.RecordStatus("api-server", false)
 
-tracker.Uptime("api-server")      // uptime %
-tracker.IsViolating("api-server") // true if below target
+tracker.Uptime("api-server")
+tracker.IsViolating("api-server")
 ```
 </details>
 
 <details>
-<summary><b>Dependency Graph</b></summary>
+<summary><b>Dependency Graph + Blast Radius</b></summary>
 
 ```go
 import "github.com/Nagendhra-web/Immortal/internal/dependency"
@@ -353,74 +506,8 @@ g.AddDependency("api", "database")
 g.AddDependency("worker", "database")
 
 g.TransitiveDependents("database") // ["api", "worker"]
-g.ImpactOf("database")            // 2 services affected
+g.ImpactOf("database")             // 2 services affected
 g.CriticalPath()                   // sorted by impact
-```
-</details>
-
-<details>
-<summary><b>WAF (Web Application Firewall)</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/security/firewall"
-
-fw := firewall.New()
-http.ListenAndServe(":8080", fw.Middleware(yourRouter))
-
-result := fw.Analyze(userInput)
-if result.Blocked {
-    fmt.Printf("Blocked: %s\n", result.ThreatType) // sql_injection, xss, etc.
-}
-```
-</details>
-
-<details>
-<summary><b>Webhook Sender</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/webhook"
-
-sender := webhook.New(webhook.Config{
-    URL:    "https://your-endpoint.com/hook",
-    Secret: "hmac-secret", // SHA-256 signed
-})
-
-sender.Send(webhook.Payload{
-    Event: "service_down", Severity: "critical",
-    Source: "api-server", Message: "HTTP 500",
-})
-```
-</details>
-
-<details>
-<summary><b>Audit Log</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/audit"
-
-log := audit.New(10000)
-log.Log("heal", "healer", "api-server", "restarted after crash", true)
-
-log.Entries(10)              // last 10
-log.EntriesByAction("heal")  // filter by action
-log.Search("deploy")         // full-text search
-```
-</details>
-
-<details>
-<summary><b>Pattern Detection</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/pattern"
-
-det := pattern.New(5*time.Minute, 3) // 3+ occurrences in 5 min = pattern
-
-det.Record("api:connection timeout", "critical")
-det.Record("api:connection timeout", "critical")
-det.Record("api:connection timeout", "critical")
-
-det.IsRepeating("api:connection timeout") // true
-det.Patterns()                            // sorted by frequency
 ```
 </details>
 
@@ -430,108 +517,12 @@ det.Patterns()                            // sorted by frequency
 ```go
 import "github.com/Nagendhra-web/Immortal/internal/chaos"
 
-// Create a chaos engine that injects events into your healing engine
 ch := chaos.New(engine.Ingest)
-
-// Inject faults and see if your healing rules catch them
 ch.InjectHTTPError("api-server", 500)
 ch.InjectProcessCrash("nginx")
 ch.InjectCPUSpike(95.0)
 
-// Record whether each fault was detected and healed
-ch.RecordResult(fault.ID, true, 200*time.Millisecond, true, 500*time.Millisecond)
-
-// Score your healing effectiveness (0.0 to 1.0)
 fmt.Printf("Healing score: %.0f%%\n", ch.Score()*100)
-```
-</details>
-
-<details>
-<summary><b>Self-Learning Healer</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/autolearn"
-
-learner := autolearn.New(5) // suggest rules after 5 occurrences
-
-// The engine feeds successful heals automatically
-learner.Record("restart-rule", "api-server", "crash", "critical", true)
-// ... after enough observations ...
-
-// Get suggested rules the engine learned on its own
-suggested := learner.SuggestedRules()
-for _, rule := range suggested {
-    fmt.Printf("Suggested: %s (confidence: %.0f%%)\n", rule.Pattern, rule.Confidence*100)
-}
-```
-</details>
-
-<details>
-<summary><b>Incident Reports</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/incident"
-
-mgr := incident.New()
-
-// Open an incident
-inc := mgr.Open("API Outage", "critical")
-mgr.AddEvent(inc.ID, "api-server", "critical", "HTTP 500 errors")
-mgr.AddEvent(inc.ID, "database", "error", "connection pool exhausted")
-mgr.SetRootCause(inc.ID, "database connection limit reached")
-mgr.AddAffectedService(inc.ID, "api-server")
-mgr.AddHealingAction(inc.ID, "restarted connection pool")
-mgr.Resolve(inc.ID, "Connection pool restarted, API recovered")
-
-// Auto-generate a markdown postmortem
-fmt.Println(mgr.GenerateMarkdown(inc.ID))
-```
-</details>
-
-<details>
-<summary><b>Capacity Forecasting</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/capacity"
-
-planner := capacity.New()
-planner.SetCapacity("disk_gb", 500) // 500 GB total
-
-// Feed observations over time
-planner.Record("disk_gb", 200)
-planner.Record("disk_gb", 220)
-planner.Record("disk_gb", 245)
-
-f := planner.Forecast("disk_gb")
-fmt.Printf("Trend: %s, Growth: %.1f GB/hour\n", f.Trend, f.GrowthRate)
-fmt.Printf("Disk full in: %.0f days\n", f.DaysUntilFull)
-
-// Find resources running out within 7 days
-critical := planner.Critical(7)
-```
-</details>
-
-<details>
-<summary><b>Metric Correlation</b></summary>
-
-```go
-import "github.com/Nagendhra-web/Immortal/internal/correlation"
-
-engine := correlation.New()
-
-// Feed metrics over time
-for i := 0; i < 100; i++ {
-    engine.Record("cpu", float64(i)*2)
-    engine.Record("memory", float64(i)*1.5)
-    engine.Record("latency", float64(i)*3)
-}
-
-// Discover hidden relationships
-all := engine.AllCorrelations() // sorted by strength
-
-// Find leading indicators for a metric
-leaders := engine.LeadingIndicators("latency")
-// "memory spikes 5 minutes before latency increases"
 ```
 </details>
 
@@ -542,82 +533,100 @@ leaders := engine.LeadingIndicators("latency")
 import "github.com/Nagendhra-web/Immortal/internal/playbook"
 
 runner := playbook.New()
-
 runner.Register("deploy-recovery", []playbook.Step{
-    {
-        Name:     "backup-db",
-        Action:   func() error { /* backup */ return nil },
-        Rollback: func() error { /* restore */ return nil },
-    },
-    {
-        Name:    "run-migration",
-        Action:  func() error { /* migrate */ return nil },
-        Retries: 3, // retry up to 3 times
-    },
-    {
-        Name:      "restart-service",
-        Action:    func() error { /* restart */ return nil },
-        Condition: func() bool { return isServiceDown() },
-    },
+    {Name: "backup-db", Action: backupDB, Rollback: restoreDB},
+    {Name: "run-migration", Action: migrate, Retries: 3},
+    {Name: "restart-service", Action: restart, Condition: func() bool { return isServiceDown() }},
 })
 
-// Execute (auto-rollback if any step fails)
-exec, err := runner.Run("deploy-recovery")
-
-// Or dry-run first
-exec, _ = runner.DryRun("deploy-recovery")
+exec, err := runner.Run("deploy-recovery") // auto-rollback on failure
 ```
 </details>
 
 <details>
-<summary><b>More: Circuit Breaker, Rate Limiter, Secret Scanner, RASP, Anti-Scrape, Zero-Trust, Backoff, Dedup, Causality, Logger, Metrics, Notifications, Prometheus</b></summary>
+<summary><b>More: WAF, RASP, Rate Limiter, Secret Scanner, Webhook, Audit, Pattern, Correlation, Capacity, Incident, Zero-Trust, Circuit Breaker</b></summary>
 
-See the [full package list](internal/) — each one works independently with zero dependencies on the engine.
+Browse [internal/](internal/) for the full list. Every package works independently with no dependency on the engine.
 </details>
+
+---
 
 ## Project Structure
 
 ```
-cmd/immortal/        CLI entrypoint
+cmd/immortal/          CLI entrypoint
 internal/
-  engine/            Core healing orchestrator
-  dna/               Anomaly detection (learns baselines)
-  causality/         Root cause analysis graph
-  predict/           Predictive healing (linear regression)
-  pattern/           Recurring failure detection
-  sla/               SLA tracking per service
-  audit/             Immutable audit log
-  dependency/        Service dependency graph
-  webhook/           HMAC-signed HTTP notifications
-  healing/           Healing rules and execution
-  chaos/             Chaos testing (fault injection + scoring)
-  autolearn/         Self-learning healer (auto-suggests rules)
-  incident/          Incident report generator (auto postmortem)
-  capacity/          Capacity forecasting (exhaustion prediction)
-  correlation/       Cross-metric correlation (leading indicators)
-  playbook/          Multi-step healing playbooks (auto-rollback)
-  security/          WAF, RASP, rate limiter, anti-scrape, secrets, zero-trust
-  api/rest/          REST API server (31 endpoints)
-  cli/               CLI commands (16 commands)
-  ... and 30+ more packages
+  engine/              Core healing orchestrator
+  agentic/             ReAct-style reasoning loop
+  twin/                Digital twin simulator
+  causal/              PC-algorithm + do-calculus
+  federated/           FedAvg with DP and robust trim
+  formal/              LTL/CTL model checker
+  pqaudit/             Post-quantum audit chain
+  dna/                 Anomaly detection
+  causality/           Causality graph
+  predict/             Predictive healing
+  pattern/             Recurring failure detection
+  sla/                 SLA tracking
+  audit/               Immutable audit log
+  dependency/          Service dependency graph
+  webhook/             HMAC-signed notifications
+  healing/             Rules and execution
+  chaos/               Fault injection + scoring
+  autolearn/           Self-learning healer
+  incident/            Auto postmortem generator
+  capacity/            Capacity forecasting
+  correlation/         Cross-metric correlation
+  playbook/            Multi-step healing with rollback
+  security/            WAF, RASP, rate limiter, anti-scrape, secrets, zero-trust
+  api/rest/            REST API server
+  api/dashboard/       Embedded operator dashboard (vanilla JS, zero deps)
+  cli/                 CLI commands
+  ... and 50+ more packages
 sdk/
-  typescript/        Node.js SDK
-  python/            Python SDK
+  typescript/          Node SDK
+  python/              Python SDK
+  go/                  Go SDK
 ```
 
-## Contributing
+---
 
-Contributions welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
+## Community and Contributing
+
+- **Star** the repo if Immortal helps you. It genuinely helps us reach more operators.
+- **Issues**: bug reports and feature requests at [github.com/Nagendhra-web/Immortal/issues](https://github.com/Nagendhra-web/Immortal/issues).
+- **Discussions**: architecture and use-case conversations at [github.com/Nagendhra-web/Immortal/discussions](https://github.com/Nagendhra-web/Immortal/discussions).
+- **Pull requests**: please read [CONTRIBUTING.md](CONTRIBUTING.md). Small, focused PRs get merged fastest.
+
+---
+
+## Roadmap Highlights
+
+- [x] Post-quantum audit chain with Merkle root
+- [x] Digital twin plan simulation
+- [x] Agentic ReAct healing loop
+- [x] PCMCI causal root-cause
+- [x] Federated anomaly learning with DP
+- [x] LTL/CTL formal verification
+- [x] Vanilla-JS operator dashboard (12 views, command palette, SVG charts)
+- [ ] Native Kubernetes operator
+- [ ] Remote-write support for Mimir, VictoriaMetrics, Thanos
+- [ ] eBPF-based zero-overhead syscall observer
+- [ ] OpenTelemetry trace ingest
+
+See [open milestones](https://github.com/Nagendhra-web/Immortal/milestones) for details.
+
+---
 
 ## License
 
-[Apache 2.0](LICENSE) — free forever, no restrictions.
+[Apache 2.0](LICENSE). Free forever, commercial use allowed, no restrictions.
 
 ---
 
 <div align="center">
 
-**[Documentation](docs/) · [Design Spec](docs/superpowers/specs/)**
+**[Install](docs/INSTALL.md) · [Documentation](docs/) · [Releases](https://github.com/Nagendhra-web/Immortal/releases) · [Report a bug](https://github.com/Nagendhra-web/Immortal/issues/new)**
 
 *Built to keep your apps alive.*
 

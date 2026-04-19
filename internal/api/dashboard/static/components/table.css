@@ -1,0 +1,64 @@
+.table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-inset);
+}
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--fs-sm);
+}
+.table thead th {
+  position: sticky; top: 0;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+  z-index: 1;
+}
+.table thead th[data-sortable] { cursor: pointer; }
+.table thead th[data-sortable]:hover { color: var(--text); }
+.table thead th[data-sort]::after {
+  content: "";
+  display: inline-block;
+  width: 0; height: 0;
+  margin-left: 6px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  vertical-align: middle;
+  border-top: 5px solid currentColor;
+}
+.table thead th[data-sort="desc"]::after { border-top: 0; border-bottom: 5px solid currentColor; }
+
+.table tbody td {
+  padding: 0 var(--s-3);
+  height: var(--table-row-h);
+  border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+  color: var(--text);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+.table tbody tr:hover td { background: var(--bg-hover); }
+.table tbody tr[data-active="true"] td { background: color-mix(in oklab, var(--accent) 8%, transparent); }
+.table tbody tr[data-rowlink] { cursor: pointer; }
+
+.table__num { font-family: var(--font-mono); text-align: right; }
+.table__dim { color: var(--text-muted); }
+
+.table tbody tr:focus-visible { outline: none; }
+.table tbody tr:focus-visible td {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  box-shadow: inset 2px 0 0 var(--accent);
+}

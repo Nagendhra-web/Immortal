@@ -1,0 +1,167 @@
+/* Tokens — tier 1 primitives, tier 2 semantics, tier 3 components. */
+/* All tokens are CSS custom properties. Swap :root for runtime theming. */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Tier 1: Primitives ──────────────────────────────────────────────── */
+
+  /* Ink ramp (backgrounds → text). OKLCH w/ HSL fallbacks. */
+  --ink-0:  oklch(0.09 0.012 252);
+  --ink-1:  oklch(0.12 0.015 252);
+  --ink-2:  oklch(0.16 0.018 252);
+  --ink-3:  oklch(0.22 0.020 252);
+  --ink-4:  oklch(0.30 0.020 252);
+  --ink-5:  oklch(0.42 0.018 252);
+  --ink-6:  oklch(0.58 0.015 252);
+  --ink-7:  oklch(0.70 0.012 252);
+  --ink-8:  oklch(0.82 0.010 252);
+  --ink-9:  oklch(0.92 0.006 252);
+  --ink-10: oklch(0.98 0.004 252);
+
+  /* Signals — status + domain hues. */
+  --signal-green:  oklch(0.74 0.18 148);
+  --signal-amber:  oklch(0.80 0.17 78);
+  --signal-red:    oklch(0.68 0.22 25);
+  --signal-cyan:   oklch(0.78 0.14 210);
+  --signal-violet: oklch(0.70 0.20 295);
+  --signal-lime:   oklch(0.82 0.18 130);
+  --signal-pink:   oklch(0.72 0.22 0);
+  --signal-blue:   oklch(0.66 0.20 258);
+
+  /* Spacing — 4px base. */
+  --s-0: 0;
+  --s-1: 4px;  --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-5: 20px; --s-6: 24px;  --s-7: 28px;  --s-8: 32px;
+  --s-10: 40px; --s-12: 48px; --s-16: 64px; --s-20: 80px;
+
+  /* Radius. */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+
+  /* Type. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-2xs: 10px;
+  --fs-xs:  11px;
+  --fs-sm:  12px;
+  --fs-base: 13px;
+  --fs-md:  14px;
+  --fs-lg:  16px;
+  --fs-xl:  20px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
+
+  --lh-tight: 1.15;
+  --lh-snug:  1.35;
+  --lh-normal: 1.55;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-semibold: 600;
+  --fw-bold:    700;
+
+  /* Motion. */
+  --dur-fast: 120ms;
+  --dur-med:  200ms;
+  --dur-slow: 320ms;
+  --ease:     cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in:  cubic-bezier(0.4, 0, 1, 1);
+
+  /* Shadow / elevation. */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 6px 18px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 18px 48px rgb(0 0 0 / 0.6);
+  --shadow-inset: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+
+  /* ── Tier 2: Semantics ───────────────────────────────────────────────── */
+
+  --bg:             var(--ink-0);
+  --bg-card:        var(--ink-1);
+  --bg-elevated:    var(--ink-2);
+  --bg-hover:       color-mix(in oklab, var(--ink-2) 70%, transparent);
+  --bg-active:      var(--ink-3);
+  --bg-input:       color-mix(in oklab, var(--ink-1) 70%, transparent);
+
+  --border:         color-mix(in oklab, var(--ink-4) 60%, transparent);
+  --border-strong:  var(--ink-4);
+  --border-muted:   color-mix(in oklab, var(--ink-3) 70%, transparent);
+
+  --text:           var(--ink-8);
+  --text-muted:     var(--ink-6);
+  --text-subtle:    var(--ink-5);
+  --text-strong:    var(--ink-10);
+  --text-inverse:   var(--ink-0);
+
+  --accent:         var(--signal-cyan);
+  --accent-muted:   color-mix(in oklab, var(--signal-cyan) 20%, transparent);
+  --accent-hover:   color-mix(in oklab, var(--signal-cyan) 80%, white 20%);
+
+  --ok:             var(--signal-green);
+  --warn:           var(--signal-amber);
+  --err:            var(--signal-red);
+  --info:           var(--signal-cyan);
+
+  --focus-ring:     0 0 0 2px color-mix(in oklab, var(--accent) 60%, transparent);
+
+  /* ── Tier 3: Component ───────────────────────────────────────────────── */
+
+  --btn-h:       32px;
+  --btn-h-sm:    26px;
+  --btn-h-lg:    38px;
+  --input-h:     32px;
+  --input-h-lg:  38px;
+
+  --dialog-w:    560px;
+  --cmdk-w:      640px;
+  --tooltip-max: 280px;
+
+  --sheet-w:     480px;
+  --sidebar-w:   232px;
+  --topbar-h:    52px;
+
+  --table-row-h: 36px;
+  --toast-w:     360px;
+
+  /* Chart-specific tokens, consumed by chart.js via getComputedStyle. */
+  --chart-grid:       color-mix(in oklab, var(--ink-4) 30%, transparent);
+  --chart-axis:       var(--ink-5);
+  --chart-label:      var(--ink-6);
+  --chart-series-1:   var(--signal-cyan);
+  --chart-series-2:   var(--signal-lime);
+  --chart-series-3:   var(--signal-violet);
+  --chart-series-4:   var(--signal-amber);
+  --chart-series-5:   var(--signal-pink);
+  --chart-series-6:   var(--signal-blue);
+}
+
+/* Light-mode skin — a single tier-2 swap. Not wired to a toggle yet. */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg:           oklch(0.99 0.004 252);
+  --bg-card:      oklch(0.97 0.006 252);
+  --bg-elevated:  oklch(0.94 0.008 252);
+  --bg-hover:     oklch(0.93 0.010 252);
+  --bg-active:    oklch(0.90 0.012 252);
+  --bg-input:     oklch(0.96 0.006 252);
+  --border:       oklch(0.85 0.012 252);
+  --border-strong: oklch(0.75 0.014 252);
+  --border-muted:  oklch(0.90 0.010 252);
+  --text:         oklch(0.22 0.02 252);
+  --text-muted:   oklch(0.42 0.018 252);
+  --text-subtle:  oklch(0.55 0.015 252);
+  --text-strong:  oklch(0.12 0.02 252);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0.01ms;
+    --dur-med:  0.01ms;
+    --dur-slow: 0.01ms;
+  }
+}

@@ -1,0 +1,19 @@
+.tooltip {
+  position: fixed;
+  z-index: 9000;
+  max-width: var(--tooltip-max);
+  padding: 6px 10px;
+  background: var(--ink-2);
+  color: var(--text-strong);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  pointer-events: none;
+  white-space: pre-line;
+}
+.tooltip[data-visible="true"] { opacity: 1; transform: translateY(0); }

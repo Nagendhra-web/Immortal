@@ -1,0 +1,77 @@
+.cmdk {
+  width: min(var(--cmdk-w), calc(100vw - 32px));
+  max-height: 72vh;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.cmdk::backdrop {
+  background: color-mix(in oklab, black 50%, transparent);
+  backdrop-filter: blur(4px);
+}
+.cmdk__input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.cmdk__input-row__icon { color: var(--text-subtle); flex-shrink: 0; }
+.cmdk__input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: var(--text-strong);
+  font-size: var(--fs-md);
+  height: 28px;
+  outline: none;
+}
+.cmdk__input::placeholder { color: var(--text-subtle); }
+.cmdk__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--s-1) var(--s-1) var(--s-2) var(--s-1);
+  overflow: auto;
+  max-height: calc(72vh - 110px);
+}
+.cmdk__group-label {
+  padding: var(--s-3) var(--s-3) 2px;
+  font-size: var(--fs-2xs);
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--fw-medium);
+}
+.cmdk__item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: var(--text);
+  gap: var(--s-3);
+}
+.cmdk__item[aria-selected="true"] {
+  background: var(--bg-hover);
+  color: var(--text-strong);
+}
+.cmdk__item__title { display: flex; align-items: center; gap: 8px; }
+.cmdk__item__shortcut { display: inline-flex; gap: 4px; }
+.cmdk__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-4);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-2xs);
+  color: var(--text-muted);
+  background: color-mix(in oklab, var(--bg) 30%, transparent);
+}
+.cmdk__footer__item { display: inline-flex; align-items: center; gap: 6px; }
+.cmdk__empty { padding: 32px; text-align: center; color: var(--text-muted); font-size: var(--fs-sm); }

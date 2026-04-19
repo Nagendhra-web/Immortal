@@ -1,0 +1,41 @@
+.dialog {
+  width: min(var(--dialog-w), calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.dialog::backdrop {
+  background: color-mix(in oklab, black 60%, transparent);
+  backdrop-filter: blur(4px);
+  animation: fade-in var(--dur-med) var(--ease);
+}
+.dialog[open]  { animation: dialog-in var(--dur-med) var(--ease); }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--border);
+}
+.dialog__title { font-size: var(--fs-md); font-weight: var(--fw-semibold); color: var(--text-strong); }
+.dialog__body  { padding: var(--s-5); overflow: auto; max-height: calc(100vh - 220px); }
+.dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  border-top: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg) 30%, transparent);
+}

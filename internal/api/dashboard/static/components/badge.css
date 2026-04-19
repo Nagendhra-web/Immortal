@@ -1,0 +1,28 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in oklab, var(--ink-5) 18%, transparent);
+  color: var(--ink-8);
+  border: 1px solid color-mix(in oklab, var(--ink-5) 30%, transparent);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.badge--ok      { background: color-mix(in oklab, var(--ok)   16%, transparent); color: var(--ok);   border-color: color-mix(in oklab, var(--ok)   30%, transparent); }
+.badge--warn    { background: color-mix(in oklab, var(--warn) 18%, transparent); color: var(--warn); border-color: color-mix(in oklab, var(--warn) 32%, transparent); }
+.badge--err     { background: color-mix(in oklab, var(--err)  18%, transparent); color: var(--err);  border-color: color-mix(in oklab, var(--err)  32%, transparent); }
+.badge--info    { background: color-mix(in oklab, var(--signal-cyan)   18%, transparent); color: var(--signal-cyan);   border-color: color-mix(in oklab, var(--signal-cyan)   32%, transparent); }
+.badge--violet  { background: color-mix(in oklab, var(--signal-violet) 18%, transparent); color: var(--signal-violet); border-color: color-mix(in oklab, var(--signal-violet) 32%, transparent); }
+.badge--lime    { background: color-mix(in oklab, var(--signal-lime)   18%, transparent); color: var(--signal-lime);   border-color: color-mix(in oklab, var(--signal-lime)   32%, transparent); }
+.badge--pink    { background: color-mix(in oklab, var(--signal-pink)   18%, transparent); color: var(--signal-pink);   border-color: color-mix(in oklab, var(--signal-pink)   32%, transparent); }
+
+.badge--solid   { background: var(--text-strong); color: var(--ink-0); border-color: var(--text-strong); }
+.badge--outline { background: transparent; }

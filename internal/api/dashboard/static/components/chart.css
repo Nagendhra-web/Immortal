@@ -1,0 +1,72 @@
+.chart {
+  position: relative;
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  color: var(--chart-label);
+}
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.chart__axis-line { stroke: var(--chart-grid); stroke-width: 1; }
+.chart__grid      { stroke: var(--chart-grid); stroke-width: 1; stroke-dasharray: 2 3; }
+.chart__label     { fill: var(--chart-label); font-size: 10px; }
+.chart__tick      { fill: var(--chart-label); font-size: 10px; }
+
+.chart__series { fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.chart__series--dashed { stroke-dasharray: 4 3; }
+.chart__area { opacity: 0.18; }
+.chart__dot  { fill: var(--bg); stroke-width: 1.6; }
+
+.chart__bar { rx: 2; }
+
+.chart__crosshair {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.chart__tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--ink-2);
+  color: var(--text-strong);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  font-size: var(--fs-xs);
+  box-shadow: var(--shadow-md);
+  min-width: 140px;
+  max-width: 320px;
+  transform: translate(-50%, -110%);
+  white-space: nowrap;
+  z-index: 10;
+}
+.chart__tooltip__title { font-weight: var(--fw-semibold); margin-bottom: 4px; color: var(--text-strong); }
+.chart__tooltip__row { display: flex; align-items: center; gap: 8px; justify-content: space-between; font-family: var(--font-mono); }
+.chart__tooltip__swatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+
+.chart__legend {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.chart__legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.chart__legend__swatch { width: 10px; height: 10px; border-radius: 2px; }
+
+/* Sparkline — inline, tiny. */
+.sparkline { display: inline-block; width: 100%; height: 100%; }
+.sparkline path { fill: none; stroke-width: 1.4; }
+.sparkline .area { fill: currentColor; opacity: 0.18; stroke: none; }
+
+/* Graph (force-layout node/edge). */
+.graph__edge { stroke: var(--chart-grid); stroke-width: 1.2; fill: none; }
+.graph__edge--active { stroke: var(--accent); stroke-width: 2; }
+.graph__edge-label { fill: var(--chart-label); font-size: 10px; }
+.graph__node { stroke: var(--bg); stroke-width: 2; cursor: pointer; }
+.graph__node-label { fill: var(--text); font-size: 11px; font-weight: 500; pointer-events: none; }
+
+/* Heatmap cells. */
+.heatmap__cell { stroke: var(--bg); stroke-width: 1; }

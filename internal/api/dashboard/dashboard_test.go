@@ -30,7 +30,7 @@ func TestDashboardHandler_ServesIndexHTML(t *testing.T) {
 
 func TestDashboardHandler_ServesCSS(t *testing.T) {
 	h := dashboard.Handler()
-	req := httptest.NewRequest(http.MethodGet, "/dashboard/app.css", nil)
+	req := httptest.NewRequest(http.MethodGet, "/dashboard/tokens.css", nil)
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 

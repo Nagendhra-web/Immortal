@@ -1,0 +1,103 @@
+.field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  min-width: 0;
+}
+.field__label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.02em;
+}
+.field__hint {
+  font-size: var(--fs-xs);
+  color: var(--text-subtle);
+}
+.field__error {
+  font-size: var(--fs-xs);
+  color: var(--err);
+}
+
+.input, .textarea {
+  height: var(--input-h);
+  padding: 0 var(--s-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text-strong);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  width: 100%;
+  min-width: 0;
+}
+.input::placeholder, .textarea::placeholder { color: var(--text-subtle); }
+.input:hover, .textarea:hover { border-color: var(--border-strong); }
+.input:focus, .textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+
+.textarea {
+  height: auto;
+  padding: var(--s-3);
+  line-height: var(--lh-snug);
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-sans);
+}
+
+.input--mono { font-family: var(--font-mono); }
+.input--lg { height: var(--input-h-lg); font-size: var(--fs-md); }
+
+/* Input with leading icon. */
+.input-group {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+.input-group__icon {
+  position: absolute;
+  left: var(--s-3);
+  color: var(--text-subtle);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+.input-group .input { padding-left: var(--s-8); }
+.input-group__suffix {
+  position: absolute;
+  right: var(--s-2);
+  color: var(--text-subtle);
+  font-size: var(--fs-xs);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+/* Segmented / toggle. */
+.segmented {
+  display: inline-flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 2px;
+  gap: 2px;
+}
+.segmented button {
+  height: calc(var(--btn-h) - 6px);
+  padding: 0 var(--s-3);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--r-md) - 2px);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  font-weight: var(--fw-medium);
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.segmented button[aria-pressed="true"] {
+  background: var(--bg-elevated);
+  color: var(--text-strong);
+}
+.segmented button:hover { color: var(--text); }

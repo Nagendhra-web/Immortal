@@ -1,0 +1,112 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: var(--btn-h);
+  padding: 0 var(--s-4);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+.btn:hover   { background: var(--bg-hover); }
+.btn:active  { transform: translateY(0.5px); }
+.btn[disabled], .btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.btn--sm { height: var(--btn-h-sm); font-size: var(--fs-xs); padding: 0 var(--s-3); }
+.btn--lg { height: var(--btn-h-lg); font-size: var(--fs-md); padding: 0 var(--s-5); }
+
+.btn--primary {
+  background: var(--text-strong);
+  color: var(--ink-0);
+  border-color: var(--text-strong);
+}
+.btn--primary:hover {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.btn--accent {
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.btn--accent:hover {
+  background: color-mix(in oklab, var(--accent) 28%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+}
+
+.btn--secondary {
+  border-color: var(--border-strong);
+  background: var(--bg-card);
+}
+.btn--secondary:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+
+.btn--ghost { color: var(--text-muted); }
+.btn--ghost:hover { color: var(--text); background: var(--bg-hover); }
+
+.btn--danger {
+  background: color-mix(in oklab, var(--err) 16%, transparent);
+  color: var(--err);
+  border-color: color-mix(in oklab, var(--err) 40%, transparent);
+}
+.btn--danger:hover { background: color-mix(in oklab, var(--err) 26%, transparent); }
+
+.btn--icon {
+  width: var(--btn-h);
+  padding: 0;
+  color: var(--text-muted);
+}
+.btn--icon.btn--sm { width: var(--btn-h-sm); }
+.btn--icon:hover { color: var(--text); }
+
+.btn[aria-busy="true"] { color: transparent; position: relative; }
+.btn[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  color: var(--text);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(1turn); } }
+
+/* Button group. */
+.btn-group {
+  display: inline-flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 2px;
+  gap: 2px;
+}
+.btn-group .btn {
+  height: calc(var(--btn-h) - 4px);
+  border-radius: calc(var(--r-md) - 2px);
+  border: 0;
+  padding: 0 var(--s-3);
+  color: var(--text-muted);
+}
+.btn-group .btn[aria-pressed="true"] {
+  background: var(--bg-elevated);
+  color: var(--text-strong);
+  box-shadow: var(--shadow-inset);
+}
