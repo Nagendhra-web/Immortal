@@ -1,9 +1,5 @@
 <div align="center">
 
-<a href="https://nagendhra-web.github.io/Immortal/">
-  <img src="docs/images/hero.svg" alt="Immortal — the self-healing engine for modern infrastructure." width="100%" />
-</a>
-
 # Immortal
 
 ### The self-healing engine for modern infrastructure.
