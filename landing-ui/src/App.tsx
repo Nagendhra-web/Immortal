@@ -204,7 +204,7 @@ export default function App() {
         <div className="max-w-2xl mb-16">
           <p className="text-sm font-medium text-ember-600 uppercase tracking-wider mb-3">Capabilities</p>
           <h2 className="font-serif font-bold text-4xl md:text-5xl tracking-[-0.02em] leading-[1.05]">
-            Nothing else in the space<br />comes close.
+            The complete self-healing<br />platform, in one binary.
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -392,17 +392,38 @@ export default function App() {
       <footer className="border-t border-border/60 mt-24 bg-muted/30">
         <div className="max-w-6xl mx-auto px-6 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-sm">
-            {[
-              { h: "Product",   items: ["Features", "Dashboard", "Docs", "Changelog"] },
-              { h: "Company",   items: ["About", "Blog", "Careers", "Contact"] },
-              { h: "Resources", items: ["GitHub", "Discord", "Twitter", "Status"] },
-              { h: "Legal",     items: ["Apache 2.0", "Security", "Privacy"] },
-            ].map(({ h, items }) => (
+            {([
+              { h: "Product", items: [
+                { label: "Features",     href: "#features" },
+                { label: "How it works", href: "#how" },
+                { label: "Benchmarks",   href: "#benchmarks" },
+              ] },
+              { h: "Resources", items: [
+                { label: "GitHub",   href: `https://github.com/${GITHUB_REPO}`,           external: true },
+                { label: "Install",  href: `https://github.com/${GITHUB_REPO}#quick-start`, external: true },
+                { label: "Releases", href: `https://github.com/${GITHUB_REPO}/releases`,  external: true },
+                { label: "Issues",   href: `https://github.com/${GITHUB_REPO}/issues`,    external: true },
+              ] },
+              { h: "Enterprise support", items: [
+                { label: "nagendhra.madishetti24@gmail.com", href: "mailto:nagendhra.madishetti24@gmail.com" },
+              ] },
+              { h: "Legal", items: [
+                { label: "Apache 2.0", href: `https://github.com/${GITHUB_REPO}/blob/main/LICENSE`, external: true },
+              ] },
+            ] as { h: string; items: { label: string; href: string; external?: boolean }[] }[]).map(({ h, items }) => (
               <div key={h}>
                 <div className="font-semibold mb-3">{h}</div>
                 <ul className="space-y-2 text-muted-foreground">
-                  {items.map((it) => (
-                    <li key={it}><a href="#" className="hover:text-foreground transition-colors">{it}</a></li>
+                  {items.map(({ label, href, external }) => (
+                    <li key={label}>
+                      <a
+                        href={href}
+                        {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+                        className="hover:text-foreground transition-colors break-words"
+                      >
+                        {label}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>
