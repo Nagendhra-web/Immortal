@@ -1,5 +1,9 @@
 <div align="center">
 
+<a href="https://nagendhra-web.github.io/Immortal/">
+  <img src="docs/images/hero.svg" alt="Immortal — the self-healing engine for modern infrastructure." width="100%" />
+</a>
+
 # Immortal
 
 ### The self-healing engine for modern infrastructure.
@@ -9,6 +13,7 @@ Detect failures in milliseconds. Heal them autonomously. Prove every action with
 **79 Go packages · 12-view operator dashboard · 3 SDKs · Single binary · Apache 2.0**
 
 [![CI](https://github.com/Nagendhra-web/Immortal/actions/workflows/ci.yml/badge.svg)](https://github.com/Nagendhra-web/Immortal/actions)
+[![Pages](https://github.com/Nagendhra-web/Immortal/actions/workflows/pages.yml/badge.svg)](https://nagendhra-web.github.io/Immortal/)
 [![Release](https://img.shields.io/github/v/release/Nagendhra-web/Immortal?color=00c48c)](https://github.com/Nagendhra-web/Immortal/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Nagendhra-web/Immortal)](https://goreportcard.com/report/github.com/Nagendhra-web/Immortal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/Nagendhra-web/Immortal.svg)](https://pkg.go.dev/github.com/Nagendhra-web/Immortal)
@@ -20,7 +25,9 @@ Detect failures in milliseconds. Heal them autonomously. Prove every action with
 <a href="#what-it-actually-does">Features</a> ·
 <a href="#the-operator-dashboard">Dashboard</a> ·
 <a href="#sdks">SDKs</a> ·
+<a href="https://nagendhra-web.github.io/Immortal/">Landing</a> ·
 <a href="docs/INSTALL.md">Docs</a> ·
+<a href="CHANGELOG.md">Changelog</a> ·
 <a href="https://github.com/Nagendhra-web/Immortal/issues">Issues</a>
 </p>
 

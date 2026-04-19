@@ -23,20 +23,12 @@ jobs:
           go-version: "1.25"
           check-latest: true
 
-      - name: Set up Node (for bundling dashboard + landing)
+      - name: Set up Node (for bundling landing page)
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: |
-            dashboard-ui/package-lock.json
-            landing-ui/package-lock.json
-
-      - name: Build dashboard
-        working-directory: dashboard-ui
-        run: |
-          npm ci
-          npm run build
+          cache-dependency-path: landing-ui/package-lock.json
 
       - name: Build landing
         working-directory: landing-ui
