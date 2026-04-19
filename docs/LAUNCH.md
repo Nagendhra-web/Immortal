@@ -1,6 +1,6 @@
 # Launch copy
 
-Reusable announcement templates for `v0.5.0`. Pick the closest channel and tailor.
+Reusable announcement templates for `v0.6.0`. Pick the closest channel and tailor.
 
 ---
 
@@ -37,7 +37,7 @@ Reusable announcement templates for `v0.5.0`. Pick the closest channel and tailo
 
 ## r/golang
 
-**Title**: `Immortal v0.5.0 - self-healing engine in one Go binary (agentic + digital twin + PQ audit)`
+**Title**: `Immortal v0.6.0 - self-healing engine in one Go binary (agentic + digital twin + PQ audit)`
 
 **Body**:
 
@@ -116,7 +116,7 @@ Repo + quickstart: https://github.com/Nagendhra-web/Immortal
 PR description template:
 
 ```
-Adding Immortal v0.5.0, a self-healing engine in Go.
+Adding Immortal v0.6.0, a self-healing engine in Go.
 
 - Single 16 MB static binary, no external runtime deps
 - 79 tested packages
@@ -139,7 +139,7 @@ Repo follows awesome-go style guidelines: meaningful README, tests, CI, license,
 >
 > Immortal closes that loop.
 >
-> Open source, single Go binary, Apache 2.0. v0.5.0 out now.
+> Open source, single Go binary, Apache 2.0. v0.6.0 out now.
 
 **Reply (features)**:
 
@@ -168,7 +168,7 @@ Professional tone, lead with the problem:
 >
 > Why it exists: deployments, tests, and infra are all automated. Recovery is not. A human still reads stack traces at 3 AM.
 >
-> v0.5.0 just shipped:
+> v0.6.0 just shipped:
 >
 > - Agentic ReAct healing loop for novel failures
 > - Digital twin simulation before any plan touches prod
@@ -190,4 +190,4 @@ Professional tone, lead with the problem:
 - **One channel at a time.** Wait at least 4 hours between posts so you can respond to comments.
 - **Respond to every comment in the first 2 hours.** Upvotes correlate with engagement density.
 - **Do not self-upvote or ring-vote.** Detection is automatic and penalties are brutal.
-- **Have v0.5.0 release assets published before posting.** A broken install link kills momentum.
+- **Have v0.6.0 release assets published before posting.** A broken install link kills momentum.

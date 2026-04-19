@@ -6,6 +6,34 @@ Immortal follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-19
+
+Docker images, honest install story, and hardening based on a post-v0.5 audit.
+
+### Added
+
+- **Multi-arch Docker images** at `ghcr.io/nagendhra-web/immortal` (`linux/amd64` + `linux/arm64`). Auto-published on every tag via `actions/docker` with GoReleaser's version/commit/date baked in. First tag with the new release job. Pull with `docker pull ghcr.io/nagendhra-web/immortal:v0.6.0`.
+- `runtime/debug.ReadBuildInfo()` fallback in `internal/version`, so `go install github.com/Nagendhra-web/Immortal/cmd/immortal@vX.Y.Z` users get the correct version string even without ldflags.
+- `.github/ISSUE_TEMPLATE/config.yml` disables blank issues and routes users to private security advisories, Discussions, or enterprise support.
+- GitHub Discussions enabled on the repo.
+
+### Changed
+
+- **`Dockerfile` hardened**: base bumped from `golang:1.22-alpine` (broken for our `go.mod` 1.25 requirement) to `golang:1.25-alpine`. Non-root user, `HEALTHCHECK` against `/api/health`, `-trimpath`, and VERSION/COMMIT/DATE build args so images carry correct version metadata.
+- **`Makefile` LDFLAGS** corrected from the stale `github.com/immortal-engine/immortal` module path to `github.com/Nagendhra-web/Immortal`. `make build` now actually injects version info.
+- **`scripts/install.sh`** normalizes `uname -s` so Git Bash / MSYS / Cygwin users no longer hit 404s from `immortal_mingw64_nt-...tar.gz` URLs. Windows shells are now redirected to `install.ps1`.
+- **`README.md` + `docs/INSTALL.md`** no longer advertise `brew install immortal` (the tap formula does not yet exist). Homebrew is marked "planned for v0.6" with a short setup note. `docs/INSTALL.md` rewritten throughout with v0.5/v0.6 references and em dashes removed.
+- Release + Pages workflows opt in to Node 24 runtime to clear Node 20 deprecation warnings.
+
+### Fixed
+
+- `version.Version` default was frozen at `0.3.0`. Every `go install` user saw the wrong version after installing v0.5.0.
+- `.goreleaser.yaml` had a GoReleaser v1 `folder:` key under `brews:`, which caused v0.5.0's initial release workflow to fail. Uses `directory:` now.
+
+### Security
+
+- `SECURITY.md` supported-version matrix refreshed for v0.5/v0.6.
+
 ## [0.5.0] - 2026-04-19
 
 First release with the new dashboard, install pipeline, and hosted landing page.
