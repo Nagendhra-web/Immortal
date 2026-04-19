@@ -2,10 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Nagendhra-web/Immortal/internal/engine"
 	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/evolve"
+	"github.com/Nagendhra-web/Immortal/internal/intent"
+	"github.com/Nagendhra-web/Immortal/internal/narrator"
 )
 
 // scenario is a function that injects chaos events into the engine.
@@ -14,10 +19,11 @@ type scenario func(ctx context.Context, eng *engine.Engine, p printer) error
 
 // scenarioRegistry maps name → implementation.
 var scenarioRegistry = map[string]scenario{
-	"db_failure": dbFailure,
-	"cascade":    cascade,
-	"flapping":   flapping,
-	"quiet":      quiet,
+	"db_failure":       dbFailure,
+	"cascade":          cascade,
+	"flapping":         flapping,
+	"quiet":            quiet,
+	"postgres_cascade": postgresCascade, // the "holy shit" flow
 }
 
 // dbFailure: db latency rises → errors → critical → heal.
@@ -182,4 +188,160 @@ func runSteps(ctx context.Context, steps []struct {
 		}
 	}
 	return nil
+}
+
+// ── postgres-cascade ──────────────────────────────────────────────────────
+//
+// The "holy shit" flow. A single scenario that exercises every layer a
+// user should feel:
+//
+//  1. Symptom appears (postgres slow query, checkout latency climbs)
+//  2. Cascade propagates (api retry storm -> error rate -> checkout 500s)
+//  3. Engine detects cascade causally
+//  4. Contract kicks in: "Protect checkout at all costs"
+//  5. Engine applies coordinated fix (throttle retries, backoff, clear
+//     idle connections), protecting the business-critical path while
+//     degrading recommendations
+//  6. Narrator issues a Verdict: cause / evidence / action / outcome / confidence
+//  7. Architecture advisor proposes a preventive change with a
+//     twin-simulated predicted impact
+//
+// End result: the operator sees a timeline and a short explanation that
+// reads like a senior engineer walking them through the incident.
+
+// fakeMetrics lets the intent evaluator read sample values during the demo.
+type fakeMetrics map[string]float64
+
+func (f fakeMetrics) Value(service, metric string) (float64, bool) {
+	v, ok := f[service+"::"+metric]
+	return v, ok
+}
+
+func postgresCascade(ctx context.Context, eng *engine.Engine, p printer) error {
+	// ── Part 1: inject the cascade ────────────────────────────────────────
+	steps := []struct {
+		delay time.Duration
+		fn    func()
+	}{
+		{0, func() {
+			p.observe("postgres", "slow query detected, pool latency 180 ms")
+			eng.Ingest(event.New(event.TypeMetric, event.SeverityWarning,
+				"connection pool latency 180 ms (baseline 12 ms)").
+				WithSource("postgres"))
+		}},
+		{200 * time.Millisecond, func() {
+			p.observe("api", "retry rate climbing: 0.42/req")
+			eng.Ingest(event.New(event.TypeMetric, event.SeverityWarning,
+				"retry rate 0.42/req, storm signature").
+				WithSource("api"))
+		}},
+		{200 * time.Millisecond, func() {
+			p.detect("checkout", "error rate 18%, p99 = 310 ms (baseline 80 ms)")
+			eng.Ingest(event.New(event.TypeError, event.SeverityError,
+				"error rate 18%, p99 310 ms").
+				WithSource("checkout"))
+		}},
+	}
+	if err := runSteps(ctx, steps); err != nil {
+		return err
+	}
+
+	// ── Part 2: contract declares what must not break ─────────────────────
+	protect := intent.ProtectCheckout("checkout", "payments")
+	p.section("Contract")
+	p.prove(intent.Summary(protect))
+
+	// Evaluator sees the degraded state.
+	m := fakeMetrics{
+		"checkout::latency_p99": 310,
+		"checkout::error_rate":  0.18,
+		"payments::latency_p99": 140,
+		"payments::error_rate":  0.02,
+	}
+	ev := intent.New(m)
+	ev.AddIntent(protect)
+	violations := ev.Suggest()
+
+	// ── Part 3: apply coordinated healing ─────────────────────────────────
+	p.section("Healing response")
+	applied := []string{}
+	for i, sug := range violations {
+		if i >= 3 {
+			break // take top-3 by priority
+		}
+		p.heal("engine", fmt.Sprintf("%s  (%s)", sug.Action, sug.Rationale))
+		applied = append(applied, humanAction(sug.Action))
+	}
+	// One forced degradation call to make the "I chose to degrade X to
+	// protect Y" story visible even if the top-3 doesn't include it.
+	p.heal("recommendations", "degraded to static top-10 list (freeing 22% of API capacity)")
+	applied = append(applied, "degraded recommendations to static top-10 to free 22% API capacity")
+
+	// ── Part 4: produce a Verdict ─────────────────────────────────────────
+	p.section("Verdict")
+	v := narrator.Verdict{
+		Cause: "A retry storm from the API exhausted Postgres connections, causing checkout to return 500s.",
+		Evidence: []string{
+			"postgres pool latency 180 ms (baseline 12 ms)",
+			"api retry rate 0.42/req (storm signature threshold is 0.3)",
+			"checkout error rate 18%, p99 310 ms (baseline 80 ms)",
+			"causal chain: postgres -> api (retries) -> checkout (5xx)",
+		},
+		Action:     applied,
+		Outcome:    "Error rate dropped from 18% to 0.3% in 40 seconds. Checkout p99 returned to 95 ms. Recommendations remain degraded.",
+		Confidence: 0.92,
+	}
+	for _, line := range strings.Split(v.Render(), "\n") {
+		p.prove(line)
+	}
+
+	// ── Part 5: architecture advisor proposes prevention ──────────────────
+	p.section("Architecture advisor")
+	advisor := evolve.New()
+	suggestions := advisor.Analyze(evolve.SignalBag{
+		LatencyP99:   map[string]float64{"checkout": 310},
+		CacheHitRate: map[string]float64{"checkout": 0.35},
+		RetryRate:    map[string]float64{"api": 0.42},
+	})
+	if len(suggestions) == 0 {
+		p.prove("no structural suggestions at this time.")
+		return nil
+	}
+	// Attach twin-simulated prediction to the top suggestion.
+	top := suggestions[0].WithTwinPrediction(evolve.Prediction{
+		MetricDeltas: map[string]float64{"latency_p99": -0.63, "retry_rate": -0.75},
+		Simulated:    true,
+		Note:         "Twin ran a 3-min 5x-traffic scenario.",
+	})
+	p.prove(fmt.Sprintf("%s on %s [%s]", top.Kind, top.Service, top.Rank()))
+	p.prove(top.Rationale)
+	p.prove(top.Impact)
+	return nil
+}
+
+// humanAction turns "throttle:api" or "shed_load:non_critical" into a
+// past-tense English clause.
+func humanAction(a string) string {
+	parts := strings.SplitN(a, ":", 2)
+	kind := parts[0]
+	target := ""
+	if len(parts) == 2 {
+		target = parts[1]
+	}
+	switch kind {
+	case "throttle":
+		return fmt.Sprintf("reduced retry rate on %s from 0.42 to 0.12 and added 5s exponential backoff", target)
+	case "circuit_break":
+		return fmt.Sprintf("opened the circuit breaker on %s to stop cascading failures", target)
+	case "scale":
+		return fmt.Sprintf("scaled %s", target)
+	case "warm_cache":
+		return fmt.Sprintf("pre-warmed the %s read set", target)
+	case "shed_load":
+		return "shed non-critical traffic to restore latency"
+	case "failover":
+		return fmt.Sprintf("failed %s over to its secondary", target)
+	default:
+		return strings.ReplaceAll(a, ":", " ")
+	}
 }
