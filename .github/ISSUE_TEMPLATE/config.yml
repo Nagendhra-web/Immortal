@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Nagendhra-web/Immortal/security/advisories/new
+    about: Report a security vulnerability privately. Please do not file a public issue.
+  - name: Discussions and Q&A
+    url: https://github.com/Nagendhra-web/Immortal/discussions
+    about: Architecture questions, use-case conversations, show-and-tell.
+  - name: Enterprise support
+    url: mailto:nagendhra.madishetti24@gmail.com
+    about: Paid support, on-prem deployment help, custom integrations.

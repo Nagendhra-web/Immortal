@@ -23,7 +23,7 @@ First release with the new dashboard, install pipeline, and hosted landing page.
 - Three-tier OKLCH design token system with dark default and light swap.
 - Hosted landing page on GitHub Pages at https://nagendhra-web.github.io/Immortal/, with auto-deploy workflow.
 - One-line installers (`install.sh`, `install.ps1`) that try pre-built binaries first, fall back to `go install`.
-- GoReleaser v2 pipeline for `linux/darwin/windows` x `amd64/arm64` with auto Homebrew tap bump.
+- GoReleaser v2 pipeline for `linux/darwin/windows` x `amd64/arm64`. Homebrew tap auto-bump is wired but disabled pending a `HOMEBREW_TAP_TOKEN` secret (planned for v0.6).
 - Go vanity-import scaffolding at `vanity/index.html` for future `immortal.dev` domain.
 - Enterprise support contact in landing-page footer (`nagendhra.madishetti24@gmail.com`).
 

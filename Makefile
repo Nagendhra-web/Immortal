@@ -2,7 +2,8 @@ BINARY_NAME=immortal
 VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-LDFLAGS=-ldflags "-X github.com/immortal-engine/immortal/internal/version.Version=$(VERSION) -X github.com/immortal-engine/immortal/internal/version.GitCommit=$(COMMIT) -X github.com/immortal-engine/immortal/internal/version.BuildDate=$(DATE)"
+MODULE=github.com/Nagendhra-web/Immortal
+LDFLAGS=-ldflags "-s -w -X $(MODULE)/internal/version.Version=$(VERSION) -X $(MODULE)/internal/version.GitCommit=$(COMMIT) -X $(MODULE)/internal/version.BuildDate=$(DATE)"
 
 .PHONY: build test clean lint run
 
