@@ -36,3 +36,21 @@ node_modules/
 *.egg-info/
 __pycache__/
 .pytest_cache/
+
+# Local agent + debug state (should never be committed)
+.omc/
+.playwright-mcp/
+.claude/
+.cursor/
+.aider*
+
+# Screenshots / debug artifacts at repo root
+/immortal-*.png
+/screenshots/
+*.screenshot.png
+*.debug.png
+
+# Editor backups
+*~
+*.bak
+*.orig
