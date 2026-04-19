@@ -1,0 +1,47 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - link "IMMORTAL" [ref=e3] [cursor=pointer]:
+      - /url: "#/overview"
+      - generic [ref=e5]: IMMORTAL
+    - generic [ref=e6]:
+      - link "Overview" [ref=e7] [cursor=pointer]:
+        - /url: "#/overview"
+      - link "Topology" [ref=e8] [cursor=pointer]:
+        - /url: "#/topology"
+      - link "Audit Chain" [ref=e9] [cursor=pointer]:
+        - /url: "#/audit"
+      - link "Terminal" [ref=e10] [cursor=pointer]:
+        - /url: "#/terminal"
+    - generic [ref=e11]:
+      - generic [ref=e12]: NODE · demo-node
+      - generic [ref=e13]: LIVE
+  - main [ref=e14]:
+    - text: "02:31:18 PM · INFO · cpu usage: 36.5% 02:31:18 PM · WARNING · memory usage: 83.0% 02:31:08 PM · WARNING · memory usage: 83.0% 02:31:08 PM · INFO · cpu usage: 31.5% 02:30:58 PM · INFO · cpu usage: 30.0% 02:30:48 PM · WARNING · memory usage: 83.0% 02:30:48 PM · INFO · cpu usage: 30.5% 02:30:38 PM · WARNING · memory usage: 84.0% 02:30:38 PM · INFO · cpu usage: 38.9% 02:30:28 PM · WARNING · memory usage: 83.0% 02:30:28 PM · INFO · cpu usage: 28.4% 02:30:18 PM · INFO · cpu usage: 37.5% 02:30:18 PM · WARNING · memory usage: 83.0% 02:30:08 PM · WARNING · memory usage: 83.0% 02:30:08 PM · INFO · cpu usage: 33.5% 02:29:58 PM · WARNING · memory usage: 83.0% 02:29:58 PM · INFO · cpu usage: 27.8% 02:29:48 PM · INFO · cpu usage: 38.8% 02:29:38 PM · WARNING · memory usage: 83.0% 02:29:38 PM · INFO · cpu usage: 34.8% 02:29:28 PM · INFO · cpu usage: 43.6% 02:29:28 PM · WARNING · memory usage: 83.0%"
+    - generic [ref=e317]:
+      - generic [ref=e318]:
+        - generic [ref=e322]: immortal — live event tail
+        - generic [ref=e323]: 22 events
+      - generic [ref=e324]:
+        - generic [ref=e325]: "02:29:28 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e326]: "02:29:28 PM INFO [system] cpu usage: 43.6%"
+        - generic [ref=e327]: "02:29:38 PM INFO [system] cpu usage: 34.8%"
+        - generic [ref=e328]: "02:29:38 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e329]: "02:29:48 PM INFO [system] cpu usage: 38.8%"
+        - generic [ref=e330]: "02:29:58 PM INFO [system] cpu usage: 27.8%"
+        - generic [ref=e331]: "02:29:58 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e332]: "02:30:08 PM INFO [system] cpu usage: 33.5%"
+        - generic [ref=e333]: "02:30:08 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e334]: "02:30:18 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e335]: "02:30:18 PM INFO [system] cpu usage: 37.5%"
+        - generic [ref=e336]: "02:30:28 PM INFO [system] cpu usage: 28.4%"
+        - generic [ref=e337]: "02:30:28 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e338]: "02:30:38 PM INFO [system] cpu usage: 38.9%"
+        - generic [ref=e339]: "02:30:38 PM WARNING [system] memory usage: 84.0%"
+        - generic [ref=e340]: "02:30:48 PM INFO [system] cpu usage: 30.5%"
+        - generic [ref=e341]: "02:30:48 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e342]: "02:30:58 PM INFO [system] cpu usage: 30.0%"
+        - generic [ref=e343]: "02:31:08 PM INFO [system] cpu usage: 31.5%"
+        - generic [ref=e344]: "02:31:08 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e345]: "02:31:18 PM WARNING [system] memory usage: 83.0%"
+        - generic [ref=e346]: "02:31:18 PM INFO [system] cpu usage: 36.5%"
+      - generic [ref=e348]: immortal>

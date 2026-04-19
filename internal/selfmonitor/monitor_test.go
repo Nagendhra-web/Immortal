@@ -3,7 +3,7 @@ package selfmonitor_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/selfmonitor"
+	"github.com/Nagendhra-web/Immortal/internal/selfmonitor"
 )
 
 func TestMonitorStats(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/export"
+	"github.com/Nagendhra-web/Immortal/internal/export"
 )
 
 func TestGauge(t *testing.T) {

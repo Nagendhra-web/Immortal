@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/incident"
+	"github.com/Nagendhra-web/Immortal/internal/incident"
 )
 
 func TestNew(t *testing.T) {

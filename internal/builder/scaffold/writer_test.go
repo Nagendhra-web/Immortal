@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/builder/scaffold"
-	"github.com/immortal-engine/immortal/internal/builder/template"
+	"github.com/Nagendhra-web/Immortal/internal/builder/scaffold"
+	"github.com/Nagendhra-web/Immortal/internal/builder/template"
 )
 
 func TestWriteFiles(t *testing.T) {

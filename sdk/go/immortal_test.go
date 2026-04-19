@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	immortal "github.com/immortal-engine/immortal/sdk/go"
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/healing"
+	immortal "github.com/Nagendhra-web/Immortal/sdk/go"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/healing"
 )
 
 func TestNewApp(t *testing.T) {

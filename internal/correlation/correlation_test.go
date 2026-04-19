@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/correlation"
+	"github.com/Nagendhra-web/Immortal/internal/correlation"
 )
 
 func TestNew(t *testing.T) {

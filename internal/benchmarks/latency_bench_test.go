@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/engine"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/engine"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // BenchmarkIngest_Latency records per-event ingest latency and reports

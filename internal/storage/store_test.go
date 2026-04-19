@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/storage"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/storage"
 )
 
 func newTestStore(t *testing.T) *storage.Store {

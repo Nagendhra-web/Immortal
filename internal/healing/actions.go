@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func ActionExec(command string) ActionFunc {

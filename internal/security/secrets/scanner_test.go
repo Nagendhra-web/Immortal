@@ -3,7 +3,7 @@ package secrets_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/security/secrets"
+	"github.com/Nagendhra-web/Immortal/internal/security/secrets"
 )
 
 func TestScannerDetectsAWSKeys(t *testing.T) {

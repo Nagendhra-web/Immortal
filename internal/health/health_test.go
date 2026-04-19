@@ -3,7 +3,7 @@ package health_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/health"
+	"github.com/Nagendhra-web/Immortal/internal/health"
 )
 
 func TestRegistryRegisterAndGet(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/capacity"
+	"github.com/Nagendhra-web/Immortal/internal/capacity"
 )
 
 func newPlanner() *capacity.Planner {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/api/dashboard"
+	"github.com/Nagendhra-web/Immortal/internal/api/dashboard"
 )
 
 func TestDashboardHandler_ServesIndexHTML(t *testing.T) {

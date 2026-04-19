@@ -1,4 +1,4 @@
-module github.com/immortal-engine/immortal
+module github.com/Nagendhra-web/Immortal
 
 go 1.25.0
 

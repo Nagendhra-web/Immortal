@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/circuitbreaker"
+	"github.com/Nagendhra-web/Immortal/internal/circuitbreaker"
 )
 
 func TestBreakerClosedOnSuccess(t *testing.T) {

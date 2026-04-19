@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/security/firewall"
+	"github.com/Nagendhra-web/Immortal/internal/security/firewall"
 )
 
 func TestFirewallBlocksSQLi(t *testing.T) {

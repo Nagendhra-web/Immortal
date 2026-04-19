@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/web/landing"
+	"github.com/Nagendhra-web/Immortal/internal/web/landing"
 )
 
 func TestLanding_ServesIndex(t *testing.T) {

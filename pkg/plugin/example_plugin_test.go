@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/immortal-engine/immortal/pkg/plugin"
+	"github.com/Nagendhra-web/Immortal/pkg/plugin"
 )
 
 // -------------------------------------------------------------------------

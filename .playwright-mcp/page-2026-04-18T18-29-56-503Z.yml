@@ -1,0 +1,97 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - link "IMMORTAL" [ref=e3] [cursor=pointer]:
+      - /url: "#/overview"
+      - generic [ref=e5]: IMMORTAL
+    - generic [ref=e6]:
+      - link "Overview" [ref=e7] [cursor=pointer]:
+        - /url: "#/overview"
+      - link "Topology" [ref=e8] [cursor=pointer]:
+        - /url: "#/topology"
+      - link "Audit Chain" [ref=e9] [cursor=pointer]:
+        - /url: "#/audit"
+      - link "Terminal" [ref=e10] [cursor=pointer]:
+        - /url: "#/terminal"
+    - generic [ref=e11]:
+      - generic [ref=e12]: NODE · demo-node
+      - generic [ref=e13]: LIVE
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "YOUR APPS / NEVER DIE." [level=1] [ref=e17]:
+          - text: YOUR APPS /
+          - text: NEVER DIE.
+        - generic [ref=e20]: NODE · demo-node · autonomous mode · connected
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]: Uptime
+          - generic [ref=e24]: 36.5380165s
+        - generic [ref=e25]:
+          - generic [ref=e26]: Events Processed
+          - generic [ref=e27]: "5"
+        - generic [ref=e28]:
+          - generic [ref=e29]: Healing Actions
+          - generic [ref=e30]: —
+        - generic [ref=e31]:
+          - generic [ref=e32]: Services Healthy
+          - generic [ref=e33]: 0/4
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]: Healing Timeline
+          - generic [ref=e37]: Last 20 events — hover for detail
+        - generic [ref=e38]:
+          - generic [ref=e98] [cursor=pointer]: "02:29:48 PM · INFO · cpu usage: 38.8%"
+          - generic [ref=e99] [cursor=pointer]: "02:29:38 PM · WARNING · memory usage: 83.0%"
+          - generic [ref=e100] [cursor=pointer]: "02:29:38 PM · INFO · cpu usage: 34.8%"
+          - generic [ref=e101] [cursor=pointer]: "02:29:28 PM · INFO · cpu usage: 43.6%"
+          - generic [ref=e102] [cursor=pointer]: "02:29:28 PM · WARNING · memory usage: 83.0%"
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e46]: Live Feed
+          - generic [ref=e48]:
+            - generic [ref=e103]:
+              - generic [ref=e104]: 02:29:28 PM
+              - generic [ref=e105]: WARNING
+              - generic [ref=e106]: "memory usage: 83.0%"
+              - generic [ref=e107]: system
+            - generic [ref=e108]:
+              - generic [ref=e109]: 02:29:28 PM
+              - generic [ref=e110]: INFO
+              - generic [ref=e111]: "cpu usage: 43.6%"
+              - generic [ref=e112]: system
+            - generic [ref=e113]:
+              - generic [ref=e114]: 02:29:38 PM
+              - generic [ref=e115]: INFO
+              - generic [ref=e116]: "cpu usage: 34.8%"
+              - generic [ref=e117]: system
+            - generic [ref=e118]:
+              - generic [ref=e119]: 02:29:38 PM
+              - generic [ref=e120]: WARNING
+              - generic [ref=e121]: "memory usage: 83.0%"
+              - generic [ref=e122]: system
+            - generic [ref=e123]:
+              - generic [ref=e124]: 02:29:48 PM
+              - generic [ref=e125]: INFO
+              - generic [ref=e126]: "cpu usage: 38.8%"
+              - generic [ref=e127]: system
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]: Services
+            - generic [ref=e72]: 0 of 4 healthy
+          - generic [ref=e73]:
+            - generic [ref=e128]:
+              - generic "system-metrics" [ref=e131]
+              - generic [ref=e132]: unknown
+              - generic [ref=e133]: 07:03:58 PM
+            - generic [ref=e134]:
+              - generic "api" [ref=e137]
+              - generic [ref=e138]: unknown
+              - generic [ref=e139]: 07:03:58 PM
+            - generic [ref=e140]:
+              - generic "db" [ref=e143]
+              - generic [ref=e144]: unknown
+              - generic [ref=e145]: 07:03:58 PM
+            - generic [ref=e146]:
+              - generic "cache" [ref=e149]
+              - generic [ref=e150]: unknown
+              - generic [ref=e151]: 07:03:58 PM

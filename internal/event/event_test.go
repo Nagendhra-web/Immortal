@@ -3,7 +3,7 @@ package event_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestNewEvent(t *testing.T) {

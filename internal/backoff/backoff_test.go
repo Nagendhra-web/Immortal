@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/backoff"
+	"github.com/Nagendhra-web/Immortal/internal/backoff"
 )
 
 func TestBackoffIncreases(t *testing.T) {

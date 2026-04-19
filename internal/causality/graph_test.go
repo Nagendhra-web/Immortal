@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/causality"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/causality"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestGraphAddAndTraceChain(t *testing.T) {

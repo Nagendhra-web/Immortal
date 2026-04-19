@@ -1,0 +1,151 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - link "IMMORTAL" [ref=e3] [cursor=pointer]:
+      - /url: "#/overview"
+      - generic [ref=e5]: IMMORTAL
+    - generic [ref=e6]:
+      - link "Overview" [ref=e7] [cursor=pointer]:
+        - /url: "#/overview"
+      - link "Topology" [ref=e8] [cursor=pointer]:
+        - /url: "#/topology"
+      - link "Audit Chain" [ref=e9] [cursor=pointer]:
+        - /url: "#/audit"
+      - link "Terminal" [ref=e10] [cursor=pointer]:
+        - /url: "#/terminal"
+    - generic [ref=e11]:
+      - generic [ref=e12]: NODE · demo-node
+      - generic [ref=e13]: LIVE
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "YOUR APPS / NEVER DIE." [level=1] [ref=e17]:
+          - text: YOUR APPS /
+          - text: NEVER DIE.
+        - generic [ref=e20]: NODE · demo-node · autonomous mode · connected
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]: Uptime
+          - generic [ref=e24]: 12.5191503s
+        - generic [ref=e25]:
+          - generic [ref=e26]: Events Processed
+          - generic [ref=e27]: —
+        - generic [ref=e28]:
+          - generic [ref=e29]: Healing Actions
+          - generic [ref=e30]: —
+        - generic [ref=e31]:
+          - generic [ref=e32]: Services Healthy
+          - generic [ref=e33]: 0/4
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]: Healing Timeline
+          - generic [ref=e37]: Last 20 events — hover for detail
+        - generic [ref=e38]:
+          - generic [ref=e39] [cursor=pointer]: "02:25:03 PM · WARNING · memory usage: 83.0%"
+          - generic [ref=e40] [cursor=pointer]: "02:25:03 PM · INFO · cpu usage: 27.6%"
+          - generic [ref=e41] [cursor=pointer]: "10:35:23 AM · INFO · cpu usage: 31.7%"
+          - generic [ref=e42] [cursor=pointer]: "10:35:13 AM · WARNING · memory usage: 83.0%"
+          - generic [ref=e43] [cursor=pointer]: "10:35:13 AM · INFO · cpu usage: 25.4%"
+          - generic [ref=e44] [cursor=pointer]: "10:35:03 AM · WARNING · memory usage: 81.0%"
+          - generic [ref=e45] [cursor=pointer]: "10:35:03 AM · INFO · cpu usage: 41.6%"
+          - generic [ref=e46] [cursor=pointer]: "10:34:53 AM · INFO · cpu usage: 28.2%"
+          - generic [ref=e47] [cursor=pointer]: "10:34:43 AM · WARNING · memory usage: 81.0%"
+          - generic [ref=e48] [cursor=pointer]: "10:34:43 AM · INFO · cpu usage: 34.2%"
+          - generic [ref=e49] [cursor=pointer]: "10:34:33 AM · WARNING · memory usage: 80.0%"
+          - generic [ref=e50] [cursor=pointer]: "10:34:33 AM · INFO · cpu usage: 28.9%"
+          - generic [ref=e51] [cursor=pointer]: "10:34:23 AM · INFO · cpu usage: 36.7%"
+          - generic [ref=e52] [cursor=pointer]: "10:34:23 AM · WARNING · memory usage: 87.0%"
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e56]: Live Feed
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e60]: 10:34:23 AM
+              - generic [ref=e61]: WARNING
+              - generic [ref=e62]: "memory usage: 87.0%"
+              - generic [ref=e63]: system
+            - generic [ref=e64]:
+              - generic [ref=e65]: 10:34:23 AM
+              - generic [ref=e66]: INFO
+              - generic [ref=e67]: "cpu usage: 36.7%"
+              - generic [ref=e68]: system
+            - generic [ref=e69]:
+              - generic [ref=e70]: 10:34:33 AM
+              - generic [ref=e71]: INFO
+              - generic [ref=e72]: "cpu usage: 28.9%"
+              - generic [ref=e73]: system
+            - generic [ref=e74]:
+              - generic [ref=e75]: 10:34:33 AM
+              - generic [ref=e76]: WARNING
+              - generic [ref=e77]: "memory usage: 80.0%"
+              - generic [ref=e78]: system
+            - generic [ref=e79]:
+              - generic [ref=e80]: 10:34:43 AM
+              - generic [ref=e81]: INFO
+              - generic [ref=e82]: "cpu usage: 34.2%"
+              - generic [ref=e83]: system
+            - generic [ref=e84]:
+              - generic [ref=e85]: 10:34:43 AM
+              - generic [ref=e86]: WARNING
+              - generic [ref=e87]: "memory usage: 81.0%"
+              - generic [ref=e88]: system
+            - generic [ref=e89]:
+              - generic [ref=e90]: 10:34:53 AM
+              - generic [ref=e91]: INFO
+              - generic [ref=e92]: "cpu usage: 28.2%"
+              - generic [ref=e93]: system
+            - generic [ref=e94]:
+              - generic [ref=e95]: 10:35:03 AM
+              - generic [ref=e96]: INFO
+              - generic [ref=e97]: "cpu usage: 41.6%"
+              - generic [ref=e98]: system
+            - generic [ref=e99]:
+              - generic [ref=e100]: 10:35:03 AM
+              - generic [ref=e101]: WARNING
+              - generic [ref=e102]: "memory usage: 81.0%"
+              - generic [ref=e103]: system
+            - generic [ref=e104]:
+              - generic [ref=e105]: 10:35:13 AM
+              - generic [ref=e106]: INFO
+              - generic [ref=e107]: "cpu usage: 25.4%"
+              - generic [ref=e108]: system
+            - generic [ref=e109]:
+              - generic [ref=e110]: 10:35:13 AM
+              - generic [ref=e111]: WARNING
+              - generic [ref=e112]: "memory usage: 83.0%"
+              - generic [ref=e113]: system
+            - generic [ref=e114]:
+              - generic [ref=e115]: 10:35:23 AM
+              - generic [ref=e116]: INFO
+              - generic [ref=e117]: "cpu usage: 31.7%"
+              - generic [ref=e118]: system
+            - generic [ref=e119]:
+              - generic [ref=e120]: 02:25:03 PM
+              - generic [ref=e121]: INFO
+              - generic [ref=e122]: "cpu usage: 27.6%"
+              - generic [ref=e123]: system
+            - generic [ref=e124]:
+              - generic [ref=e125]: 02:25:03 PM
+              - generic [ref=e126]: WARNING
+              - generic [ref=e127]: "memory usage: 83.0%"
+              - generic [ref=e128]: system
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - generic [ref=e131]: Services
+            - generic [ref=e132]: 0 of 4 healthy
+          - generic [ref=e133]:
+            - generic [ref=e134]:
+              - generic "db" [ref=e137]
+              - generic [ref=e138]: unknown
+              - generic [ref=e139]: 07:03:58 PM
+            - generic [ref=e140]:
+              - generic "cache" [ref=e143]
+              - generic [ref=e144]: unknown
+              - generic [ref=e145]: 07:03:58 PM
+            - generic [ref=e146]:
+              - generic "system-metrics" [ref=e149]
+              - generic [ref=e150]: unknown
+              - generic [ref=e151]: 07:03:58 PM
+            - generic [ref=e152]:
+              - generic "api" [ref=e155]
+              - generic [ref=e156]: unknown
+              - generic [ref=e157]: 07:03:58 PM

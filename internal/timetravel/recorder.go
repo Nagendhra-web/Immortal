@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // Snapshot captures system state at a point in time.

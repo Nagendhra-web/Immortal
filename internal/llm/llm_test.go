@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/llm"
+	"github.com/Nagendhra-web/Immortal/internal/llm"
 )
 
 func TestDisabledClient(t *testing.T) {

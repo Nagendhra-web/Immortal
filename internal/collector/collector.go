@@ -1,6 +1,6 @@
 package collector
 
-import "github.com/immortal-engine/immortal/internal/event"
+import "github.com/Nagendhra-web/Immortal/internal/event"
 
 // Collector is the interface all collectors implement.
 type Collector interface {

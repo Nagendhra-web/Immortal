@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/security/antiscrape"
+	"github.com/Nagendhra-web/Immortal/internal/security/antiscrape"
 )
 
 func TestShieldDetectsBotUserAgent(t *testing.T) {

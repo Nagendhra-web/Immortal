@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/tenant"
+	"github.com/Nagendhra-web/Immortal/internal/tenant"
 )
 
 func TestBilling_RecordEvents(t *testing.T) {

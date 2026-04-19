@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/analytics/metrics"
-	"github.com/immortal-engine/immortal/internal/analytics/report"
-	"github.com/immortal-engine/immortal/internal/health"
+	"github.com/Nagendhra-web/Immortal/internal/analytics/metrics"
+	"github.com/Nagendhra-web/Immortal/internal/analytics/report"
+	"github.com/Nagendhra-web/Immortal/internal/health"
 )
 
 func TestReportGeneration(t *testing.T) {

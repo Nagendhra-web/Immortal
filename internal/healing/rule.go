@@ -3,7 +3,7 @@ package healing
 import (
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 type MatchFunc func(e *event.Event) bool

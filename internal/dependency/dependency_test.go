@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/dependency"
+	"github.com/Nagendhra-web/Immortal/internal/dependency"
 )
 
 func TestNewEmpty(t *testing.T) {

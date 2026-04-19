@@ -3,8 +3,8 @@ package brain
 import (
 	"sync"
 
-	"github.com/immortal-engine/immortal/internal/dna"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/dna"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // TrendDirection indicates the direction of a metric trend.

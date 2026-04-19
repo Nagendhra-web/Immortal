@@ -1,0 +1,7 @@
+{
+  "tool_name": "mcp__plugin_playwright_playwright__browser_navigate",
+  "tool_input_preview": "{\"url\":\"http://127.0.0.1:17777/\"}",
+  "error": "### Error\nError: browserBackend.callTool: Target page, context or browser has been closed",
+  "timestamp": "2026-04-19T03:22:21.826Z",
+  "retry_count": 1
+}

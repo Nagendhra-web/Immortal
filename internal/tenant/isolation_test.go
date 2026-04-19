@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/tenant"
+	"github.com/Nagendhra-web/Immortal/internal/tenant"
 )
 
 // === DATA ISOLATION ===

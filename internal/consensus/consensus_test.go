@@ -3,8 +3,8 @@ package consensus_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/consensus"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/consensus"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestConsensusAllAgree(t *testing.T) {

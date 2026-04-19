@@ -3,7 +3,7 @@ package cli_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/version"
+	"github.com/Nagendhra-web/Immortal/internal/version"
 )
 
 func TestVersionOutput(t *testing.T) {

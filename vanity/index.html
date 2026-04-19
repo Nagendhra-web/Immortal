@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>immortal.dev — self-healing engine</title>
+  <meta name="description" content="Immortal — self-healing engine. Your apps never die." />
+
+  <!--
+    Go vanity import. When someone runs:
+      go install immortal.dev/immortal/cmd/immortal@latest
+    `go get` fetches this page, reads the meta tag below, and redirects to
+    the actual GitHub repo. The module path users type becomes
+    `immortal.dev/immortal/...` but the source still lives at GitHub.
+
+    Requirements to activate this:
+      1. Own the domain immortal.dev
+      2. Host this file at https://immortal.dev/immortal (and any subpath under it,
+         so /immortal/cmd/immortal, /immortal/internal/*, etc. all return the same HTML)
+      3. Rewrite go.mod `module` from `github.com/Nagendhra-web/Immortal` to
+         `immortal.dev/immortal`, plus a matching global import rewrite
+      4. Keep the GitHub repo as the source of truth — this is just a redirect
+  -->
+  <meta name="go-import" content="immortal.dev/immortal git https://github.com/Nagendhra-web/Immortal" />
+  <meta name="go-source" content="immortal.dev/immortal https://github.com/Nagendhra-web/Immortal https://github.com/Nagendhra-web/Immortal/tree/main{/dir} https://github.com/Nagendhra-web/Immortal/blob/main{/dir}/{file}#L{line}" />
+
+  <!-- Redirect humans (not the go tool) to the repo. -->
+  <meta http-equiv="refresh" content="0; url=https://github.com/Nagendhra-web/Immortal" />
+</head>
+<body>
+  <p>Redirecting to <a href="https://github.com/Nagendhra-web/Immortal">github.com/Nagendhra-web/Immortal</a>…</p>
+</body>
+</html>

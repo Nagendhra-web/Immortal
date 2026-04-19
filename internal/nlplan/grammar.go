@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/formal"
+	"github.com/Nagendhra-web/Immortal/internal/formal"
 )
 
 // synonymTable maps variant verbs to their canonical form.

@@ -1,0 +1,438 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776516695751,
+  "projectRoot": "c:\\Users\\ekada\\OneDrive\\Desktop\\ALL_APPS\\Immortal",
+  "techStack": {
+    "languages": [
+      {
+        "name": "Go",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "go.mod"
+        ]
+      },
+      {
+        "name": "C/C++",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "Makefile"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "go",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "make build",
+    "testCommand": "make test",
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "assets",
+      "bin",
+      "docs",
+      "examples"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1776516695604,
+      "keyFiles": [
+        "README.md"
+      ]
+    },
+    "bin": {
+      "path": "bin",
+      "purpose": "Executable scripts",
+      "fileCount": 2,
+      "lastAccessed": 1776516695606,
+      "keyFiles": [
+        "immortal-linux",
+        "immortal.exe"
+      ]
+    },
+    "cmd": {
+      "path": "cmd",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776516695607,
+      "keyFiles": []
+    },
+    "demo": {
+      "path": "demo",
+      "purpose": null,
+      "fileCount": 12,
+      "lastAccessed": 1776516695610,
+      "keyFiles": [
+        "app.log",
+        "chaos_test.go",
+        "demo_test.go",
+        "e2e_bench_test.go",
+        "edgecase_test.go"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1776516695610,
+      "keyFiles": []
+    },
+    "examples": {
+      "path": "examples",
+      "purpose": "Example code",
+      "fileCount": 2,
+      "lastAccessed": 1776516695611,
+      "keyFiles": [
+        "immortal.json",
+        "rules.json"
+      ]
+    },
+    "internal": {
+      "path": "internal",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776516695612,
+      "keyFiles": []
+    },
+    "sdk": {
+      "path": "sdk",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776516695612,
+      "keyFiles": []
+    },
+    "internal\\api": {
+      "path": "internal\\api",
+      "purpose": "API routes",
+      "fileCount": 0,
+      "lastAccessed": 1776516695617,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "internal\\api\\rest\\server_test.go",
+      "accessCount": 27,
+      "lastAccessed": 1776519704744,
+      "type": "file"
+    },
+    {
+      "path": "internal\\api\\rest\\server.go",
+      "accessCount": 25,
+      "lastAccessed": 1776519684272,
+      "type": "file"
+    },
+    {
+      "path": "internal\\engine\\engine.go",
+      "accessCount": 19,
+      "lastAccessed": 1776519708315,
+      "type": "file"
+    },
+    {
+      "path": "internal\\cli\\app.go",
+      "accessCount": 16,
+      "lastAccessed": 1776568679155,
+      "type": "directory"
+    },
+    {
+      "path": "internal\\twin\\twin.go",
+      "accessCount": 15,
+      "lastAccessed": 1776533308586,
+      "type": "file"
+    },
+    {
+      "path": "internal\\pqaudit\\pqaudit.go",
+      "accessCount": 14,
+      "lastAccessed": 1776519721228,
+      "type": "file"
+    },
+    {
+      "path": "internal\\federated\\federated.go",
+      "accessCount": 12,
+      "lastAccessed": 1776533340602,
+      "type": "file"
+    },
+    {
+      "path": "internal\\agentic\\agentic.go",
+      "accessCount": 10,
+      "lastAccessed": 1776519673367,
+      "type": "file"
+    },
+    {
+      "path": "internal\\agentic\\agentic_test.go",
+      "accessCount": 7,
+      "lastAccessed": 1776489466899,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\pc.go",
+      "accessCount": 7,
+      "lastAccessed": 1776518068151,
+      "type": "file"
+    },
+    {
+      "path": "internal\\event\\event.go",
+      "accessCount": 7,
+      "lastAccessed": 1776519708760,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\causal.go",
+      "accessCount": 5,
+      "lastAccessed": 1776489385183,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\effect.go",
+      "accessCount": 5,
+      "lastAccessed": 1776489388095,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\fci.go",
+      "accessCount": 5,
+      "lastAccessed": 1776518235887,
+      "type": "file"
+    },
+    {
+      "path": "go.mod",
+      "accessCount": 5,
+      "lastAccessed": 1776533450343,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 5,
+      "lastAccessed": 1776537674989,
+      "type": "directory"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 5,
+      "lastAccessed": 1776569888281,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\causal_integration_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776483643927,
+      "type": "file"
+    },
+    {
+      "path": "internal\\engine\\wiring_integration_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776485999631,
+      "type": "file"
+    },
+    {
+      "path": "internal\\agentic\\agentic_integration_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776488488644,
+      "type": "file"
+    },
+    {
+      "path": "internal\\federated\\federated_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776488535343,
+      "type": "file"
+    },
+    {
+      "path": "internal\\twin\\twin_integration_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776488585197,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\causal_test.go",
+      "accessCount": 4,
+      "lastAccessed": 1776489391602,
+      "type": "file"
+    },
+    {
+      "path": "internal\\event\\severity.go",
+      "accessCount": 4,
+      "lastAccessed": 1776519712029,
+      "type": "file"
+    },
+    {
+      "path": "internal\\pqaudit\\signer.go",
+      "accessCount": 3,
+      "lastAccessed": 1776488438836,
+      "type": "file"
+    },
+    {
+      "path": "internal\\pqaudit\\merkle.go",
+      "accessCount": 3,
+      "lastAccessed": 1776488439807,
+      "type": "file"
+    },
+    {
+      "path": "internal\\pqaudit\\pqaudit_test.go",
+      "accessCount": 3,
+      "lastAccessed": 1776488442942,
+      "type": "file"
+    },
+    {
+      "path": "internal\\twin\\effects.go",
+      "accessCount": 3,
+      "lastAccessed": 1776488581869,
+      "type": "file"
+    },
+    {
+      "path": "internal\\twin\\twin_test.go",
+      "accessCount": 3,
+      "lastAccessed": 1776488584751,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\matrix.go",
+      "accessCount": 3,
+      "lastAccessed": 1776489388744,
+      "type": "file"
+    },
+    {
+      "path": "internal\\federated\\stats.go",
+      "accessCount": 3,
+      "lastAccessed": 1776489428085,
+      "type": "file"
+    },
+    {
+      "path": "internal\\agentic\\tools.go",
+      "accessCount": 3,
+      "lastAccessed": 1776519669604,
+      "type": "file"
+    },
+    {
+      "path": "internal\\audit\\audit.go",
+      "accessCount": 3,
+      "lastAccessed": 1776519722759,
+      "type": "file"
+    },
+    {
+      "path": "internal\\llm\\llm.go",
+      "accessCount": 2,
+      "lastAccessed": 1776482667014,
+      "type": "file"
+    },
+    {
+      "path": "internal\\pqaudit\\pqaudit_integration_test.go",
+      "accessCount": 2,
+      "lastAccessed": 1776482923224,
+      "type": "file"
+    },
+    {
+      "path": "internal\\federated\\federated_integration_test.go",
+      "accessCount": 2,
+      "lastAccessed": 1776483326325,
+      "type": "file"
+    },
+    {
+      "path": "internal\\incident\\incident.go",
+      "accessCount": 2,
+      "lastAccessed": 1776485808250,
+      "type": "file"
+    },
+    {
+      "path": "internal\\engine\\agentic_planner.go",
+      "accessCount": 2,
+      "lastAccessed": 1776486300953,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\bootstrap.go",
+      "accessCount": 2,
+      "lastAccessed": 1776489392161,
+      "type": "file"
+    },
+    {
+      "path": "internal\\causal\\pag.go",
+      "accessCount": 2,
+      "lastAccessed": 1776518061887,
+      "type": "file"
+    },
+    {
+      "path": "internal\\healing\\healer.go",
+      "accessCount": 2,
+      "lastAccessed": 1776519713720,
+      "type": "file"
+    },
+    {
+      "path": "Makefile",
+      "accessCount": 1,
+      "lastAccessed": 1776427010370,
+      "type": "file"
+    },
+    {
+      "path": "internal\\sandbox\\sandbox.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482588747,
+      "type": "file"
+    },
+    {
+      "path": "internal\\brain\\predictive.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482588811,
+      "type": "file"
+    },
+    {
+      "path": "internal\\consensus\\consensus.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482588932,
+      "type": "file"
+    },
+    {
+      "path": "internal\\chaos\\chaos.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482745705,
+      "type": "file"
+    },
+    {
+      "path": "internal\\autolearn\\autolearn.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482783489,
+      "type": "file"
+    },
+    {
+      "path": "internal\\correlation\\correlation_test.go",
+      "accessCount": 1,
+      "lastAccessed": 1776482829230,
+      "type": "file"
+    },
+    {
+      "path": "internal\\engine",
+      "accessCount": 1,
+      "lastAccessed": 1776485554541,
+      "type": "directory"
+    },
+    {
+      "path": "internal\\pqaudit\\encryption.go",
+      "accessCount": 1,
+      "lastAccessed": 1776488486977,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

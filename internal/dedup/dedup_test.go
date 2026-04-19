@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/dedup"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/dedup"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestFirstEventNotDuplicate(t *testing.T) {

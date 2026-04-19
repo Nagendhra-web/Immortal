@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/immortal-engine/immortal/internal/builder/template"
+	"github.com/Nagendhra-web/Immortal/internal/builder/template"
 )
 
 type Result struct {

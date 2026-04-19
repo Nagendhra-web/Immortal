@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/connector"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/connector"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestHTTPConnectorHealthy(t *testing.T) {

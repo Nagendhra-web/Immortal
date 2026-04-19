@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/healing"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/healing"
 )
 
 type RuleConfig struct {

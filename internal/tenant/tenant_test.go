@@ -3,7 +3,7 @@ package tenant_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/tenant"
+	"github.com/Nagendhra-web/Immortal/internal/tenant"
 )
 
 func TestCreateAndGet(t *testing.T) {

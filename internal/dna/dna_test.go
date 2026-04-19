@@ -3,7 +3,7 @@ package dna_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/dna"
+	"github.com/Nagendhra-web/Immortal/internal/dna"
 )
 
 func TestDNARecordAndBaseline(t *testing.T) {

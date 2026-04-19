@@ -3,7 +3,7 @@ package consensus
 import (
 	"sync"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // VerifyFunc determines if a verifier agrees that action should be taken.

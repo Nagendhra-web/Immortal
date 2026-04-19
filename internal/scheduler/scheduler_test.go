@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/scheduler"
+	"github.com/Nagendhra-web/Immortal/internal/scheduler"
 )
 
 func TestSchedulerRunsJobs(t *testing.T) {

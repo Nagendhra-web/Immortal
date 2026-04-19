@@ -3,7 +3,7 @@ package template_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/builder/template"
+	"github.com/Nagendhra-web/Immortal/internal/builder/template"
 )
 
 func TestGenerateGoAPI(t *testing.T) {

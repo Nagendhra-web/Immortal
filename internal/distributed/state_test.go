@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/distributed"
+	"github.com/Nagendhra-web/Immortal/internal/distributed"
 )
 
 func TestStateStorePutGet(t *testing.T) {

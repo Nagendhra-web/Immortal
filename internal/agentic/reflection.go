@@ -3,7 +3,7 @@ package agentic
 import (
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // Reflection captures the post-step self-critique for one iteration.

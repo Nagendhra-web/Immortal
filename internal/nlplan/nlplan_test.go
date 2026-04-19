@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/formal"
+	"github.com/Nagendhra-web/Immortal/internal/formal"
 )
 
 func TestCompiler_GrammarOnlyPath_ProducesValidPlan(t *testing.T) {

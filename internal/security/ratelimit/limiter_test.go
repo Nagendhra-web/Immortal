@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/security/ratelimit"
+	"github.com/Nagendhra-web/Immortal/internal/security/ratelimit"
 )
 
 func TestLimiterAllowsWithinLimit(t *testing.T) {

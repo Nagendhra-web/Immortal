@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/logger"
+	"github.com/Nagendhra-web/Immortal/internal/logger"
 )
 
 func TestLoggerOutput(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestEventIDsAreUnique(t *testing.T) {

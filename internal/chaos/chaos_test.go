@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/chaos"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/chaos"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestNewEngine(t *testing.T) {

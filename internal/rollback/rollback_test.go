@@ -3,7 +3,7 @@ package rollback_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/rollback"
+	"github.com/Nagendhra-web/Immortal/internal/rollback"
 )
 
 func TestRecordAndRollback(t *testing.T) {

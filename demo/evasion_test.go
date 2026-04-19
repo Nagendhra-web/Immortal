@@ -3,7 +3,7 @@ package demo_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/security/firewall"
+	"github.com/Nagendhra-web/Immortal/internal/security/firewall"
 )
 
 // ============================================================================

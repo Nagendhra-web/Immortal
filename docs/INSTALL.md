@@ -1,0 +1,118 @@
+# Installing Immortal
+
+Pick the path that matches your setup. All three land on the same binary.
+
+## 1. One-line installer (recommended)
+
+**macOS / Linux:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.sh | bash
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.ps1 | iex
+```
+
+The script tries a pre-built release binary first, falls back to `go install` if you have Go ≥ 1.25 on `PATH`.
+
+Env overrides:
+- `IMMORTAL_VERSION=v0.4.0` — pin a specific tag (default: `latest`)
+- `IMMORTAL_INSTALL=/opt/bin` — custom install directory
+
+## 2. Go install (from source)
+
+Requires Go 1.25+.
+
+```sh
+go install github.com/Nagendhra-web/Immortal/cmd/immortal@latest
+```
+
+To pin a version:
+
+```sh
+go install github.com/Nagendhra-web/Immortal/cmd/immortal@v0.4.0
+```
+
+## 3. Homebrew (macOS / Linux)
+
+```sh
+brew tap Nagendhra-web/immortal
+brew install immortal
+```
+
+The tap lives at [`Nagendhra-web/homebrew-immortal`](https://github.com/Nagendhra-web/homebrew-immortal) and is auto-bumped by GoReleaser on every release tag.
+
+## 4. Pre-built binaries
+
+Download the archive for your platform from the [Releases page](https://github.com/Nagendhra-web/Immortal/releases/latest):
+
+| Platform | Archive |
+|---|---|
+| Linux x86_64 | `immortal_linux_amd64.tar.gz` |
+| Linux arm64 | `immortal_linux_arm64.tar.gz` |
+| macOS x86_64 (Intel) | `immortal_darwin_amd64.tar.gz` |
+| macOS arm64 (Apple Silicon) | `immortal_darwin_arm64.tar.gz` |
+| Windows x86_64 | `immortal_windows_amd64.zip` |
+
+Each archive contains one `immortal` binary. Extract it, put it on your `PATH`, done.
+
+## 5. From source
+
+```sh
+git clone https://github.com/Nagendhra-web/Immortal
+cd Immortal
+make build
+./bin/immortal start
+```
+
+Useful make targets:
+- `make build` — compile to `./bin/immortal`
+- `make test` — run the full test suite (78 packages)
+- `make lint` — run `golangci-lint`
+
+## 6. Docker
+
+```sh
+docker build -t immortal:local .
+docker run -p 7777:7777 immortal:local start --api-port 7777
+```
+
+(A pre-built image on ghcr.io is planned — see issue #15.)
+
+---
+
+## Verifying the install
+
+```sh
+immortal version
+# immortal v0.4.0 · commit abc1234 · built 2026-04-19
+
+immortal start --pqaudit --twin --agentic --causal --topology --formal
+# open http://127.0.0.1:7777/  (landing)
+# open http://127.0.0.1:7777/dashboard/ (app)
+```
+
+## Uninstalling
+
+| Install method | Uninstall |
+|---|---|
+| `install.sh` / `install.ps1` | `rm $IMMORTAL_INSTALL/immortal` |
+| `go install` | `rm $(go env GOBIN)/immortal` |
+| Homebrew | `brew uninstall immortal && brew untap Nagendhra-web/immortal` |
+| Docker | `docker rmi immortal:local` |
+| Source | `rm -rf Immortal/` |
+
+No state lives outside the `$IMMORTAL_DATA` directory (default `~/.immortal`). Delete that to fully remove traces.
+
+## Troubleshooting
+
+**`command not found: immortal`** — the install directory isn't on your `PATH`. The installer prints a hint. On macOS/Linux add `export PATH="$PATH:$HOME/.local/bin"` to your shell rc.
+
+**`go: no matching versions for query "latest"`** — you're running Go < 1.25 or the tag hasn't been pushed yet. Update Go: https://go.dev/dl/
+
+**`brew install immortal` returns v0.2.0** — the Homebrew tap gets auto-bumped on release tags. If it's stale, open an issue on `Nagendhra-web/homebrew-immortal` and we'll bump the formula.
+
+**"module not found: github.com/Nagendhra-web/Immortal"** — Go is case-sensitive. The module path is exactly `github.com/Nagendhra-web/Immortal` (capital I, capital N), matching the GitHub repo.

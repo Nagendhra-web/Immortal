@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/throttle"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/throttle"
 )
 
 func TestThrottlerAllowsFirst(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/playbook"
+	"github.com/Nagendhra-web/Immortal/internal/playbook"
 )
 
 func TestNew(t *testing.T) {

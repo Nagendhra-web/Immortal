@@ -1,0 +1,102 @@
+# GoReleaser v2 — cross-platform release automation
+# Usage:
+#   git tag v0.4.0 && git push --tags
+#   (CI workflow at .github/workflows/release.yml runs goreleaser on tag push)
+#
+# Local dry-run:
+#   goreleaser release --snapshot --clean
+
+version: 2
+
+project_name: immortal
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: immortal
+    main: ./cmd/immortal
+    binary: immortal
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/Nagendhra-web/Immortal/internal/version.Version={{.Version}}
+      - -X github.com/Nagendhra-web/Immortal/internal/version.GitCommit={{.ShortCommit}}
+      - -X github.com/Nagendhra-web/Immortal/internal/version.BuildDate={{.Date}}
+
+archives:
+  - id: immortal
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Os }}_
+      {{- if eq .Arch "amd64" }}amd64
+      {{- else if eq .Arch "arm64" }}arm64
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - LICENSE
+      - README.md
+      - PERFORMANCE.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+
+release:
+  github:
+    owner: Nagendhra-web
+    name: Immortal
+  draft: false
+  prerelease: auto
+  header: |
+    ## Immortal {{ .Version }}
+    Self-healing engine · your apps never die.
+  footer: |
+    ---
+    **Install:**
+    ```sh
+    curl -fsSL https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.sh | bash
+    ```
+    Or via Go:
+    ```sh
+    go install github.com/Nagendhra-web/Immortal/cmd/immortal@{{ .Tag }}
+    ```
+
+brews:
+  - name: immortal
+    repository:
+      owner: Nagendhra-web
+      name: homebrew-immortal
+    folder: Formula
+    homepage: "https://github.com/Nagendhra-web/Immortal"
+    description: "Self-healing engine — your apps never die"
+    license: "Apache-2.0"
+    test: |
+      system "#{bin}/immortal", "version"
+    install: |
+      bin.install "immortal"

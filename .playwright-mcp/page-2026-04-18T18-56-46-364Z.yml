@@ -1,0 +1,98 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - link "Immortal home" [ref=e3] [cursor=pointer]:
+      - /url: "#/overview"
+      - generic [ref=e5]: IMMORTAL
+    - navigation "Main navigation" [ref=e6]:
+      - link "Overview" [ref=e7] [cursor=pointer]:
+        - /url: "#/overview"
+      - link "Topology" [ref=e8] [cursor=pointer]:
+        - /url: "#/topology"
+      - link "Audit Chain" [ref=e9] [cursor=pointer]:
+        - /url: "#/audit"
+      - link "Terminal" [ref=e10] [cursor=pointer]:
+        - /url: "#/terminal"
+      - link "Forecast" [ref=e11] [cursor=pointer]:
+        - /url: "#/forecast"
+      - link "Agent" [ref=e12] [cursor=pointer]:
+        - /url: "#/agent"
+      - link "Verify" [ref=e13] [cursor=pointer]:
+        - /url: "#/verify"
+      - link "Plan" [ref=e14] [cursor=pointer]:
+        - /url: "#/plan"
+      - link "Causes" [ref=e15] [cursor=pointer]:
+        - /url: "#/causes"
+      - link "Fleet" [ref=e16] [cursor=pointer]:
+        - /url: "#/fleet"
+      - link "Economics" [ref=e17] [cursor=pointer]:
+        - /url: "#/economics"
+      - link "Certs" [ref=e18] [cursor=pointer]:
+        - /url: "#/certificates"
+    - generic [ref=e19]:
+      - generic [ref=e20]: NODE · demo-node
+      - generic [ref=e21]: LIVE
+      - button "Open command palette (Ctrl+K)" [ref=e22] [cursor=pointer]: ⌘K
+  - main [ref=e23]:
+    - text: "02:56:43 PM · WARNING · memory usage: 79.0% 02:56:43 PM · INFO · cpu usage: 28.2% 02:56:33 PM · WARNING · memory usage: 80.0% 02:56:33 PM · INFO · cpu usage: 37.4% 02:56:23 PM · WARNING · memory usage: 79.0% 02:56:23 PM · INFO · cpu usage: 37.0% 02:56:13 PM · INFO · cpu usage: 45.4% 02:56:03 PM · INFO · cpu usage: 43.5% 02:56:03 PM · WARNING · memory usage: 80.0% 02:55:53 PM · WARNING · memory usage: 80.0% 02:55:53 PM · INFO · cpu usage: 30.9% 02:55:43 PM · INFO · cpu usage: 61.6% 02:55:33 PM · INFO · cpu usage: 65.1% 02:55:33 PM · WARNING · memory usage: 81.0% 02:55:23 PM · INFO · cpu usage: 56.4% 02:55:23 PM · WARNING · memory usage: 78.0% 02:55:13 PM · INFO · cpu usage: 51.3% 02:55:03 PM · INFO · cpu usage: 39.1% 02:55:03 PM · WARNING · memory usage: 78.0% 02:54:53 PM · CRITICAL · cpu usage: 100.0% 02:54:53 PM · WARNING · memory usage: 79.0%"
+    - generic [ref=e462]:
+      - heading "Economic Planner" [level=2] [ref=e463]
+      - generic [ref=e464]:
+        - generic [ref=e465]:
+          - generic [ref=e467]: Service Value Matrix
+          - table [ref=e468]:
+            - rowgroup [ref=e469]:
+              - row "Service USD/min Dep. Factor" [ref=e470]:
+                - columnheader "Service" [ref=e471]
+                - columnheader "USD/min" [ref=e472]
+                - columnheader "Dep. Factor" [ref=e473]
+            - rowgroup [ref=e474]:
+              - row "api 120 0.9" [ref=e475]:
+                - cell "api" [ref=e476]
+                - cell "120" [ref=e477]:
+                  - spinbutton "USD per minute for api" [ref=e478]: "120"
+                - cell "0.9" [ref=e479]:
+                  - spinbutton "Dependency factor for api" [ref=e480]: "0.9"
+              - row "db 80 0.7" [ref=e481]:
+                - cell "db" [ref=e482]
+                - cell "80" [ref=e483]:
+                  - spinbutton "USD per minute for db" [ref=e484]: "80"
+                - cell "0.7" [ref=e485]:
+                  - spinbutton "Dependency factor for db" [ref=e486]: "0.7"
+              - row "cache 30 0.4" [ref=e487]:
+                - cell "cache" [ref=e488]
+                - cell "30" [ref=e489]:
+                  - spinbutton "USD per minute for cache" [ref=e490]: "30"
+                - cell "0.4" [ref=e491]:
+                  - spinbutton "Dependency factor for cache" [ref=e492]: "0.4"
+          - generic [ref=e493]:
+            - generic [ref=e494]: "Simulate on:"
+            - combobox "Simulate on:" [ref=e495] [cursor=pointer]:
+              - option "api" [selected]
+              - option "db"
+              - option "cache"
+            - button "Simulate" [ref=e496] [cursor=pointer]
+        - generic [ref=e498]:
+          - generic [ref=e499]: $—
+          - generic [ref=e500]: Expected Net Value (best plan)
+  - dialog "Command palette" [ref=e140]:
+    - generic [ref=e141]:
+      - generic [ref=e142]:
+        - textbox "Command search" [ref=e143]:
+          - /placeholder: Type a command or search…
+        - generic [ref=e144]: ESC
+      - listbox "Commands" [ref=e145]
+      - generic [ref=e146]:
+        - generic [ref=e147]:
+          - generic [ref=e148]: ↑↓
+          - text: navigate
+        - generic [ref=e149]:
+          - generic [ref=e150]: ↵
+          - text: select
+        - generic [ref=e151]:
+          - generic [ref=e152]: ESC
+          - text: close
+  - complementary "Detail panel" [ref=e153]:
+    - generic [ref=e154]:
+      - generic [ref=e155]: Detail
+      - button "Close detail panel" [ref=e156] [cursor=pointer]: ✕
+  - alert

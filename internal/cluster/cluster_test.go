@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/cluster"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/cluster"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestClusterCreateAndPeers(t *testing.T) {

@@ -167,7 +167,7 @@ export default function App() {
             <span className="ml-3 text-xs text-zinc-500 font-mono">~/apps/production</span>
           </div>
           <div className="p-6 md:p-8 font-mono text-sm md:text-[15px] leading-relaxed">
-            <div className="text-zinc-400">$ <span className="text-zinc-100">go install github.com/immortal-engine/immortal/cmd/immortal@latest</span></div>
+            <div className="text-zinc-400">$ <span className="text-zinc-100">curl -fsSL https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.sh | bash</span></div>
             <div className="text-zinc-400 mt-1">$ <span className="text-zinc-100">immortal start --pqaudit --twin --agentic --causal --topology --formal</span></div>
             <div className="mt-6 space-y-1.5">
               <LogLine tag="[OBSERVE]" body="metric cpu=92% svc=db" color="text-cyan-400" delay={400} />

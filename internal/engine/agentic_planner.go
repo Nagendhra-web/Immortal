@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/agentic"
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/llm"
+	"github.com/Nagendhra-web/Immortal/internal/agentic"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/llm"
 )
 
 // heuristicPlanner is the default Planner when no LLM is configured.

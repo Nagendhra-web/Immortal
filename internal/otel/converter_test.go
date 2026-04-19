@@ -3,7 +3,7 @@ package otel
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // ---------- helpers ----------

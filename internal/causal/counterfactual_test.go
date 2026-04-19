@@ -5,7 +5,7 @@ import (
 	"math/rand/v2"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/causal"
+	"github.com/Nagendhra-web/Immortal/internal/causal"
 )
 
 // buildLinearDS builds a dataset where Y = slope*X + intercept + N(0, noise).

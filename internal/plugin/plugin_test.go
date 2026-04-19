@@ -3,7 +3,7 @@ package plugin_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/plugin"
+	"github.com/Nagendhra-web/Immortal/internal/plugin"
 )
 
 type testPlugin struct {

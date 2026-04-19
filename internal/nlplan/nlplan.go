@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/immortal-engine/immortal/internal/formal"
+	"github.com/Nagendhra-web/Immortal/internal/formal"
 )
 
 // CompileRequest asks the compiler to turn English into a plan.

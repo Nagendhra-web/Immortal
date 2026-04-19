@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/causality"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/causality"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestGraphLongChain(t *testing.T) {

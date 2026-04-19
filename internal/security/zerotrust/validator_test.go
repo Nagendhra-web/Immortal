@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/security/zerotrust"
+	"github.com/Nagendhra-web/Immortal/internal/security/zerotrust"
 )
 
 func TestIssueAndValidateToken(t *testing.T) {

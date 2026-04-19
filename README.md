@@ -104,11 +104,25 @@ PASS  TestRealWorld_CausalRootCauseBeatsCorrelation  — r=0.83 red herring demo
 ## Quick Start
 
 ```bash
-# Install
-go install github.com/immortal-engine/immortal/cmd/immortal@latest
+# macOS / Linux — one-liner installer (downloads release binary or builds from source)
+curl -fsSL https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.sh | bash
 
+# Windows — PowerShell
+irm https://raw.githubusercontent.com/Nagendhra-web/Immortal/main/scripts/install.ps1 | iex
+
+# Or via Go toolchain (requires Go 1.25+)
+go install github.com/Nagendhra-web/Immortal/cmd/immortal@latest
+
+# Or via Homebrew
+brew tap Nagendhra-web/immortal && brew install immortal
+```
+
+```bash
 # Start healing
 immortal start
+
+# With every advanced feature on
+immortal start --pqaudit --twin --agentic --causal --topology --formal
 
 # Ghost mode — observe first, heal later
 immortal start --ghost
@@ -116,6 +130,8 @@ immortal start --ghost
 # Watch specific targets
 immortal start --watch-url https://myapp.com --watch-process nginx --watch-log /var/log/app.log
 ```
+
+More install options (pre-built binaries, Docker, from source): **[docs/INSTALL.md](docs/INSTALL.md)**
 
 ## CLI
 
@@ -267,14 +283,14 @@ eng.Start()
 Every package works **standalone** — import just what you need:
 
 ```bash
-go get github.com/immortal-engine/immortal
+go get github.com/Nagendhra-web/Immortal
 ```
 
 <details>
 <summary><b>Anomaly Detection (DNA)</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/dna"
+import "github.com/Nagendhra-web/Immortal/internal/dna"
 
 d := dna.New("api-server")
 
@@ -295,7 +311,7 @@ score := d.HealthScore(map[string]float64{"response_time_ms": 500.0})
 <summary><b>Predictive Healing</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/predict"
+import "github.com/Nagendhra-web/Immortal/internal/predict"
 
 pred := predict.New()
 pred.SetThreshold("cpu_percent", 90.0)
@@ -313,7 +329,7 @@ fmt.Printf("Breach in: %s (confidence: %.0f%%)\n", p.TimeToThreshold, p.Confiden
 <summary><b>SLA Tracking</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/sla"
+import "github.com/Nagendhra-web/Immortal/internal/sla"
 
 tracker := sla.New()
 tracker.SetTarget("api-server", 99.9)
@@ -330,7 +346,7 @@ tracker.IsViolating("api-server") // true if below target
 <summary><b>Dependency Graph</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/dependency"
+import "github.com/Nagendhra-web/Immortal/internal/dependency"
 
 g := dependency.New()
 g.AddDependency("api", "database")
@@ -346,7 +362,7 @@ g.CriticalPath()                   // sorted by impact
 <summary><b>WAF (Web Application Firewall)</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/security/firewall"
+import "github.com/Nagendhra-web/Immortal/internal/security/firewall"
 
 fw := firewall.New()
 http.ListenAndServe(":8080", fw.Middleware(yourRouter))
@@ -362,7 +378,7 @@ if result.Blocked {
 <summary><b>Webhook Sender</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/webhook"
+import "github.com/Nagendhra-web/Immortal/internal/webhook"
 
 sender := webhook.New(webhook.Config{
     URL:    "https://your-endpoint.com/hook",
@@ -380,7 +396,7 @@ sender.Send(webhook.Payload{
 <summary><b>Audit Log</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/audit"
+import "github.com/Nagendhra-web/Immortal/internal/audit"
 
 log := audit.New(10000)
 log.Log("heal", "healer", "api-server", "restarted after crash", true)
@@ -395,7 +411,7 @@ log.Search("deploy")         // full-text search
 <summary><b>Pattern Detection</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/pattern"
+import "github.com/Nagendhra-web/Immortal/internal/pattern"
 
 det := pattern.New(5*time.Minute, 3) // 3+ occurrences in 5 min = pattern
 
@@ -412,7 +428,7 @@ det.Patterns()                            // sorted by frequency
 <summary><b>Chaos Testing</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/chaos"
+import "github.com/Nagendhra-web/Immortal/internal/chaos"
 
 // Create a chaos engine that injects events into your healing engine
 ch := chaos.New(engine.Ingest)
@@ -434,7 +450,7 @@ fmt.Printf("Healing score: %.0f%%\n", ch.Score()*100)
 <summary><b>Self-Learning Healer</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/autolearn"
+import "github.com/Nagendhra-web/Immortal/internal/autolearn"
 
 learner := autolearn.New(5) // suggest rules after 5 occurrences
 
@@ -454,7 +470,7 @@ for _, rule := range suggested {
 <summary><b>Incident Reports</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/incident"
+import "github.com/Nagendhra-web/Immortal/internal/incident"
 
 mgr := incident.New()
 
@@ -476,7 +492,7 @@ fmt.Println(mgr.GenerateMarkdown(inc.ID))
 <summary><b>Capacity Forecasting</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/capacity"
+import "github.com/Nagendhra-web/Immortal/internal/capacity"
 
 planner := capacity.New()
 planner.SetCapacity("disk_gb", 500) // 500 GB total
@@ -499,7 +515,7 @@ critical := planner.Critical(7)
 <summary><b>Metric Correlation</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/correlation"
+import "github.com/Nagendhra-web/Immortal/internal/correlation"
 
 engine := correlation.New()
 
@@ -523,7 +539,7 @@ leaders := engine.LeadingIndicators("latency")
 <summary><b>Healing Playbooks</b></summary>
 
 ```go
-import "github.com/immortal-engine/immortal/internal/playbook"
+import "github.com/Nagendhra-web/Immortal/internal/playbook"
 
 runner := playbook.New()
 

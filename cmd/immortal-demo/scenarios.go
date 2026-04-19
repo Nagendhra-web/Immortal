@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/engine"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/engine"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 // scenario is a function that injects chaos events into the engine.

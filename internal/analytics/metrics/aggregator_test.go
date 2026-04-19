@@ -3,7 +3,7 @@ package metrics_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/analytics/metrics"
+	"github.com/Nagendhra-web/Immortal/internal/analytics/metrics"
 )
 
 func TestAggregatorRecordAndSummarize(t *testing.T) {

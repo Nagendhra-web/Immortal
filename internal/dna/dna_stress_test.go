@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/dna"
+	"github.com/Nagendhra-web/Immortal/internal/dna"
 )
 
 func TestDNAConcurrentRecords(t *testing.T) {

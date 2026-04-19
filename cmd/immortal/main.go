@@ -1,6 +1,6 @@
 package main
 
-import "github.com/immortal-engine/immortal/internal/cli"
+import "github.com/Nagendhra-web/Immortal/internal/cli"
 
 func main() {
 	cli.Execute()

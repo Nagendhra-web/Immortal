@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/collector"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/collector"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestLogCollectorDetectsErrors(t *testing.T) {

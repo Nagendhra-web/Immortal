@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/connector"
-	"github.com/immortal-engine/immortal/internal/dna"
-	"github.com/immortal-engine/immortal/internal/engine"
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/healing"
-	"github.com/immortal-engine/immortal/internal/rules"
-	"github.com/immortal-engine/immortal/internal/security/firewall"
-	"github.com/immortal-engine/immortal/internal/security/ratelimit"
+	"github.com/Nagendhra-web/Immortal/internal/connector"
+	"github.com/Nagendhra-web/Immortal/internal/dna"
+	"github.com/Nagendhra-web/Immortal/internal/engine"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/healing"
+	"github.com/Nagendhra-web/Immortal/internal/rules"
+	"github.com/Nagendhra-web/Immortal/internal/security/firewall"
+	"github.com/Nagendhra-web/Immortal/internal/security/ratelimit"
 )
 
 // ============================================================================

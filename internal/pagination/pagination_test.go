@@ -3,7 +3,7 @@ package pagination_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/pagination"
+	"github.com/Nagendhra-web/Immortal/internal/pagination"
 )
 
 func TestPaginate(t *testing.T) {

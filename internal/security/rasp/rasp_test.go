@@ -3,7 +3,7 @@ package rasp_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/security/rasp"
+	"github.com/Nagendhra-web/Immortal/internal/security/rasp"
 )
 
 func TestRASPBlocksDangerousCommands(t *testing.T) {

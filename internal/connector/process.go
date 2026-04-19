@@ -7,7 +7,7 @@ import (
 
 	"github.com/shirou/gopsutil/v3/process"
 
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 type ProcessConfig struct {

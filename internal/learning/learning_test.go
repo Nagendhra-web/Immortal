@@ -3,7 +3,7 @@ package learning_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/learning"
+	"github.com/Nagendhra-web/Immortal/internal/learning"
 )
 
 func TestRecordAndFindPattern(t *testing.T) {

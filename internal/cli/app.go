@@ -12,17 +12,17 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/immortal-engine/immortal/internal/alert"
-	"github.com/immortal-engine/immortal/internal/api/rest"
-	"github.com/immortal-engine/immortal/internal/web/landing"
-	"github.com/immortal-engine/immortal/internal/collector"
-	"github.com/immortal-engine/immortal/internal/connector"
-	"github.com/immortal-engine/immortal/internal/engine"
-	"github.com/immortal-engine/immortal/internal/event"
-	"github.com/immortal-engine/immortal/internal/healing"
-	"github.com/immortal-engine/immortal/internal/middleware"
-	"github.com/immortal-engine/immortal/internal/rules"
-	"github.com/immortal-engine/immortal/internal/version"
+	"github.com/Nagendhra-web/Immortal/internal/alert"
+	"github.com/Nagendhra-web/Immortal/internal/api/rest"
+	"github.com/Nagendhra-web/Immortal/internal/web/landing"
+	"github.com/Nagendhra-web/Immortal/internal/collector"
+	"github.com/Nagendhra-web/Immortal/internal/connector"
+	"github.com/Nagendhra-web/Immortal/internal/engine"
+	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/healing"
+	"github.com/Nagendhra-web/Immortal/internal/middleware"
+	"github.com/Nagendhra-web/Immortal/internal/rules"
+	"github.com/Nagendhra-web/Immortal/internal/version"
 )
 
 func Execute() {

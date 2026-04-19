@@ -4,7 +4,7 @@ import (
 	"math/rand/v2"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/causal"
+	"github.com/Nagendhra-web/Immortal/internal/causal"
 )
 
 // makePAG is a small helper to build a PAG directly from a node list and edges.

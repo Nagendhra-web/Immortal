@@ -3,7 +3,7 @@ package notify_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/notify"
+	"github.com/Nagendhra-web/Immortal/internal/notify"
 )
 
 func TestDispatcherSendsToAll(t *testing.T) {

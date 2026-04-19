@@ -3,7 +3,7 @@ package autolearn_test
 import (
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/autolearn"
+	"github.com/Nagendhra-web/Immortal/internal/autolearn"
 )
 
 func TestNewLearner(t *testing.T) {

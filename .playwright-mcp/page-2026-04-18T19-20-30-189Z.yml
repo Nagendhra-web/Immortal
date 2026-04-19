@@ -1,0 +1,239 @@
+- generic [ref=e1]:
+  - navigation "Main navigation" [ref=e2]:
+    - generic [ref=e3]:
+      - link "Immortal home" [ref=e4] [cursor=pointer]:
+        - /url: "#/overview"
+        - img [ref=e6]
+        - generic [ref=e9]: Immortal
+      - button "Collapse sidebar" [expanded] [ref=e10] [cursor=pointer]:
+        - img [ref=e11]
+    - navigation "Application views" [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: Monitor
+        - link "Overview" [ref=e16] [cursor=pointer]:
+          - /url: "#/overview"
+          - img [ref=e17]
+          - generic [ref=e22]: Overview
+        - link "Topology" [ref=e23] [cursor=pointer]:
+          - /url: "#/topology"
+          - img [ref=e24]
+          - generic [ref=e29]: Topology
+        - link "Audit Chain" [ref=e30] [cursor=pointer]:
+          - /url: "#/audit"
+          - img [ref=e31]
+          - generic [ref=e34]: Audit
+        - link "Terminal" [ref=e35] [cursor=pointer]:
+          - /url: "#/terminal"
+          - img [ref=e36]
+          - generic [ref=e39]: Terminal
+      - generic [ref=e40]:
+        - generic [ref=e41]: Reason
+        - link "Forecast" [ref=e42] [cursor=pointer]:
+          - /url: "#/forecast"
+          - img [ref=e43]
+          - generic [ref=e45]: Forecast
+        - link "Agent" [ref=e46] [cursor=pointer]:
+          - /url: "#/agent"
+          - img [ref=e47]
+          - generic [ref=e50]: Agent
+        - link "Verify" [ref=e51] [cursor=pointer]:
+          - /url: "#/verify"
+          - img [ref=e52]
+          - generic [ref=e54]: Verify
+        - link "Plan" [ref=e55] [cursor=pointer]:
+          - /url: "#/plan"
+          - img [ref=e56]
+          - generic [ref=e58]: Plan
+        - link "Causes" [active] [ref=e59] [cursor=pointer]:
+          - /url: "#/causes"
+          - img [ref=e60]
+          - generic [ref=e63]: Causes
+      - generic [ref=e64]:
+        - generic [ref=e65]: Scale
+        - link "Fleet" [ref=e66] [cursor=pointer]:
+          - /url: "#/fleet"
+          - img [ref=e67]
+          - generic [ref=e72]: Fleet
+        - link "Economics" [ref=e73] [cursor=pointer]:
+          - /url: "#/economics"
+          - img [ref=e74]
+          - generic [ref=e76]: Economics
+        - link "Certificates" [ref=e77] [cursor=pointer]:
+          - /url: "#/certificates"
+          - img [ref=e78]
+          - generic [ref=e81]: Certificates
+    - generic [ref=e82]:
+      - button "Toggle dark mode" [ref=e83] [cursor=pointer]:
+        - img [ref=e84]
+        - generic [ref=e87]: Theme
+      - generic [ref=e90]: demo-node
+  - generic [ref=e91]:
+    - banner [ref=e92]:
+      - navigation "Breadcrumb" [ref=e93]:
+        - generic [ref=e94]: Monitor
+        - generic [ref=e95]: /
+        - generic [ref=e96]: Overview
+      - button "Open command palette (Ctrl+K)" [ref=e98] [cursor=pointer]:
+        - img [ref=e99]
+        - generic [ref=e102]: Search commands…
+        - generic [ref=e103]: ⌘K
+      - generic [ref=e104]:
+        - generic "Live data active" [ref=e105]:
+          - generic [ref=e107]: Live
+        - generic [ref=e108]: demo-node
+        - img "User avatar" [ref=e109]: I
+    - main [ref=e110]:
+      - generic [ref=e111]:
+        - generic [ref=e112]:
+          - heading "Overview" [level=1] [ref=e113]
+          - paragraph [ref=e114]: System health and live event feed
+        - generic [ref=e116]:
+          - generic [ref=e117]: Severity
+          - button "All" [ref=e118] [cursor=pointer]
+          - button "info" [ref=e119] [cursor=pointer]
+          - button "warning" [ref=e120] [cursor=pointer]
+          - button "critical" [ref=e121] [cursor=pointer]
+          - generic [ref=e122]: Range
+          - button "5m" [ref=e123] [cursor=pointer]
+          - button "15m" [ref=e124] [cursor=pointer]
+          - button "1h" [ref=e125] [cursor=pointer]
+          - button "6h" [ref=e126] [cursor=pointer]
+          - button "24h" [ref=e127] [cursor=pointer]
+          - searchbox "Search events" [ref=e128]
+          - button "● Live" [ref=e129] [cursor=pointer]
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - generic [ref=e132]: Uptime
+            - generic [ref=e133]: 1m23.662541s
+          - generic [ref=e134]:
+            - generic [ref=e135]: Events Processed
+            - generic [ref=e136]: "15"
+          - generic [ref=e137]:
+            - generic [ref=e138]: Healing Actions
+            - generic [ref=e139]: —
+          - generic [ref=e140]:
+            - generic [ref=e141]: Services Healthy
+            - generic [ref=e142]: 0/4
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - heading "Live Feed" [level=2] [ref=e146]
+            - log "Live event feed" [ref=e149]:
+              - 'button "03:19:14 PM WARNING memory usage: 87.0% system" [ref=e373] [cursor=pointer]':
+                - generic [ref=e374]: 03:19:14 PM
+                - generic [ref=e375]: WARNING
+                - generic [ref=e376]: "memory usage: 87.0%"
+                - generic [ref=e377]: system
+              - 'button "03:19:14 PM INFO cpu usage: 44.8% system" [ref=e378] [cursor=pointer]':
+                - generic [ref=e379]: 03:19:14 PM
+                - generic [ref=e380]: INFO
+                - generic [ref=e381]: "cpu usage: 44.8%"
+                - generic [ref=e382]: system
+              - 'button "03:19:24 PM WARNING memory usage: 86.0% system" [ref=e383] [cursor=pointer]':
+                - generic [ref=e384]: 03:19:24 PM
+                - generic [ref=e385]: WARNING
+                - generic [ref=e386]: "memory usage: 86.0%"
+                - generic [ref=e387]: system
+              - 'button "03:19:24 PM INFO cpu usage: 34.1% system" [ref=e388] [cursor=pointer]':
+                - generic [ref=e389]: 03:19:24 PM
+                - generic [ref=e390]: INFO
+                - generic [ref=e391]: "cpu usage: 34.1%"
+                - generic [ref=e392]: system
+              - 'button "03:19:34 PM INFO cpu usage: 53.2% system" [ref=e393] [cursor=pointer]':
+                - generic [ref=e394]: 03:19:34 PM
+                - generic [ref=e395]: INFO
+                - generic [ref=e396]: "cpu usage: 53.2%"
+                - generic [ref=e397]: system
+              - 'button "03:19:34 PM WARNING memory usage: 89.0% system" [ref=e398] [cursor=pointer]':
+                - generic [ref=e399]: 03:19:34 PM
+                - generic [ref=e400]: WARNING
+                - generic [ref=e401]: "memory usage: 89.0%"
+                - generic [ref=e402]: system
+              - 'button "03:19:44 PM WARNING memory usage: 89.0% system" [ref=e403] [cursor=pointer]':
+                - generic [ref=e404]: 03:19:44 PM
+                - generic [ref=e405]: WARNING
+                - generic [ref=e406]: "memory usage: 89.0%"
+                - generic [ref=e407]: system
+              - 'button "03:19:44 PM INFO cpu usage: 61.1% system" [ref=e408] [cursor=pointer]':
+                - generic [ref=e409]: 03:19:44 PM
+                - generic [ref=e410]: INFO
+                - generic [ref=e411]: "cpu usage: 61.1%"
+                - generic [ref=e412]: system
+              - 'button "03:19:54 PM WARNING memory usage: 89.0% system" [ref=e413] [cursor=pointer]':
+                - generic [ref=e414]: 03:19:54 PM
+                - generic [ref=e415]: WARNING
+                - generic [ref=e416]: "memory usage: 89.0%"
+                - generic [ref=e417]: system
+              - 'button "03:19:54 PM INFO cpu usage: 39.6% system" [ref=e418] [cursor=pointer]':
+                - generic [ref=e419]: 03:19:54 PM
+                - generic [ref=e420]: INFO
+                - generic [ref=e421]: "cpu usage: 39.6%"
+                - generic [ref=e422]: system
+              - 'button "03:20:04 PM INFO cpu usage: 48.8% system" [ref=e423] [cursor=pointer]':
+                - generic [ref=e424]: 03:20:04 PM
+                - generic [ref=e425]: INFO
+                - generic [ref=e426]: "cpu usage: 48.8%"
+                - generic [ref=e427]: system
+              - 'button "03:20:04 PM WARNING memory usage: 89.0% system" [ref=e428] [cursor=pointer]':
+                - generic [ref=e429]: 03:20:04 PM
+                - generic [ref=e430]: WARNING
+                - generic [ref=e431]: "memory usage: 89.0%"
+                - generic [ref=e432]: system
+              - 'button "03:20:14 PM INFO cpu usage: 51.6% system" [ref=e433] [cursor=pointer]':
+                - generic [ref=e434]: 03:20:14 PM
+                - generic [ref=e435]: INFO
+                - generic [ref=e436]: "cpu usage: 51.6%"
+                - generic [ref=e437]: system
+              - 'button "03:20:14 PM WARNING memory usage: 89.0% system" [ref=e438] [cursor=pointer]':
+                - generic [ref=e439]: 03:20:14 PM
+                - generic [ref=e440]: WARNING
+                - generic [ref=e441]: "memory usage: 89.0%"
+                - generic [ref=e442]: system
+              - 'button "03:20:24 PM INFO cpu usage: 53.3% system" [ref=e443] [cursor=pointer]':
+                - generic [ref=e444]: 03:20:24 PM
+                - generic [ref=e445]: INFO
+                - generic [ref=e446]: "cpu usage: 53.3%"
+                - generic [ref=e447]: system
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - heading "Services" [level=2] [ref=e172]
+              - generic [ref=e173]: 0 of 4 healthy
+            - generic [ref=e175]:
+              - button "system-metrics unknown 07:03:58 PM" [ref=e448] [cursor=pointer]:
+                - generic "system-metrics" [ref=e451]
+                - generic [ref=e452]: unknown
+                - generic [ref=e453]: 07:03:58 PM
+              - button "api unknown 07:03:58 PM" [ref=e454] [cursor=pointer]:
+                - generic "api" [ref=e457]
+                - generic [ref=e458]: unknown
+                - generic [ref=e459]: 07:03:58 PM
+              - button "db unknown 07:03:58 PM" [ref=e460] [cursor=pointer]:
+                - generic "db" [ref=e463]
+                - generic [ref=e464]: unknown
+                - generic [ref=e465]: 07:03:58 PM
+              - button "cache unknown 07:03:58 PM" [ref=e466] [cursor=pointer]:
+                - generic "cache" [ref=e469]
+                - generic [ref=e470]: unknown
+                - generic [ref=e471]: 07:03:58 PM
+  - dialog "Command palette":
+    - combobox:
+      - generic:
+        - img
+        - searchbox "Command search"
+        - generic: ESC
+      - listbox "Commands"
+      - generic:
+        - generic:
+          - generic: ↑↓
+          - text: navigate
+        - generic:
+          - generic: ↵
+          - text: select
+        - generic:
+          - generic: ESC
+          - text: close
+  - complementary "Detail panel" [ref=e200]:
+    - generic [ref=e201]:
+      - heading "Detail" [level=2] [ref=e202]
+      - button "Close detail panel" [ref=e203] [cursor=pointer]:
+        - img [ref=e204]
+  - alert

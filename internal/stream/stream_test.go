@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/stream"
+	"github.com/Nagendhra-web/Immortal/internal/stream"
 )
 
 func TestEmitAndSubscribe(t *testing.T) {

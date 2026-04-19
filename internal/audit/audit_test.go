@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/audit"
+	"github.com/Nagendhra-web/Immortal/internal/audit"
 )
 
 func TestNewDefaults(t *testing.T) {

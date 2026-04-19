@@ -1,0 +1,313 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "Immortal" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+        - generic [ref=e10]: Immortal
+      - generic [ref=e11]:
+        - link "Features" [ref=e12] [cursor=pointer]:
+          - /url: "#features"
+        - link "How it works" [ref=e13] [cursor=pointer]:
+          - /url: "#how"
+        - link "Benchmarks" [ref=e14] [cursor=pointer]:
+          - /url: "#benchmarks"
+        - link "FAQ" [ref=e15] [cursor=pointer]:
+          - /url: "#faq"
+      - generic [ref=e16]:
+        - link "GitHub 1.2k" [ref=e17] [cursor=pointer]:
+          - /url: https://github.com/Nagendhra-web/Immortal
+          - img [ref=e18]
+          - generic [ref=e21]: GitHub
+          - img [ref=e22]
+          - generic [ref=e24]: 1.2k
+        - link "Launch Dashboard" [ref=e25] [cursor=pointer]:
+          - /url: /dashboard/
+          - text: Launch Dashboard
+          - img [ref=e26]
+  - generic [ref=e29]:
+    - generic [ref=e30]: v0.4 — predictive healing shipped
+    - heading "Your apps never die." [level=1] [ref=e32]:
+      - text: Your apps
+      - text: never die.
+    - paragraph [ref=e33]: The open-source self-healing engine that predicts outages, simulates fixes, and proves every action it took. Before your pager ever goes off.
+    - generic [ref=e34]:
+      - link "Get started" [ref=e35] [cursor=pointer]:
+        - /url: /dashboard/
+        - text: Get started
+        - img [ref=e36]
+      - link "View on GitHub" [active] [ref=e38] [cursor=pointer]:
+        - /url: https://github.com/Nagendhra-web/Immortal
+        - img [ref=e39]
+        - text: View on GitHub
+    - paragraph [ref=e42]: Apache 2.0 · 78 packages · zero runtime dependencies
+  - generic [ref=e44]:
+    - generic [ref=e49]: ~/apps/production
+    - generic [ref=e50]:
+      - generic [ref=e51]: $ go install github.com/immortal-engine/immortal/cmd/immortal@latest
+      - generic [ref=e52]: $ immortal start --pqaudit --twin --agentic --causal --topology --formal
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: "[OBSERVE]"
+          - generic [ref=e56]: metric cpu=92% svc=db
+        - generic [ref=e57]:
+          - generic [ref=e58]: "[PREDICT]"
+          - generic [ref=e59]: breach in 4m20s, confidence 0.87
+        - generic [ref=e60]:
+          - generic [ref=e61]: "[PLAN]"
+          - generic [ref=e62]: failover(db) + restart(api) — expected $12,400 loss avoided
+        - generic [ref=e63]:
+          - generic [ref=e64]: "[VERIFY]"
+          - generic [ref=e65]: plan proven safe, cert ABC123...
+        - generic [ref=e66]:
+          - generic [ref=e67]: "[HEAL]"
+          - generic [ref=e68]: executed in 842ms
+        - generic [ref=e69]:
+          - generic [ref=e70]: "[PROVE]"
+          - generic [ref=e71]: audit entry signed, chain verified
+      - generic [ref=e72]:
+        - img [ref=e73]
+        - generic [ref=e75]: Incident resolved before it happened.
+  - generic [ref=e76]:
+    - generic [ref=e77]:
+      - paragraph [ref=e78]: Capabilities
+      - heading "Nothing else in the space comes close." [level=2] [ref=e79]:
+        - text: Nothing else in the space
+        - text: comes close.
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - img [ref=e82]
+        - heading "Agentic healing" [level=3] [ref=e85]
+        - paragraph [ref=e86]: Multi-step ReAct loop — plan → act → observe → re-plan.
+      - generic [ref=e87]:
+        - img [ref=e88]
+        - heading "Digital twin" [level=3] [ref=e93]
+        - paragraph [ref=e94]: Simulates healing plans against a shadow state before running them.
+      - generic [ref=e95]:
+        - img [ref=e96]
+        - heading "Post-quantum audit" [level=3] [ref=e99]
+        - paragraph [ref=e100]: Ed25519-signed, Merkle-rooted chain. Every action proven.
+      - generic [ref=e101]:
+        - img [ref=e102]
+        - heading "Federated learning" [level=3] [ref=e107]
+        - paragraph [ref=e108]: Fleet-wide anomaly baselines. Raw metrics never leave the node.
+      - generic [ref=e109]:
+        - img [ref=e110]
+        - heading "Causal inference" [level=3] [ref=e112]
+        - paragraph [ref=e113]: PC + FCI + do-calculus. Finds true root causes, not correlations.
+      - generic [ref=e114]:
+        - img [ref=e115]
+        - heading "Formal verification" [level=3] [ref=e118]
+        - paragraph [ref=e119]: TLA+-style model checker with cryptographic certificates.
+      - generic [ref=e120]:
+        - img [ref=e121]
+        - heading "OpenTelemetry native" [level=3] [ref=e123]
+        - paragraph [ref=e124]: OTLP/HTTP at :4318. Topology auto-discovers from traces.
+      - generic [ref=e125]:
+        - img [ref=e126]
+        - heading "867k events/sec" [level=3] [ref=e129]
+        - paragraph [ref=e130]: Sustained throughput on a laptop. −19% with every feature on.
+      - generic [ref=e131]:
+        - img [ref=e132]
+        - heading "Single binary" [level=3] [ref=e135]
+        - paragraph [ref=e136]: 16 MB Go binary. No agent, no runtime deps, no external services.
+  - generic [ref=e137]:
+    - generic [ref=e138]:
+      - paragraph [ref=e139]: The loop
+      - heading "See. Reason. Prove." [level=2] [ref=e140]
+    - generic [ref=e141]:
+      - generic [ref=e142]:
+        - generic [ref=e143]: "01"
+        - heading "Observe" [level=3] [ref=e144]
+        - paragraph [ref=e145]: OpenTelemetry ingestion. Metric, log, and trace normalization. Predictive twin observes every signal.
+      - generic [ref=e146]:
+        - generic [ref=e147]: "02"
+        - heading "Reason" [level=3] [ref=e148]
+        - paragraph [ref=e149]: Agentic loop plans multi-step healing. Causal inference finds true root causes. Economic planner picks the cheapest safe plan.
+      - generic [ref=e150]:
+        - generic [ref=e151]: "03"
+        - heading "Prove" [level=3] [ref=e152]
+        - paragraph [ref=e153]: Formal model-checker verifies invariants before execution. Post-quantum audit chain signs every action. Cryptographic certificate for auditors.
+  - generic [ref=e154]:
+    - generic [ref=e155]:
+      - paragraph [ref=e156]: The dashboard
+      - heading "See everything at a glance." [level=2] [ref=e157]
+    - generic [ref=e158]:
+      - generic [ref=e163]: immortal.local/dashboard
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - generic [ref=e166]: Immortal
+          - generic [ref=e167]:
+            - generic [ref=e168]: Monitor
+            - generic [ref=e169]: Overview
+            - generic [ref=e170]: Topology
+            - generic [ref=e171]: Audit
+            - generic [ref=e172]: Reason
+            - generic [ref=e173]: Forecast
+            - generic [ref=e174]: Agent
+            - generic [ref=e175]: Verify
+        - generic [ref=e176]:
+          - generic [ref=e177]: Overview
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - generic [ref=e180]: Uptime
+              - generic [ref=e181]: 47d 12h
+            - generic [ref=e182]:
+              - generic [ref=e183]: Events
+              - generic [ref=e184]: 2.1M
+            - generic [ref=e185]:
+              - generic [ref=e186]: Heals
+              - generic [ref=e187]: "84"
+            - generic [ref=e188]:
+              - generic [ref=e189]: Services
+              - generic [ref=e190]: 12/12
+          - generic [ref=e191]:
+            - generic [ref=e192]: Live feed
+            - generic [ref=e193]:
+              - generic [ref=e194]: 14:32:04
+              - generic [ref=e195]: heal
+              - generic [ref=e196]: db · restarted
+            - generic [ref=e197]:
+              - generic [ref=e198]: 14:31:58
+              - generic [ref=e199]: predict
+              - generic [ref=e200]: cpu breach in 4m
+            - generic [ref=e201]:
+              - generic [ref=e202]: 14:30:12
+              - generic [ref=e203]: verify
+              - generic [ref=e204]: chain ok · 1,284 entries
+    - link "Try the dashboard" [ref=e206] [cursor=pointer]:
+      - /url: /dashboard/
+      - text: Try the dashboard
+      - img [ref=e207]
+  - generic [ref=e209]:
+    - generic [ref=e210]:
+      - paragraph [ref=e211]: Benchmarks
+      - heading "Built to survive production." [level=2] [ref=e212]
+      - paragraph [ref=e213]: "Real numbers from `go test -bench` on an i7-11370H."
+    - table [ref=e215]:
+      - rowgroup [ref=e216]:
+        - row "Sustained ingest throughput 867,000 events / sec" [ref=e217]:
+          - cell "Sustained ingest throughput" [ref=e218]
+          - cell "867,000 events / sec" [ref=e219]
+        - row "With every advanced feature on 706,000 events / sec (−19%)" [ref=e220]:
+          - cell "With every advanced feature on" [ref=e221]
+          - cell "706,000 events / sec (−19%)" [ref=e222]
+        - row "Publish-path latency (p99) < 1 µs" [ref=e223]:
+          - cell "Publish-path latency (p99)" [ref=e224]
+          - cell "< 1 µs" [ref=e225]
+        - row "Heap delta at 100k events 0.19 MB (after GC)" [ref=e226]:
+          - cell "Heap delta at 100k events" [ref=e227]
+          - cell "0.19 MB (after GC)" [ref=e228]
+        - row "Total binary size 16 MB" [ref=e229]:
+          - cell "Total binary size" [ref=e230]
+          - cell "16 MB" [ref=e231]
+        - row "External runtime dependencies 0" [ref=e232]:
+          - cell "External runtime dependencies" [ref=e233]
+          - cell "0" [ref=e234]
+  - generic [ref=e236]:
+    - generic [ref=e237]: Apache 2.0
+    - heading "Free. Open source. Forever." [level=2] [ref=e238]:
+      - text: Free. Open source.
+      - text: Forever.
+    - paragraph [ref=e239]: No seats. No per-host billing. No phone-home. If you run it, it's yours.
+    - generic [ref=e240]:
+      - link "Star on GitHub" [ref=e241] [cursor=pointer]:
+        - /url: https://github.com/Nagendhra-web/Immortal
+        - img [ref=e242]
+        - text: Star on GitHub
+      - link "Enterprise support" [ref=e245] [cursor=pointer]:
+        - /url: mailto:hello@immortal.dev
+  - generic [ref=e246]:
+    - generic [ref=e247]:
+      - paragraph [ref=e248]: Questions
+      - heading "Asked honestly." [level=2] [ref=e249]
+    - generic [ref=e250]:
+      - heading "How is this different from Kubernetes healing?" [level=3] [ref=e252]:
+        - button "How is this different from Kubernetes healing?" [ref=e253] [cursor=pointer]:
+          - text: How is this different from Kubernetes healing?
+          - img [ref=e254]
+      - heading "Does it require a specific observability tool?" [level=3] [ref=e257]:
+        - button "Does it require a specific observability tool?" [ref=e258] [cursor=pointer]:
+          - text: Does it require a specific observability tool?
+          - img [ref=e259]
+      - heading "Can I run it on-prem or in an air-gapped environment?" [level=3] [ref=e262]:
+        - button "Can I run it on-prem or in an air-gapped environment?" [ref=e263] [cursor=pointer]:
+          - text: Can I run it on-prem or in an air-gapped environment?
+          - img [ref=e264]
+      - heading "What makes the audit chain post-quantum?" [level=3] [ref=e267]:
+        - button "What makes the audit chain post-quantum?" [ref=e268] [cursor=pointer]:
+          - text: What makes the audit chain post-quantum?
+          - img [ref=e269]
+      - heading "How does federated learning preserve privacy?" [level=3] [ref=e272]:
+        - button "How does federated learning preserve privacy?" [ref=e273] [cursor=pointer]:
+          - text: How does federated learning preserve privacy?
+          - img [ref=e274]
+      - heading "Can I extend it with my own healing actions?" [level=3] [ref=e277]:
+        - button "Can I extend it with my own healing actions?" [ref=e278] [cursor=pointer]:
+          - text: Can I extend it with my own healing actions?
+          - img [ref=e279]
+  - contentinfo [ref=e281]:
+    - generic [ref=e282]:
+      - generic [ref=e283]:
+        - generic [ref=e284]:
+          - generic [ref=e285]: Product
+          - list [ref=e286]:
+            - listitem [ref=e287]:
+              - link "Features" [ref=e288] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e289]:
+              - link "Dashboard" [ref=e290] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e291]:
+              - link "Docs" [ref=e292] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e293]:
+              - link "Changelog" [ref=e294] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=e295]:
+          - generic [ref=e296]: Company
+          - list [ref=e297]:
+            - listitem [ref=e298]:
+              - link "About" [ref=e299] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e300]:
+              - link "Blog" [ref=e301] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e302]:
+              - link "Careers" [ref=e303] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e304]:
+              - link "Contact" [ref=e305] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=e306]:
+          - generic [ref=e307]: Resources
+          - list [ref=e308]:
+            - listitem [ref=e309]:
+              - link "GitHub" [ref=e310] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e311]:
+              - link "Discord" [ref=e312] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e313]:
+              - link "Twitter" [ref=e314] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e315]:
+              - link "Status" [ref=e316] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=e317]:
+          - generic [ref=e318]: Legal
+          - list [ref=e319]:
+            - listitem [ref=e320]:
+              - link "Apache 2.0" [ref=e321] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e322]:
+              - link "Security" [ref=e323] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e324]:
+              - link "Privacy" [ref=e325] [cursor=pointer]:
+                - /url: "#"
+      - generic [ref=e326]:
+        - generic [ref=e327]:
+          - img [ref=e329]
+          - generic [ref=e331]: © 2026 Immortal Engine
+        - generic [ref=e332]: Your apps never die.

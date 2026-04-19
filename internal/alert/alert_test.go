@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/alert"
-	"github.com/immortal-engine/immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/alert"
+	"github.com/Nagendhra-web/Immortal/internal/event"
 )
 
 func TestAlertFires(t *testing.T) {

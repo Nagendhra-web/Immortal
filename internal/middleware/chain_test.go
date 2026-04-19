@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/immortal-engine/immortal/internal/middleware"
+	"github.com/Nagendhra-web/Immortal/internal/middleware"
 )
 
 func TestChain(t *testing.T) {

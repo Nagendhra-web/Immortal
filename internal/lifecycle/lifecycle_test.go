@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/immortal-engine/immortal/internal/lifecycle"
+	"github.com/Nagendhra-web/Immortal/internal/lifecycle"
 )
 
 func TestShutdownRunsHooks(t *testing.T) {

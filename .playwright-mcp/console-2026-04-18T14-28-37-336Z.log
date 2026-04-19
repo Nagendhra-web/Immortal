@@ -1,0 +1,28 @@
+[     102ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[     138ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/favicon.ico:0
+[    5091ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   10083ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   15088ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   20085ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   25088ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   30085ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   35083ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   40091ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   45086ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   50095ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   55086ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   60098ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   65091ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   70084ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   77138ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/status:0
+[   77138ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/health:0
+[   77139ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/events?limit=20:0
+[   77148ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   77149ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/v4/audit/entries?limit=10:0
+[   77150ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/recommendations:0
+[   82109ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/status:0
+[   82110ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/health:0
+[   82110ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/events?limit=20:0
+[   82114ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/v5/topology/snapshot:0
+[   82124ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/v4/audit/entries?limit=10:0
+[   82125ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:17777/api/recommendations:0

@@ -1,0 +1,21 @@
+[     996ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/favicon.ico:0
+[   43752ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:17777/api/v5/forecast:0
+[   43760ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43760ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43760ms] [ERROR] Error: <text> attribute y: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <text> attribute y: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <text> attribute y: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <text> attribute y: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y1: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <line> attribute y2: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <text> attribute y: Expected length, "NaN". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <path> attribute d: Expected number, "M199.3,NaN L225.2,NaN L…". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <path> attribute d: Expected number, "M199.3,NaN L225.2,NaN L…". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <path> attribute d: Expected number, "M199.3,NaN L225.2,NaN L…". @ http://127.0.0.1:17777/dashboard/app.js:533
+[   43761ms] [ERROR] Error: <path> attribute d: Expected number, "M44.0,NaN L69.9,NaN L9…". @ http://127.0.0.1:17777/dashboard/app.js:533
