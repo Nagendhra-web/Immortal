@@ -49,6 +49,30 @@ const FAQS = [
   },
 ]
 
+const GITHUB_REPO = "Nagendhra-web/Immortal"
+
+function useGithubStars() {
+  const [stars, setStars] = useState<number | null>(null)
+  useEffect(() => {
+    let abort = false
+    fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!abort && d && typeof d.stargazers_count === "number") {
+          setStars(d.stargazers_count)
+        }
+      })
+      .catch(() => {})
+    return () => { abort = true }
+  }, [])
+  return stars
+}
+
+function fmtStars(n: number): string {
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k"
+  return String(n)
+}
+
 function LogLine({ tag, body, color, delay }: { tag: string; body: string; color: string; delay: number }) {
   const [visible, setVisible] = useState(false)
   useEffect(() => {
@@ -64,6 +88,7 @@ function LogLine({ tag, body, color, delay }: { tag: string; body: string; color
 }
 
 export default function App() {
+  const stars = useGithubStars()
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
       {/* Nav */}
@@ -83,11 +108,15 @@ export default function App() {
           </div>
           <div className="ml-auto flex items-center gap-3">
             <Button variant="outline" size="sm" asChild>
-              <a href="https://github.com/Nagendhra-web/Immortal" target="_blank" rel="noreferrer">
+              <a href={`https://github.com/${GITHUB_REPO}`} target="_blank" rel="noreferrer">
                 <Github className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">GitHub</span>
-                <Star className="h-3 w-3 ml-2 fill-ember-500 text-ember-500" />
-                <span className="ml-1 text-xs font-medium">1.2k</span>
+                {stars !== null && (
+                  <>
+                    <Star className="h-3 w-3 ml-2 fill-ember-500 text-ember-500" />
+                    <span className="ml-1 text-xs font-medium">{fmtStars(stars)}</span>
+                  </>
+                )}
               </a>
             </Button>
             <Button size="sm" asChild>
