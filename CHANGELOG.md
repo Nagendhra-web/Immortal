@@ -6,6 +6,35 @@ Immortal follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-04-19
+
+Platform release. Closes every remaining roadmap issue. 86 Go packages, 0 failing tests.
+
+### Added
+
+- **Kubernetes operator** at `operator/`. Three CRDs (`Intent`, `Playbook`, `Incident`) with validation schemas + status subresources. Full Helm chart with Deployment + ConfigMap + RBAC + Service + ServiceMonitor + hardened pod security (non-root, seccomp=RuntimeDefault, read-only root filesystem).
+- **OTLP trace ingest signals** (`internal/otel/signals.go`). Rolling 5-minute aggregator derives per-service `LatencyP99`, `LatencyCoeffVar`, `ErrorRate`, `RetryRate`, and dependency graph from OTLP traces. Feeds directly into `evolve.SignalBag` so architecture advice reflects live traffic rather than synthetic numbers.
+- **Slack + Discord ChatOps** (`internal/chatops/chatops.go`). Parser + dispatcher for `/immortal {status, incidents, explain, suggest, pause, resume}` with Slack Block Kit and Discord embed formatters. Every command is audit-logged via the pluggable `Auditor` interface. Zero external SDK dependencies.
+- **eBPF-style host observer** (`internal/ebpf/`). Linux `/proc`-backed observer tracks TCP retransmit rate, fork rate, open-files pressure, and context switches. Watcher goroutine + `SignalsReport` maps to retry-storm / FD-exhaustion / runaway-workload risk scores. No-op implementation on macOS/Windows keeps the engine portable. A cilium/ebpf kprobe path is tracked as follow-up polish.
+- **GitHub App auto-PR generator** (`internal/githubapp/githubapp.go`). Converts an `evolve.Suggestion` into a draft Proposal with branch name, PR title/body, and actual generated Go code for `AddCache`, `AddCircuitBreaker`, `TightenTimeout`, `AddRetryBudget`. Unknown kinds fall back to a manual-review stub. The PR body documents how to label-reject the pattern and train the advisor.
+- **Long-horizon twin forecast** (`internal/twin/forecast.go`). `Twin.Forecast()` runs K=64 Monte-Carlo trajectories with AR(1) mean-reverting noise over any horizon/step combination. Returns per-metric per-service (mean, p10, p90) bands. Deterministic under fixed seed (covered by test).
+- **GitOps / Argo CD integration** (`internal/gitops/gitops.go`). `Client.Commit()` writes state back to a GitOps repo via `git(1)`, attaches the narrator Verdict to the commit body, supports signed commits via GPG key. `IsOurCommit()` prevents reconcile loops by author-email match. `Rollback()` reverts + force-pushes when a post-apply twin check fails.
+- **Incident replay to twin** (`internal/twin/replay.go`). `Twin.Replay()` rescores a historical incident Baseline both with and without a candidate Plan. Returns `{Accepted, UnmitigatedScore, MitigatedScore, ImprovementPct, Counterexample}` so a candidate fix is gated on twin-confirmed improvement before prod apply.
+- **`/api/config` endpoint** (`internal/api/rest/config.go`). Read-only JSON dump of version metadata, per-feature flags, optional engine-config snapshot via a pluggable callback. Secrets never leak.
+- **Grafana dashboard** (`dashboards/immortal-grafana.json`). 16 panels across 5 rows: engine KPIs, throughput + latency, intelligence layer (DNA, twin, agentic), audit + provenance, recent incidents. Prometheus data source variable; ready to import.
+- **Systemd service file** (`systemd/immortal.service`). Hardened unit config with `NoNewPrivileges`, `ProtectSystem=strict`, `PrivateTmp`, `SystemCallFilter=@system-service`, `MemoryMax=2G`, `LimitNOFILE=65536`. Install + upgrade + uninstall runbook in `systemd/README.md`.
+- **Contract examples** at `examples/` (`protect-checkout.yaml`, `cost-ceiling.yaml`, `never-drop-jobs.json`, `healing-rules.yaml` + README). Real intent contract shapes operators can copy, plus healing-rule patterns covering restart, cache clear, scale, circuit break, and paging.
+- **Blog post** at `docs/blog/anomaly-detection.md`. Deep walkthrough of the DNA package: 3-sigma baselines, Welford online stats, warm-up period, per-service isolation, exponentially-weighted drift correction, and the failure modes 3-sigma misses.
+- **Distribution templates** at `docs/SUBMISSIONS.md`. Copy-paste-ready PR bodies for awesome-go and awesome-selfhosted, plus a coordinated posting calendar for HN / Reddit / LinkedIn / Twitter.
+
+### Security
+
+- All images on GHCR now carry Sigstore-signed attestations with SLSA level 3 provenance and SPDX SBOMs (shipped in v0.6.x, verified end-to-end this release).
+
+### Test suite
+
+- 86 Go packages pass, 0 failures.
+
 ## [0.6.2] - 2026-04-19
 
 ### Added
