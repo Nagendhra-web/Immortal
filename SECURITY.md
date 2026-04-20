@@ -48,6 +48,45 @@ Out of scope: third-party dependencies (report upstream), theoretical issues wit
 
 We will not pursue legal action against good-faith security research that follows this policy. If you are unsure whether your research is in scope, email first.
 
+## Verifying a release
+
+Starting in v0.7.x, every Immortal container image on GHCR ships with:
+
+1. **Keyless Sigstore signature** via Fulcio (GitHub OIDC identity, no private key to manage).
+2. **SLSA level 3 build provenance** attestation attached to the image manifest.
+3. **SPDX SBOM** attached to the image manifest.
+
+### Verify the signature
+
+```sh
+cosign verify ghcr.io/nagendhra-web/immortal:v0.7.0 \
+  --certificate-identity-regexp 'https://github.com/Nagendhra-web/Immortal/\.github/workflows/release\.yml@refs/tags/v.*' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+A valid signature confirms the image was built by our release workflow for the tag you expect. Mismatches mean someone tampered with the image or substituted a different one.
+
+### Inspect the provenance
+
+```sh
+cosign download attestation ghcr.io/nagendhra-web/immortal:v0.7.0 \
+  --predicate-type https://slsa.dev/provenance/v1
+```
+
+The provenance includes the source commit, workflow run ID, and builder identity. It is signed with the same Fulcio-issued cert.
+
+### Inspect the SBOM
+
+```sh
+cosign download sbom ghcr.io/nagendhra-web/immortal:v0.7.0
+```
+
+Returns a SPDX-JSON document listing every Go module and OS package in the image.
+
+### Who can verify
+
+Anyone. Keyless signatures do not require a shared secret. The only trust root is Sigstore's public Fulcio CA + the GitHub OIDC issuer. Airgap-friendly verification is also possible if you pin the Sigstore TUF root ahead of time.
+
 ## Security Features in Immortal Itself
 
 These packages ship with the binary and are covered by the policy above:

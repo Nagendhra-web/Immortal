@@ -27,6 +27,8 @@ export const NAV_GROUPS = [
   {
     label: "Authoring",
     items: [
+      { path: "/intent",           label: "Intents",           icon: "◆" },
+      { path: "/evolve",           label: "Architecture",      icon: "✺" },
       { path: "/planner/nl",       label: "NL → Plan",         icon: "✎" },
       { path: "/planner/economic", label: "Economic Planner",  icon: "$" },
     ],

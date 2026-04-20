@@ -21,12 +21,15 @@ import (
 	"github.com/Nagendhra-web/Immortal/internal/dependency"
 	"github.com/Nagendhra-web/Immortal/internal/dna"
 	"github.com/Nagendhra-web/Immortal/internal/event"
+	"github.com/Nagendhra-web/Immortal/internal/evolve"
 	"github.com/Nagendhra-web/Immortal/internal/export"
+	"github.com/Nagendhra-web/Immortal/internal/intent"
 	"github.com/Nagendhra-web/Immortal/internal/federated"
 	"github.com/Nagendhra-web/Immortal/internal/formal"
 	"github.com/Nagendhra-web/Immortal/internal/healing"
 	"github.com/Nagendhra-web/Immortal/internal/health"
 	"github.com/Nagendhra-web/Immortal/internal/incident"
+	"github.com/Nagendhra-web/Immortal/internal/narrator"
 	"github.com/Nagendhra-web/Immortal/internal/pattern"
 	"github.com/Nagendhra-web/Immortal/internal/playbook"
 	"github.com/Nagendhra-web/Immortal/internal/pqaudit"
@@ -83,6 +86,12 @@ type Server struct {
 	metaAgent          *agentic.MetaAgent
 	aggregatorAdvanced *federated.Aggregator
 
+	// v0.6.x components
+	intentEval *intent.Evaluator
+	narrator   *narrator.Narrator
+	evolveAdv  *evolve.Advisor
+	evolveSignals func() evolve.SignalBag // optional source of live signals
+
 	mux *http.ServeMux
 }
 
@@ -125,6 +134,13 @@ type ServerConfig struct {
 	SemanticMemory     *agentic.SemanticMemory
 	MetaAgent          *agentic.MetaAgent
 	AggregatorAdvanced *federated.Aggregator // for /api/v5/federated/close
+
+	// v0.6.x — intent-based healing, narrator, architecture advisor.
+	// All optional: nil fields disable the matching endpoints (503 response).
+	Intent        *intent.Evaluator
+	Narrator      *narrator.Narrator
+	Evolve        *evolve.Advisor
+	EvolveSignals func() evolve.SignalBag // optional callback producing fresh signals
 }
 
 func New(store *storage.Store, registry *health.Registry, healer *healing.Healer) *Server {
@@ -186,6 +202,10 @@ func NewFull(cfg ServerConfig) *Server {
 		semanticMemory:     cfg.SemanticMemory,
 		metaAgent:          cfg.MetaAgent,
 		aggregatorAdvanced: cfg.AggregatorAdvanced,
+		intentEval:         cfg.Intent,
+		narrator:           cfg.Narrator,
+		evolveAdv:          cfg.Evolve,
+		evolveSignals:      cfg.EvolveSignals,
 		mux:                http.NewServeMux(),
 	}
 	s.routes()
@@ -250,6 +270,14 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/v5/agentic/memory/recall", s.handleV5AgenticMemoryRecall)
 	s.mux.HandleFunc("/api/v5/agentic/meta-investigate", s.handleV5AgenticMetaInvestigate)
 	s.mux.HandleFunc("/api/v5/federated/close", s.handleV5FederatedClose)
+
+	// v0.6.x endpoints — intent-based healing, narrator, architecture advisor
+	s.mux.HandleFunc("/api/v6/intent", s.handleV6Intent)
+	s.mux.HandleFunc("/api/v6/intent/", s.handleV6IntentByName)
+	s.mux.HandleFunc("/api/v6/intent/suggest", s.handleV6IntentSuggest)
+	s.mux.HandleFunc("/api/v6/intent/compile", s.handleV6IntentCompile)
+	s.mux.HandleFunc("/api/v6/narrator/explain", s.handleV6NarratorExplain)
+	s.mux.HandleFunc("/api/v6/evolve/suggest", s.handleV6EvolveSuggest)
 
 	// Dashboard (additive — must come after all /api/ routes)
 	s.mux.Handle("/dashboard/", dashboard.Handler())

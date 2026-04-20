@@ -1,0 +1,159 @@
+name: bench
+
+on:
+  pull_request:
+    paths:
+      - "**.go"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/bench.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  LATENCY_THRESHOLD_PCT: "5"
+  ALLOCS_THRESHOLD_PCT: "10"
+  # Packages with stable, fast benchmarks that gate the hot path.
+  BENCH_PKGS: |
+    ./internal/engine/...
+    ./internal/dna/...
+    ./internal/event/...
+    ./internal/throttle/...
+    ./internal/pqaudit/...
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    # Skip on PRs from forks where we cannot write comments.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          check-latest: true
+
+      - name: Install benchstat
+        run: go install golang.org/x/perf/cmd/benchstat@latest
+
+      - name: Run benchmarks (PR head)
+        id: head_bench
+        run: |
+          set -euo pipefail
+          echo "Running benchmarks on PR head..."
+          for pkg in $BENCH_PKGS; do
+            go test -run='^$' -bench=. -benchmem -benchtime=2x -count=3 $pkg \
+              | tee -a head.txt || true
+          done
+          echo "head-bytes=$(wc -c < head.txt)" >> $GITHUB_OUTPUT
+
+      - name: Checkout base (main)
+        run: git checkout ${{ github.event.pull_request.base.sha }}
+
+      - name: Run benchmarks (base)
+        id: base_bench
+        run: |
+          set -euo pipefail
+          echo "Running benchmarks on base..."
+          for pkg in $BENCH_PKGS; do
+            go test -run='^$' -bench=. -benchmem -benchtime=2x -count=3 $pkg \
+              | tee -a base.txt || true
+          done
+          echo "base-bytes=$(wc -c < base.txt)" >> $GITHUB_OUTPUT
+
+      - name: Compare with benchstat
+        id: compare
+        run: |
+          set -euo pipefail
+          if [ ! -s base.txt ] || [ ! -s head.txt ]; then
+            echo "One of the bench outputs is empty. Skipping regression gate."
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          benchstat base.txt head.txt > delta.txt || true
+          cat delta.txt
+          echo "delta<<EOF" >> $GITHUB_OUTPUT
+          cat delta.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check for regressions
+        id: regression
+        if: steps.compare.outputs.skip != 'true'
+        env:
+          DELTA: ${{ steps.compare.outputs.delta }}
+        run: |
+          set -euo pipefail
+          # Extract the "delta" column from each benchstat row. Format example:
+          #   BenchmarkFoo     100ns ± 1%   110ns ± 2%   +10.00%  (p=0.000 n=3)
+          # We match numeric percentages like " +X.Y%" or " +X%".
+          echo "$DELTA" | awk -v LAT="$LATENCY_THRESHOLD_PCT" -v ALL="$ALLOCS_THRESHOLD_PCT" '
+            /^Benchmark/ {
+              # Look for " +N.N%" tokens and compare to the threshold.
+              for (i = 1; i <= NF; i++) {
+                if ($i ~ /^\+[0-9.]+%$/) {
+                  pct = substr($i, 2, length($i)-2) + 0
+                  label = "latency"
+                  threshold = LAT
+                  # Heuristic: allocs rows end with "allocs/op"; we default to latency.
+                  if ($0 ~ /allocs\/op/) { label = "allocs"; threshold = ALL }
+                  if (pct > threshold) {
+                    print "REGRESSION: " label " " $0
+                    regressed = 1
+                  }
+                }
+              }
+            }
+            END { exit regressed ? 1 : 0 }
+          ' > regressions.txt && echo "regressed=false" >> $GITHUB_OUTPUT || echo "regressed=true" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment
+        if: always() && steps.compare.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGRESSED: ${{ steps.regression.outputs.regressed }}
+          DELTA: ${{ steps.compare.outputs.delta }}
+        run: |
+          cat > comment.md <<EOF
+          ### Benchmark comparison vs base
+
+          Threshold: ${LATENCY_THRESHOLD_PCT}% latency, ${ALLOCS_THRESHOLD_PCT}% allocs.
+
+          \`\`\`
+          $(echo "$DELTA" | head -c 8000)
+          \`\`\`
+
+          EOF
+          if [ "$REGRESSED" = "true" ]; then
+            {
+              echo ""
+              echo "**Regression detected.** Add the label \`perf:acknowledged\` to bypass once you have read the diff, or fix the hot path."
+              echo ""
+              echo "Detected:"
+              echo "\`\`\`"
+              cat regressions.txt
+              echo "\`\`\`"
+            } >> comment.md
+          else
+            echo "" >> comment.md
+            echo "No significant regressions." >> comment.md
+          fi
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file comment.md
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+
+      - name: Fail if regressed (unless acknowledged)
+        if: steps.regression.outputs.regressed == 'true' && !contains(github.event.pull_request.labels.*.name, 'perf:acknowledged')
+        run: |
+          echo "Hot-path benchmarks regressed beyond threshold."
+          exit 1

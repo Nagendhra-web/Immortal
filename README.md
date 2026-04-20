@@ -14,6 +14,7 @@ Detect failures in milliseconds. Heal them autonomously. Prove every action with
 [![Go Report Card](https://goreportcard.com/badge/github.com/Nagendhra-web/Immortal)](https://goreportcard.com/report/github.com/Nagendhra-web/Immortal)
 [![Go Reference](https://pkg.go.dev/badge/github.com/Nagendhra-web/Immortal.svg)](https://pkg.go.dev/github.com/Nagendhra-web/Immortal)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![SLSA 3](https://slsa.dev/images/gh-badge-level3.svg)](SECURITY.md#verifying-a-release)
 [![Stars](https://img.shields.io/github/stars/Nagendhra-web/Immortal?style=social)](https://github.com/Nagendhra-web/Immortal/stargazers)
 
 <p>
