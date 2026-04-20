@@ -1,0 +1,25 @@
+apiVersion: v2
+name: immortal-operator
+description: Kubernetes operator for Immortal self-healing engine. Installs CRDs (Intent, Playbook, Incident) and a controller that reconciles them against the Immortal engine running in-cluster.
+type: application
+version: 0.1.0
+appVersion: "0.7.0"
+icon: https://nagendhra-web.github.io/Immortal/favicon.svg
+home: https://github.com/Nagendhra-web/Immortal
+sources:
+  - https://github.com/Nagendhra-web/Immortal
+keywords:
+  - self-healing
+  - sre
+  - agentic-ai
+  - observability
+  - operator
+maintainers:
+  - name: Nagendhra Madishetti
+    url: https://github.com/Nagendhra-web
+kubeVersion: ">=1.25.0"
+annotations:
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/prerelease: "true"
+  artifacthub.io/operator: "true"
+  artifacthub.io/operatorCapabilities: Basic Install

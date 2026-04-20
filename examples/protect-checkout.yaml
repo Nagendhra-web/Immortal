@@ -1,0 +1,38 @@
+# Real-world example: protect a payments + checkout critical path.
+#
+# Feed this file into the engine via:
+#   curl -X POST http://127.0.0.1:7777/api/v6/intent \
+#     -H 'Content-Type: application/json' \
+#     --data-binary "$(yq -o=json . examples/protect-checkout.yaml)"
+#
+# The intent declares three goals:
+#   1. checkout latency stays under 200 ms
+#   2. checkout error rate stays under 0.5%
+#   3. payments is marked as business-critical (prioritised in conflicts)
+#
+# When these goals are at risk, the engine suggests healing actions
+# (scale, warm cache, shed non-critical traffic) ordered by priority.
+name: protect-checkout
+goals:
+  - kind: 5           # ProtectService
+    service: checkout
+    priority: 10
+  - kind: 0           # LatencyUnder
+    service: checkout
+    target: 200       # ms
+    priority: 10
+  - kind: 1           # ErrorRateUnder
+    service: checkout
+    target: 0.005     # 0.5%
+    priority: 10
+  - kind: 5
+    service: payments
+    priority: 10
+  - kind: 0
+    service: payments
+    target: 200
+    priority: 10
+  - kind: 1
+    service: payments
+    target: 0.005
+    priority: 10

@@ -1,0 +1,61 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "immortal-operator.fullname" . }}
+  labels:
+    {{- include "immortal-operator.labels" . | nindent 4 }}
+rules:
+  # Read most things to observe cluster state
+  - apiGroups: [""]
+    resources: [pods, services, endpoints, nodes, namespaces, events]
+    verbs: [get, list, watch]
+  # Manage deployments for scaling actions
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets]
+    verbs: [get, list, watch, patch, update]
+  # Reconcile own CRDs
+  - apiGroups: [immortal.dev]
+    resources: [intents, playbooks, incidents]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [immortal.dev]
+    resources: [intents/status, playbooks/status, incidents/status]
+    verbs: [get, update, patch]
+  # Leader election
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, patch, delete]
+  # Event emission for user-visible reconciliation signals
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [create, patch]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "immortal-operator.fullname" . }}
+  labels:
+    {{- include "immortal-operator.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "immortal-operator.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "immortal-operator.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- if .Values.serviceAccount.create }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "immortal-operator.serviceAccountName" . }}
+  labels:
+    {{- include "immortal-operator.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

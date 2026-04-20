@@ -1,0 +1,18 @@
+{
+  "_comment": "Example: the orders queue must never drop jobs. Engine will scale workers or spill to disk before any message is lost.",
+  "name": "never-drop-jobs",
+  "goals": [
+    {
+      "kind": 3,
+      "service": "orders",
+      "target": 0,
+      "priority": 10
+    },
+    {
+      "kind": 3,
+      "service": "webhooks",
+      "target": 0,
+      "priority": 10
+    }
+  ]
+}

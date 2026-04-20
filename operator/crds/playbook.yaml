@@ -1,0 +1,91 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: playbooks.immortal.dev
+spec:
+  group: immortal.dev
+  scope: Namespaced
+  names:
+    plural: playbooks
+    singular: playbook
+    kind: Playbook
+    shortNames: [pb]
+    categories: [immortal, sre]
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: [spec]
+          properties:
+            spec:
+              type: object
+              required: [steps]
+              properties:
+                description: {type: string}
+                trigger:
+                  type: object
+                  description: When this playbook may run automatically.
+                  properties:
+                    onIntentViolation:
+                      type: string
+                      description: Run when the named Intent is violated.
+                    onIncidentKind:
+                      type: string
+                      description: Run when an incident of this kind fires.
+                steps:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [name, action]
+                    properties:
+                      name: {type: string}
+                      action:
+                        type: object
+                        required: [kind]
+                        properties:
+                          kind:
+                            type: string
+                            enum: [exec, scale, restart, circuit_break, warm_cache, shed_load, failover, webhook]
+                          target: {type: string}
+                          command:
+                            type: array
+                            items: {type: string}
+                          replicas: {type: integer}
+                          maxReplicas: {type: integer}
+                          delta: {type: integer}
+                          openFor: {type: string}
+                          url: {type: string}
+                          template: {type: string}
+                      condition:
+                        type: string
+                        description: Optional expression; step runs only if true.
+                      retries: {type: integer}
+                      rollback:
+                        type: object
+                        properties:
+                          kind: {type: string}
+                          command: {type: array, items: {type: string}}
+            status:
+              type: object
+              properties:
+                lastRun:
+                  type: string
+                  format: date-time
+                runCount: {type: integer}
+                lastResult: {type: string, enum: [success, failed, skipped, pending]}
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Steps
+          type: integer
+          jsonPath: .spec.steps[*]
+        - name: LastRun
+          type: date
+          jsonPath: .status.lastRun
+        - name: Result
+          type: string
+          jsonPath: .status.lastResult

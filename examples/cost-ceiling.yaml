@@ -1,0 +1,12 @@
+# Real-world example: cost cap on the healing loop.
+#
+# Immortal scales services to maintain intent goals. Without a cost
+# ceiling, an incident could drive spending arbitrarily high. This
+# intent caps the aggregate at $12/hour; when hit, the evaluator will
+# prefer degrading non-critical services before scaling further.
+name: cost-ceiling
+goals:
+  - kind: 6           # CostCap
+    service: ""       # system-wide (empty service)
+    target: 12.00     # USD per hour
+    priority: 4

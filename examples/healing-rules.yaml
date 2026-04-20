@@ -1,0 +1,59 @@
+# Example healing rules. Load into the engine via --rules flag or at runtime
+# through the Healer.AddRule API.
+#
+# Each rule has:
+#   name:     unique identifier
+#   match:    event filter (source, severity, kind, regex on message)
+#   action:   what to run when the rule fires
+#   cooldown: min duration between firings (prevents flap storms)
+
+rules:
+  - name: restart-api-on-5xx
+    match:
+      source: api
+      severity: critical
+    action:
+      kind: exec
+      command: ["systemctl", "restart", "myapp-api"]
+    cooldown: 60s
+
+  - name: clear-redis-on-memory-pressure
+    match:
+      source: redis
+      message_regex: "OOM|memory pressure"
+    action:
+      kind: exec
+      command: ["redis-cli", "MEMORY", "PURGE"]
+    cooldown: 30s
+
+  - name: scale-workers-on-queue-backpressure
+    match:
+      source: worker
+      severity: warning
+      message_regex: "queue depth.*[0-9]+k"
+    action:
+      kind: scale
+      target: worker
+      delta: +2
+      max_replicas: 16
+    cooldown: 120s
+
+  - name: open-circuit-on-repeated-timeouts
+    match:
+      message_regex: "upstream timeout.*payments"
+    action:
+      kind: circuit_break
+      target: payments
+      open_for: 60s
+    cooldown: 10s
+
+  - name: page-human-on-unknown-critical
+    match:
+      severity: critical
+      source: ""     # matches any source not covered above
+    action:
+      kind: webhook
+      url: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+      format: slack
+      template: "{severity} on {source}: {message}"
+    cooldown: 300s

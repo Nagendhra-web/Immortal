@@ -1,0 +1,273 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Immortal self-healing engine — one dashboard to watch everything the engine is doing, from raw event throughput up to the agentic healing loop. Works against the Prometheus exporter on /api/metrics.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1,
+  "links": [
+    { "title": "Operator dashboard", "url": "http://${HOST}:7777/dashboard/", "type": "link", "targetBlank": true },
+    { "title": "Docs", "url": "https://github.com/Nagendhra-web/Immortal", "type": "link", "targetBlank": true }
+  ],
+  "liveNow": true,
+  "panels": [
+    {
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "title": "Engine",
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Events / sec",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        { "expr": "rate(immortal_events_ingested_total[1m])", "legendFormat": "events/s", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 500000 },
+              { "color": "red", "value": 900000 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "value", "graphMode": "area", "textMode": "value_and_name" }
+    },
+    {
+      "type": "stat",
+      "title": "Healing actions / min",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "60 * rate(immortal_healings_total[1m])", "legendFormat": "heals/min", "refId": "A" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Active incidents",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "immortal_incidents_active", "legendFormat": "", "refId": "A" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Engine health (0..1)",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "immortal_health_score", "legendFormat": "score", "refId": "A" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0, "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.85 },
+              { "color": "green", "value": 0.95 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background" }
+    },
+    {
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "title": "Throughput + latency",
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Events ingested per source",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 7 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "rate(immortal_events_ingested_total[1m])", "legendFormat": "{{source}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "ops" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Healing p99 latency (ms)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 7 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum by (le, source) (rate(immortal_healing_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{source}} p99",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "title": "Intelligence layer",
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Anomalies detected (DNA)",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "increase(immortal_anomalies_detected_total[5m])", "legendFormat": "{{service}}", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Twin simulations (accepted vs rejected)",
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        { "expr": "rate(immortal_twin_simulations_total{accepted=\"true\"}[1m])", "legendFormat": "accepted", "refId": "A" },
+        { "expr": "rate(immortal_twin_simulations_total{accepted=\"false\"}[1m])", "legendFormat": "rejected", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Agentic ReAct steps",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(immortal_agentic_steps_bucket[5m]))", "legendFormat": "p95 steps", "refId": "A" }]
+    },
+    {
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "title": "Audit + provenance",
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "PQ audit entries",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 25 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "immortal_pqaudit_entries", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "type": "stat",
+      "title": "Chain verified",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 25 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "immortal_pqaudit_verified", "refId": "A" }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bool",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.5 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background" }
+    },
+    {
+      "type": "timeseries",
+      "title": "SLA compliance per service",
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 25 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [{ "expr": "immortal_sla_uptime_ratio", "legendFormat": "{{service}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0.9, "max": 1.0 } }
+    },
+    {
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 30 },
+      "title": "Top incidents (by severity)",
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Recent incidents",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 31 },
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "targets": [
+        {
+          "expr": "topk(20, immortal_incident_severity)",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "transformations": [{ "id": "organize", "options": { "excludeByName": { "__name__": true, "job": true, "instance": true } } }]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["immortal", "self-healing", "sre"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "Prometheus", "value": "Prometheus" },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Data source",
+        "multi": false,
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "hide": 0,
+        "label": "Host",
+        "name": "HOST",
+        "query": "127.0.0.1",
+        "skipUrlSync": false,
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Immortal — Self-Healing Engine",
+  "uid": "immortal-main",
+  "version": 1
+}

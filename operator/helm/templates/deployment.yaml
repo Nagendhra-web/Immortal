@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "immortal-operator.fullname" . }}
+  labels:
+    {{- include "immortal-operator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "immortal-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "immortal-operator.selectorLabels" . | nindent 8 }}
+      annotations:
+        # Force pod restart when configmap/secret changes
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "immortal-operator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: immortal
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "start"
+            - "--data-dir=/data"
+            - "--api-port={{ .Values.service.apiPort }}"
+            {{- if .Values.features.pqaudit }}- "--pqaudit"{{ end }}
+            {{- if .Values.features.twin }}- "--twin"{{ end }}
+            {{- if .Values.features.agentic }}- "--agentic"{{ end }}
+            {{- if .Values.features.causal }}- "--causal"{{ end }}
+            {{- if .Values.features.topology }}- "--topology"{{ end }}
+            {{- if .Values.features.formal }}- "--formal"{{ end }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.service.apiPort }}
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+            {{- if .Values.existingSecret }}
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: OPENROUTER_API_KEY
+                  optional: true
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: api
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "immortal-operator.fullname" . }}-data
+        {{- else }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

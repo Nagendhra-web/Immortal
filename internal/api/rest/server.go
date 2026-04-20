@@ -92,6 +92,11 @@ type Server struct {
 	evolveAdv  *evolve.Advisor
 	evolveSignals func() evolve.SignalBag // optional source of live signals
 
+	// v0.7.x — runtime configuration snapshot exposed via /api/config.
+	// Stored as `any` so the engine.Config concrete type is not imported
+	// here, avoiding an import cycle.
+	engineConfig func() any
+
 	mux *http.ServeMux
 }
 
@@ -141,6 +146,11 @@ type ServerConfig struct {
 	Narrator      *narrator.Narrator
 	Evolve        *evolve.Advisor
 	EvolveSignals func() evolve.SignalBag // optional callback producing fresh signals
+
+	// v0.7.x — callback that returns the current runtime configuration.
+	// Typically `func() any { return engine.GetConfig() }`. Kept as a
+	// callback so restart-free config reload works.
+	EngineConfig func() any
 }
 
 func New(store *storage.Store, registry *health.Registry, healer *healing.Healer) *Server {
@@ -206,6 +216,7 @@ func NewFull(cfg ServerConfig) *Server {
 		narrator:           cfg.Narrator,
 		evolveAdv:          cfg.Evolve,
 		evolveSignals:      cfg.EvolveSignals,
+		engineConfig:       cfg.EngineConfig,
 		mux:                http.NewServeMux(),
 	}
 	s.routes()
@@ -272,6 +283,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("/api/v5/federated/close", s.handleV5FederatedClose)
 
 	// v0.6.x endpoints — intent-based healing, narrator, architecture advisor
+	s.mux.HandleFunc("/api/config", s.handleConfig)
 	s.mux.HandleFunc("/api/v6/intent", s.handleV6Intent)
 	s.mux.HandleFunc("/api/v6/intent/", s.handleV6IntentByName)
 	s.mux.HandleFunc("/api/v6/intent/suggest", s.handleV6IntentSuggest)

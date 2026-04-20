@@ -1,0 +1,80 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: incidents.immortal.dev
+spec:
+  group: immortal.dev
+  scope: Namespaced
+  names:
+    plural: incidents
+    singular: incident
+    kind: Incident
+    shortNames: [inc]
+    categories: [immortal, sre]
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                source: {type: string}
+                severity:
+                  type: string
+                  enum: [info, warning, error, critical, fatal]
+                message: {type: string}
+                startedAt:
+                  type: string
+                  format: date-time
+                intents:
+                  type: array
+                  description: Names of intents violated by this incident.
+                  items: {type: string}
+            status:
+              type: object
+              properties:
+                resolvedAt:
+                  type: string
+                  format: date-time
+                phase:
+                  type: string
+                  enum: [observing, investigating, healing, resolved, escalated]
+                verdict:
+                  type: object
+                  properties:
+                    cause: {type: string}
+                    evidence: {type: array, items: {type: string}}
+                    action: {type: array, items: {type: string}}
+                    outcome: {type: string}
+                    confidence: {type: number}
+                healingActions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      at: {type: string, format: date-time}
+                      tool: {type: string}
+                      target: {type: string}
+                      result: {type: string}
+                auditReceipt:
+                  type: string
+                  description: Hash of the signed PQ audit entry for this incident.
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Severity
+          type: string
+          jsonPath: .spec.severity
+        - name: Phase
+          type: string
+          jsonPath: .status.phase
+        - name: Source
+          type: string
+          jsonPath: .spec.source
+        - name: Started
+          type: date
+          jsonPath: .spec.startedAt

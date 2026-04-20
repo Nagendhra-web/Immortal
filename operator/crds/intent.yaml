@@ -1,0 +1,99 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: intents.immortal.dev
+  labels:
+    app.kubernetes.io/name: immortal
+    app.kubernetes.io/managed-by: immortal-operator
+spec:
+  group: immortal.dev
+  scope: Namespaced
+  names:
+    plural: intents
+    singular: intent
+    kind: Intent
+    shortNames: [in, int]
+    categories: [immortal, sre]
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: [spec]
+          properties:
+            spec:
+              type: object
+              required: [goals]
+              properties:
+                description:
+                  type: string
+                  description: Human-readable intent description (used in Verdict output).
+                goals:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [kind]
+                    properties:
+                      kind:
+                        type: string
+                        enum:
+                          - LatencyUnder
+                          - ErrorRateUnder
+                          - AvailabilityOver
+                          - JobsNoDrop
+                          - ProtectService
+                          - CostCap
+                          - Saturation
+                      service:
+                        type: string
+                        description: Target service; empty means system-wide.
+                      metric:
+                        type: string
+                        description: Optional metric name override.
+                      target:
+                        type: number
+                        description: Threshold value. Unit depends on Kind.
+                      priority:
+                        type: integer
+                        minimum: 0
+                        maximum: 10
+                        description: 0=lowest, 10=highest; resolves conflicts between goals.
+            status:
+              type: object
+              properties:
+                observedGeneration:
+                  type: integer
+                lastEvaluated:
+                  type: string
+                  format: date-time
+                summary:
+                  type: string
+                goalStatus:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      kind: {type: string}
+                      service: {type: string}
+                      current: {type: number}
+                      target: {type: number}
+                      met: {type: boolean}
+                      atRisk: {type: boolean}
+                      slack: {type: number}
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Goals
+          type: integer
+          description: Number of declared goals
+          jsonPath: .spec.goals[*]
+        - name: Summary
+          type: string
+          description: Current evaluation summary
+          jsonPath: .status.summary
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp

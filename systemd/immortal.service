@@ -1,0 +1,58 @@
+[Unit]
+Description=Immortal Self-Healing Engine
+Documentation=https://github.com/Nagendhra-web/Immortal
+After=network-online.target
+Wants=network-online.target
+# Restart Immortal if it ever dies. It literally is the thing that heals
+# other services, so pay extra attention to keeping it alive.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=immortal
+Group=immortal
+
+# Binary location. Override via systemctl edit if you installed elsewhere.
+ExecStart=/usr/local/bin/immortal start \
+  --data-dir /var/lib/immortal \
+  --api-port 7777 \
+  --pqaudit \
+  --twin \
+  --agentic \
+  --causal \
+  --topology \
+  --formal
+
+Restart=always
+RestartSec=5s
+
+# Process supervision hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/immortal
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Resource limits. Adjust to taste; these are conservative defaults.
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=2G
+
+# Environment overrides (create /etc/immortal/env with KEY=VALUE lines)
+EnvironmentFile=-/etc/immortal/env
+
+# Graceful shutdown window
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

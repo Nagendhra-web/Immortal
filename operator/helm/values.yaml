@@ -1,0 +1,88 @@
+# Default values for the Immortal operator.
+# Override any of these with --set or a custom values file at install time.
+
+image:
+  repository: ghcr.io/nagendhra-web/immortal
+  tag: ""            # defaults to Chart.appVersion
+  pullPolicy: IfNotPresent
+
+replicaCount: 1       # controller is singleton-leader-elected
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Engine flags enabled by default. Disable any feature you don't need
+# to shrink the blast radius.
+features:
+  pqaudit: true
+  twin: true
+  agentic: true
+  causal: true
+  topology: true
+  formal: true
+  intent: true
+  narrator: true
+  evolve: true
+
+# Data directory for audit chain, twin state, and federation
+# partial models. Map to a PVC for persistence.
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""   # default StorageClass if empty
+
+service:
+  type: ClusterIP
+  apiPort: 7777
+  annotations: {}
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+rbac:
+  create: true
+
+# ServiceMonitor for Prometheus Operator. Set to false if you scrape
+# via annotations or don't use Prometheus Operator.
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Configuration passed to the engine via environment variables.
+# Secrets (API keys) should be loaded via existingSecret instead.
+env:
+  IMMORTAL_LOG_LEVEL: info
+
+# To enable the LLM planner, provide an existing secret containing
+# OPENROUTER_API_KEY or equivalent.
+existingSecret: ""
+
+# Pod-level security. The default is the hardened non-root profile.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: [ALL]
+  readOnlyRootFilesystem: true
+
+# Install the three CRDs? Leave true unless you manage them with a
+# separate GitOps pipeline (e.g. Argo CD CRD sync).
+crds:
+  install: true
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
