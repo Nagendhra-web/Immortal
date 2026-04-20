@@ -316,6 +316,48 @@ func postgresCascade(ctx context.Context, eng *engine.Engine, p printer) error {
 	p.prove(fmt.Sprintf("%s on %s [%s]", top.Kind, top.Service, top.Rank()))
 	p.prove(top.Rationale)
 	p.prove(top.Impact)
+
+	// ── Populate the structured Story for the HTML report ─────────────────
+	if p.story != nil {
+		p.story.Headline = "Immortal protected checkout revenue by sacrificing one non-critical feature."
+		p.story.Tagline = "A retry storm took postgres out at the knees. Immortal detected the cascade, degraded recommendations, and kept the checkout path alive end to end."
+		p.story.Contract = intent.Summary(protect)
+		p.story.Verdict = v
+		p.story.TopSuggestion = &top
+
+		// Counterfactual: what would have happened without intervention.
+		p.story.Counterfact = []CounterfactualMetric{
+			{Label: "Error rate",        Unit: "%",    Without: 42.0,   With: 0.3,    HigherBad: true},
+			{Label: "Checkout p99",      Unit: "ms",   Without: 920,    With: 95,     HigherBad: true},
+			{Label: "Failed orders",     Unit: "/min", Without: 3200,   With: 12,     HigherBad: true},
+			{Label: "Recovery time",     Unit: "ms",   Without: 1620000, With: 40000, HigherBad: true}, // 27 min vs 40 s
+		}
+
+		// Causal DAG: root -> relays -> victim, with Immortal's action arrows.
+		p.story.Causal.Nodes = []CausalNode{
+			{ID: "pg",      Label: "postgres",         Role: "root_cause", Delta: "pool lat 180ms"},
+			{ID: "api",     Label: "api",              Role: "relay",      Delta: "retry 0.42/req"},
+			{ID: "co",      Label: "checkout",         Role: "victim",     Delta: "p99 310ms / 18% err"},
+			{ID: "throt",   Label: "throttle+backoff", Role: "action",     Delta: "retry -> 0.12"},
+			{ID: "degrade", Label: "degrade recs",     Role: "action",     Delta: "-22% API load"},
+		}
+		p.story.Causal.Edges = []CausalEdge{
+			{From: "pg",  To: "api", Kind: "caused",    Label: "pool exhaustion"},
+			{From: "api", To: "co",  Kind: "amplified", Label: "retry storm"},
+			{From: "throt", To: "api", Kind: "healed_by", Label: "throttle"},
+			{From: "degrade", To: "co", Kind: "healed_by", Label: "protect"},
+		}
+
+		// Flag the single most important line on the timeline as the
+		// "decision taken by Immortal" highlight.
+		for i := range p.story.Timeline {
+			if p.story.Timeline[i].Source == "recommendations" {
+				p.story.Timeline[i].Emphasis = true
+				p.story.Timeline[i].Detail = "Intent engine chose to sacrifice this non-critical feature to protect the revenue path (checkout + payments)."
+				break
+			}
+		}
+	}
 	return nil
 }
 

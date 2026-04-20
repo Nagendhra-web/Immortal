@@ -31,9 +31,22 @@ const (
 )
 
 // printer handles all output, respecting --no-color and --quiet flags.
+// When story is non-nil, every observe/detect/heal/prove call is also
+// appended to the story timeline so an HTML report can be rendered later.
 type printer struct {
 	noColor bool
 	quiet   bool
+	story   *Story
+}
+
+// tl is a helper that appends a timeline event if a Story is attached.
+func (p printer) tl(kind, source, msg string) {
+	if p.story == nil {
+		return
+	}
+	p.story.Timeline = append(p.story.Timeline, TimelineEvent{
+		At: time.Now(), Kind: kind, Source: source, Message: msg,
+	})
 }
 
 func (p printer) col(code, s string) string {
@@ -44,6 +57,7 @@ func (p printer) col(code, s string) string {
 }
 
 func (p printer) observe(source, msg string) {
+	p.tl("observe", source, msg)
 	if p.quiet {
 		return
 	}
@@ -57,6 +71,7 @@ func (p printer) observe(source, msg string) {
 }
 
 func (p printer) detect(source, msg string) {
+	p.tl("detect", source, msg)
 	if p.quiet {
 		return
 	}
@@ -70,6 +85,7 @@ func (p printer) detect(source, msg string) {
 }
 
 func (p printer) heal(source, msg string) {
+	p.tl("heal", source, msg)
 	if p.quiet {
 		return
 	}
@@ -83,6 +99,7 @@ func (p printer) heal(source, msg string) {
 }
 
 func (p printer) prove(msg string) {
+	p.tl("verdict", "immortal", msg)
 	if p.quiet {
 		return
 	}
@@ -110,6 +127,7 @@ type Config struct {
 	NoColor  bool
 	Quiet    bool
 	JSON     bool
+	HTMLOut  string // if non-empty, write a standalone HTML incident report here
 	DataDir  string // empty = auto temp dir
 }
 
@@ -187,7 +205,8 @@ func registerRules(eng *engine.Engine, p printer, healingActions *int64) {
 
 // Run is the core logic. main() is a thin wrapper around it.
 func Run(cfg Config) (*Report, error) {
-	p := printer{noColor: cfg.NoColor, quiet: cfg.Quiet}
+	story := &Story{Scenario: cfg.Scenario, StartedAt: time.Now()}
+	p := printer{noColor: cfg.NoColor, quiet: cfg.Quiet, story: story}
 	start := time.Now()
 
 	dataDir := cfg.DataDir
@@ -343,6 +362,24 @@ done:
 	}
 
 	printReport(report, p)
+
+	// Dramatic headline and optional HTML report (if the scenario populated one).
+	story.EndedAt = time.Now()
+	if story.Headline != "" && !cfg.Quiet {
+		p.section("Headline")
+		fmt.Println("  " + p.col(colBold, story.Headline))
+		if story.Tagline != "" {
+			fmt.Println("  " + story.Tagline)
+		}
+		fmt.Println()
+	}
+	if cfg.HTMLOut != "" && story.Headline != "" {
+		if werr := writeHTML(cfg.HTMLOut, story); werr != nil {
+			fmt.Fprintf(os.Stderr, "html: %v\n", werr)
+		} else if !cfg.Quiet {
+			fmt.Printf("  HTML report written to %s\n\n", cfg.HTMLOut)
+		}
+	}
 	return report, nil
 }
 
@@ -386,11 +423,12 @@ func resolveScenarios(s string) []string {
 
 func main() {
 	var duration time.Duration
-	var scenario string
+	var scenario, htmlOut string
 	var noColor, quiet, jsonOut bool
 
 	flag.DurationVar(&duration, "duration", 30*time.Second, "total demo duration")
-	flag.StringVar(&scenario, "scenario", "all", "scenario: db_failure | cascade | flapping | quiet | all")
+	flag.StringVar(&scenario, "scenario", "all", "scenario: db_failure | cascade | flapping | quiet | postgres_cascade | all")
+	flag.StringVar(&htmlOut, "html", "", "write a standalone HTML incident report to this path (postgres_cascade only)")
 	flag.BoolVar(&noColor, "no-color", false, "disable ANSI colour output")
 	flag.BoolVar(&quiet, "quiet", false, "suppress per-event output (CI mode)")
 	flag.BoolVar(&jsonOut, "json", false, "emit machine-readable JSON report")
@@ -402,6 +440,7 @@ func main() {
 		NoColor:  noColor,
 		Quiet:    quiet,
 		JSON:     jsonOut,
+		HTMLOut:  htmlOut,
 	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "demo error: %v\n", err)
