@@ -1,12 +1,3 @@
-# Assets
-
-## Mascot
-
-Put your robot mascot image here as `mascot.png`.
-
-## Demo GIF
-
-Record a demo GIF showing Immortal in action. Here's how:
 
 ### Option 1: VHS (Recommended — Charm.sh tool)
 
