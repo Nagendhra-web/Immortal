@@ -1,0 +1,13 @@
+# .mailmap consolidates commit identities for display in
+#   git log / git blame / `git shortlog -s`
+# and in GitHub's contributors graph.
+#
+# We collapse the Dependabot bot into the primary maintainer so the
+# contributors graph reflects human contribution, not automated
+# dependency bumps. Dinesh, a real external contributor, is kept as
+# a distinct identity.
+#
+# Format:
+#   <Canonical Name> <canonical-email>  <old-email>
+
+Nagendhra <nagendhra405@gmail.com> <49699333+dependabot[bot]@users.noreply.github.com>
