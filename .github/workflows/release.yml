@@ -120,7 +120,7 @@ jobs:
           done
 
       - name: Attest the image with cosign (SLSA provenance predicate)
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-name: ghcr.io/nagendhra-web/immortal
           subject-digest: ${{ steps.build.outputs.digest }}
